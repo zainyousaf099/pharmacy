@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Doctor - Panel {% endblock title %}
+
+{% block style %}
+<style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to top left, #202020 0%, #202020 30%, #5a0000 65%, #a00 100%);
+      color: white;
+      height: 100vh;
+      overflow-x: hidden; /* ✅ prevent horizontal scroll */
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 1281px;
+      margin: 20px auto;
+      padding: 20px;
+      position: relative;
+    }
+
+    .panel h3 {
+      margin: 0 0 10px 0;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 30px;
+      height: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 1100; /* ✅ above overlay */
+    }
+
+    .hamburger span {
+      display: block;
+      height: 4px;
+      width: 100%;
+      background: white;
+      border-radius: 4px;
+    }
+
+    /* ✅ Side Menu fixed correctly */
+    .side-menu {
+      position: fixed;
+      top: 0;
+          right: -318px; /* offscreen */
+      width: 250px;
+      height: 100%;
+      /* background: linear-gradient(to top left, #202020 0%, #5a0000 80%, #a00 100%); */
+       background: rgba(24, 24, 24, 0.849);
+      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+      transition: right 0.4s ease;
+      padding: 20px;
+      z-index: 1001;
+    }
+
+    .side-menu.active {
+      right: 0;
+    }
+
+    .side-menu h4 {
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .side-menu ul li {
+      margin: 15px 0;
+    }
+
+    .side-menu ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .side-menu ul li a:hover {
+      color: #00ff66;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: white;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    /* Layout */
+    .flex {
+      display: flex;
+      justify-content: space-between;
+      gap: 285px;
+      margin-top: 60px;
+      align-items: flex-start;
+    }
+
+    .left { flex: 2; margin-left:100px; }
+    .right { flex: 1; margin-right: 116px; }
+
+    input[type="text"], select {
+      padding: 6px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 6px;
+    }
+
+    table {
+      width: 69%;
+      border-spacing: 13px;
+      color: white;
+    }
+
+    td { vertical-align: middle; }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      border-radius: 8px;
+      border: none;
+      padding: 10px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    /* ✅ Button style */
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: rgba(255, 255, 255, 0.4); }
+
+    /* Round checkboxes */
+    input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid white;
+      border-radius: 50%;
+      outline: none;
+      cursor: pointer;
+      background: transparent;
+      position: relative;
+    }
+    input[type="checkbox"]:checked {
+      background-color: #a00;
+      box-shadow: inset 0 0 0 3px black;
+    }
+
+    /* ✅ Popup overlay */
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      display: none;
+    }
+
+    .popup-box {
+      background: rgba(100, 100, 100, 0.247);  
+      padding: 30px 40px;
+      border-radius: 12px;
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      animation: popupShow 0.4s ease-out;
+    }
+
+    .popup-box .tick {
+      font-size: 2.5rem;
+      color: #00ff66;
+      margin-bottom: 10px;
+    }
+
+    @keyframes popupShow {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+  </style>
+{% endblock style %}
+
+
+    
+{% block content %}
+ <div class="panel">
+    <h3>Doctor's Panel</h3>
+
+    <!-- Hamburger -->
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="flex">
+      <!-- Left Side -->
+      <div class="left">
+        <span class="section-title">ADD PRESCRIPTION</span>
+        <table id="prescriptionTable">
+          <tr>
+            <td>MEDICINE</td>
+            <td>DAYS</td>
+            <td>mon</td>
+            <td>eve</td>
+            <td>night</td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="reference no..."></td>
+            <td>
+              <select>
+                <option value="1">1 day</option>
+                <option value="2">2 days</option>
+                <option value="3">3 days</option>
+                <option value="4">4 days</option>
+                <option value="5">5 days</option>
+                <option value="6">6 days</option>
+                <option value="7">7 days</option>
+              </select>
+            </td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+            <td><input type="checkbox"></td>
+          </tr>
+        </table>
+        <button class="btn" id="addRowBtn">ADD ROW</button>
+        <br><br>
+        <button class="btn" id="printSaveBtn">PRINT/SAVE</button>
+      </div>
+
+      <!-- Right Side -->
+      <div class="right">
+        <span class="section-title">Search Patients (Ref no.)</span>
+        <input type="text" placeholder="reference no...">
+        <button class="btn">Search</button>
+        <br><br>
+        <span class="section-title">PATIENT'S DETAILS</span>
+        <textarea placeholder=""></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Side Menu (moved outside panel) -->
+  <div class="side-menu" id="sideMenu">
+    <span class="close-btn" id="closeMenu">&times;</span>
+    <h4>Menu</h4>
+    <ul>
+      <li><a href="#">🏠 Home</a></li>
+      <li><a href="#">⚙ Settings</a></li>
+      <li><a href="/template/index.html">🚪 Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ✅ Popup Modal -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-box">
+      <div class="tick">✔</div>
+      <div>Saved! Please check your printer.</div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+
+{% block js %}
+       <script>
+  // Add new row
+  document.getElementById("addRowBtn").addEventListener("click", function() {
+    const table = document.getElementById("prescriptionTable");
+    const newRow = document.createElement("tr");
+
+    newRow.innerHTML = `
+      <td><input type="text" placeholder="reference no..."></td>
+      <td>
+        <select>
+          <option value="1">1 day</option>
+          <option value="2">2 days</option>
+          <option value="3">3 days</option>
+          <option value="4">4 days</option>
+          <option value="5">5 days</option>
+          <option value="6">6 days</option>
+          <option value="7">7 days</option>
+        </select>
+      </td>
+      <td><input type="checkbox"></td>
+      <td><input type="checkbox"></td>
+      <td><input type="checkbox"></td>
+    `;
+
+    table.appendChild(newRow);
+  });
+
+  // Show popup on Print/Save
+  document.getElementById("printSaveBtn").addEventListener("click", function() {
+    const popup = document.getElementById("popup");
+    popup.style.display = "flex";
+
+    setTimeout(() => {
+      popup.style.display = "none";
+    }, 2500); // Auto hide after 2.5s
+  });
+
+  // ✅ Menu toggle
+  const hamburger = document.getElementById("hamburger");
+  const sideMenu = document.getElementById("sideMenu");
+  const overlay = document.getElementById("overlay");
+  const closeMenu = document.getElementById("closeMenu");
+
+  hamburger.addEventListener("click", () => {
+    sideMenu.classList.add("active");
+    overlay.classList.add("active");
+  });
+
+  closeMenu.addEventListener("click", () => {
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+
+  overlay.addEventListener("click", () => {
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+  </script>
+{% endblock js %}

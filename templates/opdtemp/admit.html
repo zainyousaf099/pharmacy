@@ -1,0 +1,401 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Reception - Panel {% endblock title %}
+
+{% block style %}
+ <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #1a1a1a, #0b0033, #000066);
+      color: white;
+      height: 110vh;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 1280px;
+      margin: 20px auto;
+      padding: 20px;
+      position: relative;
+      border-radius: 6px;
+    }
+
+    .panel h3 {
+      margin: 0 0 15px 0;
+      margin-bottom: 52px;
+    }
+
+    /* ✅ Hamburger */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 30px;
+      height: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 4px;
+      width: 100%;
+      background: white;
+      border-radius: 4px;
+    }
+
+    /* ✅ Side Menu */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -318px;
+      width: 250px;
+      height: 100%;
+      background: rgba(24, 24, 24, 0.95);
+      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+      transition: right 0.4s ease;
+      padding: 20px;
+      z-index: 1001;
+    }
+
+    .side-menu.active {
+      right: 0;
+    }
+
+    .side-menu h4 {
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .side-menu ul li {
+      margin: 15px 0;
+    }
+
+    .side-menu ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .side-menu ul li a:hover {
+      color: #00ff66;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: white;
+    }
+
+    /* ✅ Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    /* ✅ Layout */
+    .flex {
+      display: flex;
+      justify-content: space-between;
+      /* gap: 20px; */
+          width: 900px;
+    }
+
+    .left {
+      flex: 1;
+    }
+
+    .right {
+      flex: 1;
+    }
+
+    input[type="text"] {
+      padding: 6px;
+      border-radius: 5px;
+      border: 1px solid #aaa;
+      margin-bottom: 14px;
+      width: 200px;
+    }
+
+    textarea {
+      width: 220px;
+      height: 150px;
+      border-radius: 6px;
+      border: none;
+      padding: 10px;
+    }
+
+    /* .btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #a00;
+      color: white;
+      font-weight: bold;
+    } */
+
+    .btn:hover {
+      background: #c00;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    /* ✅ Popup overlay */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 1200;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* ✅ Popup box */
+    .popup-box {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 1.1rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      animation: popupFade 0.4s ease;
+    }
+
+    .popup-box .tick {
+      font-size: 2rem;
+      color: #00ff66;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    @keyframes popupFade {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    /* ✅ Button style */
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+          width: 134px;
+          margin-left: 10px;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: rgba(255, 255, 255, 0.4); }
+    .form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: 1px;
+}
+
+.form-grid input {
+  width: 100%;
+  padding: 1px;
+  box-sizing: border-box;
+}
+.back-home {
+  position: absolute;
+  top: 13px;
+  left: 250px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.3s;  
+}
+
+.back-home:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+  </style>
+{% endblock style %}
+
+
+    
+{% block content %}
+ 
+
+  <div class="panel">
+    <h3>RECEPTION Panel/OPD</h3>
+<a href="javascript:history.back()" class="back-home">⬅ Back</a>
+
+    <!-- ✅ Hamburger -->
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+
+
+
+
+<!-- Left Side -->
+<div class="left">
+  <span class="section-title">ADD PATIENT DETAILS</span><br>
+
+  <form method="post" class="form-grid">
+    {% csrf_token %}
+
+    <div>
+      Name<br>
+      {{ form.name }}
+    </div>
+
+    <div>
+      Phone<br>
+      {{ form.phone }}
+    </div>
+
+    <div>
+      Age<br>
+      {{ form.age }}
+    </div>
+
+    <div>
+      Temp<br>
+      {{ form.temperature }}
+    </div>
+
+    <div>
+      Weight<br>
+      {{ form.weight }}
+    </div>
+
+    <div>
+      Height<br>
+      {{ form.height }}
+    </div>
+
+    <div style="grid-column: 1 / -1; text-align:center; margin-top:15px;">
+      <button type="submit" class="btn" id="printSaveBtn">ADD / PRINT</button>
+    </div>
+  </form>
+</div>
+
+ <!-- Right Side -->
+  <div class="right">
+    <form method="post">
+      {% csrf_token %}
+      <span class="section-title">Search PATIENT</span><br>
+      <input type="text" name="search_query" placeholder="Enter Ref No, Name or Phone">
+      <button class="btn" type="submit" name="search_patient">Search</button>
+    </form>
+
+    <br><br>
+    <span class="section-title">Patient details</span><br>
+    <textarea readonly rows="8" style="width:100%">
+      {% if selected_patient %}
+Ref: {{ selected_patient.ref_no }}
+Name: {{ selected_patient.name }}
+Phone: {{ selected_patient.phone }}
+Age: {{ selected_patient.age }}
+Temp: {{ selected_patient.temperature }}
+Weight: {{ selected_patient.weight }}
+Height: {{ selected_patient.height }}
+      {% else %}
+No patient selected.
+      {% endif %}
+    </textarea>
+  </div>
+</div>
+
+
+  <!-- ✅ Side Menu -->
+  <div class="side-menu" id="sideMenu">
+    <span class="close-btn" id="closeMenu">&times;</span>
+    <h4>Menu</h4>
+    <ul>
+      <li><a href="#">🏠 Home</a></li>
+      <li><a href="#">⚙ Settings</a></li>
+       <li><a href="/template/index.html">🚪 Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- ✅ Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ✅ Popup Modal -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-box">
+      <div class="tick">✔</div>
+      <div>Saved! Please check your printer.</div>
+    </div>
+  </div>
+
+
+{% endblock content %}
+
+
+{% block js %}
+ <script>
+    // ✅ Menu toggle
+    const hamburger = document.getElementById("hamburger");
+    const sideMenu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("overlay");
+    const closeMenu = document.getElementById("closeMenu");
+
+    hamburger.addEventListener("click", () => {
+      sideMenu.classList.add("active");
+      overlay.classList.add("active");
+    });
+
+    closeMenu.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+
+    // ✅ Show popup on Print/Save
+    document.getElementById("printSaveBtn").addEventListener("click", function() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "flex";
+
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 2500);
+    });
+  </script>
+{% endblock js %}

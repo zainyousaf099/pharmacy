@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Add Product{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Add New Product / Medicine</h2>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Create</button>
+  </form>
+</div>
+{% endblock %}

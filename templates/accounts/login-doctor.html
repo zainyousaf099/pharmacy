@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Doctor's Panel {% endblock title %}
+
+{% block style %}
+   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+     background: linear-gradient(to top right, #202020 0%, #202020 30%, #5a0000 65%, #a00 100%);
+      color: white;
+      opacity: 0;
+  animation: fadeIn 1s forwards;
+    }
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 80%;
+      max-width: 1000px;
+    }
+
+    .title {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .form-box {
+      /* background: rgba(0, 0, 0, 0.2); semi-transparent box */
+      padding: 2rem;
+      border-radius: 10px;
+      min-width: 300px;
+    }
+
+    .form-box label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .form-box input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-bottom: 2px solid #ccc;
+      background: transparent;
+      color: white;
+      margin-bottom: 1.5rem;
+      outline: none;
+    }
+
+    .form-box input::placeholder {
+      color: #aaa;
+    }
+
+   .form-box button {
+    width: 245px;
+    text-align: center;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+      background: white;
+      color: #a00; /* matches gradient */
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-decoration: none;
+    }
+
+    .form-box button:hover {
+      background: #ddd;
+    }
+    .back-home {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+
+.back-home:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+  </style>
+{% endblock style %}
+
+
+    
+{% block content %}
+  <a href="{% url 'role' %}" class="back-home">⬅ Back to Home</a>
+
+<div class="container">
+  <div class="title">Doctor’s Panel</div>
+  <div class="form-box">
+    <form method="post">
+      {% csrf_token %}
+      <label for="staff_id">Enter Doctor ID</label>
+      <input type="text" name="staff_id" id="staff_id" placeholder="doctor01">
+      <button type="submit">Login</button>
+    </form>
+    {% if messages %}
+      {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
+
+
+{% block js %}
+      
+{% endblock js %}

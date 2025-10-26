@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Add Stock: {{ product.name }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Add Purchase - {{ product.name }}</h2>
+
+  <p>
+    <strong>Items per product unit (packs per box):</strong> {{ items_per_product }}<br>
+    <strong>Subitems per item (e.g., tablets per pack):</strong> {{ subitems_per_item }}
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Record Purchase</button>
+    <a class="btn btn-secondary" href="{% url 'inventory:product_detail' product.pk %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

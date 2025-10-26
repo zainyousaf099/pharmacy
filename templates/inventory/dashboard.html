@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Inventory Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  .export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color:rgb(255, 255, 255);
+    background-color:rgb(54, 54, 54);
+  }
+
+  .export-btn i {
+    font-size: 1.2rem;
+  }
+
+  .export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+</style>
+<div class="d-flex justify-content-end mb-3 gap-2">
+  <a href="{% url 'dashboard_export_pdf' %}" class="btn btn-danger export-btn">
+    <i class="bi bi-file-earmark-pdf"></i> Download PDF
+  </a>
+  <a href="{% url 'dashboard_export_excel' %}" class="btn btn-success export-btn">
+    <i class="bi bi-file-earmark-excel"></i> Download Excel
+  </a>
+</div>
+
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Inventory Dashboard (Profit & Loss)</h2>
+
+  <div class="card p-3 mb-4">
+    <h4>Monthly Overview</h4>
+    <canvas id="monthlyChart" height="100"></canvas>
+  </div>
+
+  <div class="card p-3 mb-4">
+    <h4>Yearly Overview</h4>
+    <canvas id="yearlyChart" height="100"></canvas>
+  </div>
+
+  <div class="card p-3">
+    <h4 class="text-center">Summary Table</h4>
+    <table class="table table-bordered mt-3">
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Sales</th>
+          <th>Purchases</th>
+          <th>Profit/Loss</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for month, data in monthly_data.items %}
+        <tr>
+          <td>{{ month }}</td>
+          <td>{{ data.Sale|floatformat:2 }}</td>
+          <td>{{ data.Purchase|floatformat:2 }}</td>
+          <td class="{% if data.Profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+            {{ data.Profit|floatformat:2 }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const monthly = {{ monthly_data|safe }};
+  const yearly = {{ yearly_data|safe }};
+
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(monthly),
+      datasets: [
+        { label: 'Sales', data: Object.values(monthly).map(v => v.Sale), backgroundColor: 'rgba(54, 162, 235, 0.6)' },
+        { label: 'Purchases', data: Object.values(monthly).map(v => v.Purchase), backgroundColor: 'rgba(255, 99, 132, 0.6)' },
+        { label: 'Profit/Loss', data: Object.values(monthly).map(v => v.Profit), backgroundColor: 'rgba(75, 192, 75, 0.6)' },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  new Chart(document.getElementById('yearlyChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(yearly),
+      datasets: [
+        { label: 'Sales', data: Object.values(yearly).map(v => v.Sale), backgroundColor: 'rgba(54, 162, 235, 0.6)' },
+        { label: 'Purchases', data: Object.values(yearly).map(v => v.Purchase), backgroundColor: 'rgba(255, 99, 132, 0.6)' },
+        { label: 'Profit/Loss', data: Object.values(yearly).map(v => v.Profit), backgroundColor: 'rgba(75, 192, 75, 0.6)' },
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+</script>
+{% endblock %}

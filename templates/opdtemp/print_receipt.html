@@ -1,0 +1,66 @@
+<!-- opdtemp/print_receipt.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Patient Receipt</title>
+    <style>
+        body { font-family: monospace; font-size: 14px; }
+        .receipt { width: 250px; margin: auto; text-align: center; }
+        .qr img { width: 120px; margin-top: 10px; }
+        .line { border-top: 1px dashed #000; margin: 5px 0; }
+         .receipt {
+    width: 80mm;   /* thermal roll size */
+    padding: 5mm;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .line {
+    border-top: 1px dashed #000;
+    margin: 5px 0;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  /* remove browser default header/footer */
+  @page {
+    size: 80mm auto;   /* auto height based on content */
+    margin: 0;
+  }
+.back-home {
+  position: absolute;
+  top: 13px;
+  left: 250px;
+  background: rgba(255, 255, 255, 0.063);
+  color: rgb(0, 0, 0);
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.3s;  
+}
+
+.back-home:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+    </style>
+</head>
+<body onload="window.print()">
+    <a href="javascript:history.back()" class="back-home">⬅ Back</a>
+  <div class="receipt">
+    <h2>{{ clinic_name }}</h2>
+    <div class="line"></div>
+    <p><b>Ref No:</b> {{ patient.ref_no }}</p>
+    <p><b>Name:</b> {{ patient.name }}</p>
+    <p><b>Date:</b> {{ patient.created_at|date:"d M Y H:i" }}</p>
+    <div class="line"></div>
+    <div class="qr">
+        <img src="data:image/png;base64,{{ qr_image }}" alt="QR Code">
+    </div>
+    <p>Scan QR to fetch patient</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between">
+    <h2>{{ product.name }}</h2>
+    <a class="btn btn-success" href="{% url 'inventory:product_purchase' product.pk %}">Add Stock</a>
+  </div>
+
+  <dl class="row mt-3">
+    <dt class="col-sm-3">Category</dt><dd class="col-sm-9">{{ product.category }}</dd>
+    <dt class="col-sm-3">Boxes (stock)</dt><dd class="col-sm-9">{{ product.current_stock_boxes|floatformat:2 }}</dd>
+    <dt class="col-sm-3">Packs (items) (stock)</dt><dd class="col-sm-9">{{ product.current_stock_items|floatformat:2 }}</dd>
+    <dt class="col-sm-3">Sub-items (stock)</dt><dd class="col-sm-9">{{ product.current_stock_subitems|floatformat:2 }}</dd>
+    <dt class="col-sm-3">Purchase price (per product unit)</dt><dd class="col-sm-9">{{ product.purchase_price }}</dd>
+    <dt class="col-sm-3">Items per product (packs per box)</dt><dd class="col-sm-9">{{ product.items_per_product }}</dd>
+    <dt class="col-sm-3">Subitems per item (e.g., tablets per pack)</dt><dd class="col-sm-9">{{ product.subitems_per_item }}</dd>
+  </dl>
+
+  <h4 class="mt-4">Recent Transactions</h4>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th><th>Type</th><th>Boxes</th><th>Packs</th><th>Subitems</th><th>Unit Price</th><th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr>
+        <td>{{ t.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ t.get_transaction_type_display }}</td>
+        <td>{{ t.quantity_boxes }}</td>
+        <td>{{ t.quantity_items }}</td>
+        <td>{{ t.quantity_subitems }}</td>
+        <td>{{ t.unit_purchase_price }}</td>
+        <td>{{ t.notes }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No transactions yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
