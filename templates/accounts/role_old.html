@@ -200,7 +200,6 @@
     font-weight: 600;
     letter-spacing: 1px;
     transition: all 0.3s ease;
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
   }
 
@@ -321,120 +320,53 @@
 {% endblock style %}
 
 {% block content %}
-<!-- Animated background particles -->
-<div class="particles">
-  <div class="particle" style="width: 10px; height: 10px; top: 20%; left: 10%; animation-delay: 0s;"></div>
-  <div class="particle" style="width: 15px; height: 15px; top: 60%; left: 80%; animation-delay: 2s;"></div>
-  <div class="particle" style="width: 8px; height: 8px; top: 80%; left: 30%; animation-delay: 4s;"></div>
-  <div class="particle" style="width: 12px; height: 12px; top: 40%; left: 70%; animation-delay: 1s;"></div>
-  <div class="particle" style="width: 10px; height: 10px; top: 10%; left: 50%; animation-delay: 3s;"></div>
-</div>
-
-<!-- Header -->
-<div class="header">
-  <h1>🏥 Clinic Management System</h1>
-  <p>Select Your Role to Continue</p>
-</div>
-
-<!-- Role Selection Panels -->
 <div class="container">
   <a href="{% url 'doctor_login' %}"
      class="panel doctor"
-     onclick="expandPanel(event, 'doctor', this.href)">
-    <div class="panel-icon">🩺</div>
-    <div class="panel-title">Doctor's Panel</div>
-    <div class="panel-description">
-      Access patient records, write prescriptions, and manage appointments
-    </div>
-    <div class="panel-button">Enter Portal →</div>
+     onclick="expandPanel(event, 'doctor', '{% url 'doctor_login' %}')">
+     Doctor’s Panel
   </a>
-
   <a href="{% url 'opd_login' %}"
      class="panel reception"
-     onclick="expandPanel(event, 'reception', this.href)">
-    <div class="panel-icon">📋</div>
-    <div class="panel-title">OPD/Reception</div>
-    <div class="panel-description">
-      Register patients, manage appointments, and handle admissions
-    </div>
-    <div class="panel-button">Enter Portal →</div>
+     onclick="expandPanel(event, 'reception', '{% url 'opd_login' %}')">
+     OPD/Reception
   </a>
-
   <a href="{% url 'pharmacy_login' %}"
      class="panel pharmacy"
-     onclick="expandPanel(event, 'pharmacy', this.href)">
-    <div class="panel-icon">💊</div>
-    <div class="panel-title">Pharmacy</div>
-    <div class="panel-description">
-      Manage inventory, process prescriptions, and track medicine stock
-    </div>
-    <div class="panel-button">Enter Portal →</div>
+     onclick="expandPanel(event, 'pharmacy', '{% url 'pharmacy_login' %}')">
+     Pharmacy
   </a>
 </div>
 
 <!-- Overlay for animation -->
-<div class="overlay" id="overlay">
-  <div class="overlay-content" id="overlayText"></div>
-  <div class="spinner"></div>
-</div>
+<div class="overlay" id="overlay"></div>
 {% endblock content %}
 
 {% block js %}
 <script>
   function expandPanel(e, panelType, targetUrl) {
-    e.preventDefault();
+    e.preventDefault(); // stop immediate navigation
 
     const overlay = document.getElementById("overlay");
-    const overlayText = document.getElementById("overlayText");
 
-    // Set text based on role
-    const roleTexts = {
-      'doctor': '🩺 Accessing Doctor\'s Portal...',
-      'reception': '📋 Accessing Reception...',
-      'pharmacy': '💊 Accessing Pharmacy...'
-    };
-
-    overlayText.textContent = roleTexts[panelType];
-
-    // Apply gradient
+    // Apply the right gradient
     if (panelType === "doctor") {
       overlay.style.background =
-        "linear-gradient(135deg, #3d0000 0%, #a00 50%, #ff4444 100%)";
+        "linear-gradient(to top right, #202020 0%, #202020 30%, #5a0000 65%, #a00 100%)";
     } else if (panelType === "reception") {
       overlay.style.background =
-        "linear-gradient(135deg, #001a4d 0%, #0047b3 50%, #3399ff 100%)";
+        "linear-gradient(to top left, #202020 0%, #202020 30%, #003080 65%, #001a66 100%)";
     } else if (panelType === "pharmacy") {
       overlay.style.background =
-        "linear-gradient(135deg, #004d00 0%, #00a000 50%, #44ff44 100%)";
+        "linear-gradient(to top left, #202020 0%, #202020 30%, #046600 65%, #064d00 100%)";
     }
 
     overlay.classList.add("expand");
 
-    // Redirect after animation
+    // Redirect after the animation finishes
     setTimeout(() => {
       window.location.href = targetUrl;
-    }, 1200);
+    }, 900); // slightly longer than the CSS transition
   }
-
-  // Create ripple effect on click
-  document.querySelectorAll('.panel').forEach(panel => {
-    panel.addEventListener('click', function(e) {
-      const ripple = document.createElement('span');
-      ripple.classList.add('ripple');
-      
-      const rect = this.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height);
-      const x = e.clientX - rect.left - size / 2;
-      const y = e.clientY - rect.top - size / 2;
-      
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = x + 'px';
-      ripple.style.top = y + 'px';
-      
-      this.appendChild(ripple);
-      
-      setTimeout(() => ripple.remove(), 600);
-    });
-  });
 </script>
 {% endblock js %}

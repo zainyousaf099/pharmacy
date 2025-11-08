@@ -518,40 +518,38 @@ Please search for a patient using the search box above.{% endif %}</div>
 
 {% endblock content %}
 
+
 {% block js %}
-<script>
-  // Menu toggle functionality
-  const hamburger = document.getElementById("hamburger");
-  const sideMenu = document.getElementById("sideMenu");
-  const overlay = document.getElementById("overlay");
-  const closeMenu = document.getElementById("closeMenu");
+ <script>
+    // ✅ Menu toggle
+    const hamburger = document.getElementById("hamburger");
+    const sideMenu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("overlay");
+    const closeMenu = document.getElementById("closeMenu");
 
-  hamburger.addEventListener("click", () => {
-    sideMenu.classList.add("active");
-    overlay.classList.add("active");
-  });
-
-  closeMenu.addEventListener("click", () => {
-    sideMenu.classList.remove("active");
-    overlay.classList.remove("active");
-  });
-
-  overlay.addEventListener("click", () => {
-    sideMenu.classList.remove("active");
-    overlay.classList.remove("active");
-  });
-
-  // Add focus effects to inputs
-  const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-  inputs.forEach(input => {
-    input.addEventListener('focus', function() {
-      this.parentElement.style.transform = 'scale(1.02)';
-      this.parentElement.style.transition = 'transform 0.2s ease';
+    hamburger.addEventListener("click", () => {
+      sideMenu.classList.add("active");
+      overlay.classList.add("active");
     });
-    
-    input.addEventListener('blur', function() {
-      this.parentElement.style.transform = 'scale(1)';
+
+    closeMenu.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
     });
-  });
-</script>
+
+    overlay.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+
+    // ✅ Show popup on Print/Save
+    document.getElementById("printSaveBtn").addEventListener("click", function() {
+      const popup = document.getElementById("popup");
+      popup.style.display = "flex";
+
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 2500);
+    });
+  </script>
 {% endblock js %}

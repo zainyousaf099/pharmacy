@@ -1,40 +1,94 @@
-{% extends "base.html" %}
-{% block title %}Products{% endblock %}
-{% block content %}
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Medicines / Products</h2>
-    <a class="btn btn-primary" href="{% url 'inventory:product_create' %}">Add New Product</a>
-  </div>
+{% extends "inventory/base.html" %}
+{% load static %}
 
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Boxes</th>
-        <th>Packs (items)</th>
-        <th>Sub-items</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in products %}
-      <tr>
-        <td>{{ p.name }}</td>
-        <td>{{ p.category }}</td>
-        <td>{{ p.current_stock_boxes|floatformat:2 }}</td>
-        <td>{{ p.current_stock_items|floatformat:2 }}</td>
-        <td>{{ p.current_stock_subitems|floatformat:2 }}</td>
-        <td>
-          <a class="btn btn-sm btn-outline-secondary" href="{% url 'inventory:product_detail' p.pk %}">View</a>
-          <a class="btn btn-sm btn-success" href="{% url 'inventory:product_purchase' p.pk %}">Add Stock</a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="6">No products found.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+{% block title %}Medicines Inventory{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-pills me-2"></i>Medicines Inventory
+            </h1>
+            <p class="text-muted">Manage all medicines and products</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a class="btn btn-primary btn-lg" href="{% url 'inventory:product_create' %}">
+                <i class="fas fa-plus me-2"></i>Add New Medicine
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Dosage</th>
+                            <th>Packs in Stock</th>
+                            <th>Strips in Stock</th>
+                            <th>Tablets in Stock</th>
+                            <th>Purchase Price (Pack)</th>
+                            <th>Sale Price (Pack)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in products %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ p.name }}</div>
+                                {% if p.batch_no %}
+                                    <small class="text-muted">Batch: {{ p.batch_no }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.category %}
+                                    <span class="badge bg-secondary">{{ p.category }}</span>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ p.weight_or_quantity|default:"—" }}</td>
+                            <td>
+                                <span class="badge {% if p.current_stock_boxes < 5 %}bg-danger{% else %}bg-success{% endif %}">
+                                    {{ p.current_stock_boxes|floatformat:0 }}
+                                </span>
+                            </td>
+                            <td>{{ p.current_stock_items|floatformat:0 }}</td>
+                            <td>{{ p.current_stock_subitems|floatformat:0 }}</td>
+                            <td>Rs. {{ p.purchase_price|floatformat:2 }}</td>
+                            <td class="text-success fw-bold">Rs. {{ p.sale_price|floatformat:2 }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'inventory:product_detail' p.pk %}" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a class="btn btn-sm btn-success" href="{% url 'inventory:product_purchase' p.pk %}" title="Add Stock">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <i class="fas fa-inbox fa-4x text-muted mb-3 d-block"></i>
+                                <h5 class="text-muted">No medicines found</h5>
+                                <p class="text-muted">Start by adding your first medicine to the inventory</p>
+                                <a href="{% url 'inventory:product_create' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Add Medicine
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

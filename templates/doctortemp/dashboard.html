@@ -5,61 +5,108 @@
 
 {% block style %}
 <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(to top left, #202020 0%, #202020 30%, #5a0000 65%, #a00 100%);
       color: white;
-      height: 100vh;
-      overflow-x: hidden; /* ✅ prevent horizontal scroll */
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .panel {
       width: 100%;
-      max-width: 1281px;
-      margin: 20px auto;
-      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 20px;
       position: relative;
     }
 
-    .panel h3 {
-      margin: 0 0 10px 0;
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-bottom: none;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
 
     /* Hamburger */
     .hamburger {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      width: 30px;
-      height: 22px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 5px;
       cursor: pointer;
-      z-index: 1100; /* ✅ above overlay */
+      padding: 8px;
+      transition: all 0.3s;
+    }
+
+    .hamburger:hover {
+      opacity: 0.8;
     }
 
     .hamburger span {
       display: block;
-      height: 4px;
-      width: 100%;
+      height: 3px;
+      width: 28px;
       background: white;
-      border-radius: 4px;
+      border-radius: 3px;
+      transition: all 0.3s;
     }
 
-    /* ✅ Side Menu fixed correctly */
+    /* Side Menu */
     .side-menu {
       position: fixed;
       top: 0;
-          right: -318px; /* offscreen */
-      width: 250px;
+      right: -300px;
+      width: 280px;
       height: 100%;
-      /* background: linear-gradient(to top left, #202020 0%, #5a0000 80%, #a00 100%); */
-       background: rgba(24, 24, 24, 0.849);
-      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
-      transition: right 0.4s ease;
-      padding: 20px;
+      background: rgba(24, 24, 24, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+      transition: right 0.3s ease;
+      padding: 30px 25px;
       z-index: 1001;
     }
 
@@ -70,38 +117,58 @@
     .side-menu h4 {
       margin-top: 0;
       color: #fff;
-      border-bottom: 1px solid rgba(255,255,255,0.3);
-      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(255,255,255,0.2);
+      padding-bottom: 15px;
+      font-size: 1.3rem;
     }
 
     .side-menu ul {
       list-style: none;
       padding: 0;
-      margin: 20px 0;
+      margin: 25px 0;
     }
 
     .side-menu ul li {
-      margin: 15px 0;
+      margin: 20px 0;
     }
 
     .side-menu ul li a {
-      color: white;
+      color: rgba(255, 255, 255, 0.9);
       text-decoration: none;
-      font-size: 1rem;
-      transition: color 0.3s;
+      font-size: 1.05rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 6px;
     }
 
     .side-menu ul li a:hover {
-      color: #00ff66;
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      padding-left: 15px;
     }
 
     .close-btn {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 1.5rem;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
       cursor: pointer;
       color: white;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(90deg);
     }
 
     /* Overlay */
@@ -109,94 +176,307 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
       z-index: 1000;
       display: none;
+      transition: all 0.3s;
     }
 
     .overlay.active {
       display: block;
     }
 
-    /* Layout */
-    .flex {
-      display: flex;
-      justify-content: space-between;
-      gap: 285px;
-      margin-top: 60px;
-      align-items: flex-start;
+    /* Main Content Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 30px;
+      margin-top: 20px;
     }
 
-    .left { flex: 2; margin-left:100px; }
-    .right { flex: 1; margin-right: 116px; }
-
-    input[type="text"], select {
-      padding: 6px;
-      border-radius: 5px;
-      border: none;
-      margin-bottom: 6px;
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
-    table {
-      width: 69%;
-      border-spacing: 13px;
+    /* Card Styles */
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: visible;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0 0 20px 0;
       color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
     }
 
-    td { vertical-align: middle; }
+    .card-title::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: #a00;
+      border-radius: 2px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
 
     textarea {
+      min-height: 180px;
+      resize: vertical;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Prescription Table */
+    .prescription-table-wrapper {
+      overflow: visible;
+      margin-bottom: 15px;
+    }
+
+    .prescription-table {
       width: 100%;
-      height: 200px;
-      border-radius: 8px;
-      border: none;
-      padding: 10px;
+      border-collapse: separate;
+      border-spacing: 0;
+      position: relative;
     }
 
-    .section-title {
-      font-weight: bold;
-      margin-bottom: 5px;
-      display: block;
+    .prescription-table tbody {
+      position: relative;
     }
 
-    /* ✅ Button style */
-    .btn {
-      background: rgba(255, 255, 255, 0.2);
+    .prescription-table thead th {
+      background: rgba(0, 0, 0, 0.3);
       color: white;
-      padding: 8px 14px;
-      border-radius: 6px;
-      text-decoration: none;
+      font-weight: 600;
+      padding: 12px;
+      text-align: left;
       font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     }
-    .btn:hover { background: rgba(255, 255, 255, 0.4); }
 
-    /* Round checkboxes */
+    .prescription-table thead th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .prescription-table thead th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    .prescription-table tbody td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      vertical-align: middle;
+    }
+
+    .prescription-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .medicine-input-cell {
+      position: relative;
+      width: 40%;
+    }
+
+    .medicine-input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .days-cell {
+      width: 20%;
+    }
+
+    .checkbox-cell {
+      width: 13%;
+      text-align: center;
+    }
+
+    .prescription-table .medicineSearch {
+      width: 100%;
+      margin: 0;
+    }
+
+    .prescription-table select {
+      width: 100%;
+      margin: 0;
+    }
+
+    /* Checkboxes */
     input[type="checkbox"] {
-      appearance: none;
       -webkit-appearance: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid white;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
       border-radius: 50%;
       outline: none;
       cursor: pointer;
       background: transparent;
       position: relative;
-    }
-    input[type="checkbox"]:checked {
-      background-color: #a00;
-      box-shadow: inset 0 0 0 3px black;
+      transition: all 0.2s;
     }
 
-    /* ✅ Popup overlay */
+    input[type="checkbox"]:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    input[type="checkbox"]:checked {
+      background-color: #a00;
+      border-color: #a00;
+    }
+
+    input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Buttons */
+    .btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: #a00;
+      border-color: #a00;
+    }
+
+    .btn-primary:hover {
+      background: #c00;
+      border-color: #c00;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-section {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .search-section .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .search-message {
+      color: #ff4444;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      display: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .search-message.success {
+      color: #00ff66;
+    }
+
+    .search-message.warning {
+      color: #ffa500;
+    }
+
+    .search-message.error {
+      color: #ff4444;
+    }
+
+    /* Popup */
     .popup-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(5px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -205,106 +485,282 @@
     }
 
     .popup-box {
-      background: rgba(100, 100, 100, 0.247);  
-      padding: 30px 40px;
-      border-radius: 12px;
+      background: rgba(40, 40, 40, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px 50px;
+      border-radius: 16px;
       text-align: center;
       color: white;
       font-size: 1.2rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      animation: popupShow 0.4s ease-out;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: popupShow 0.3s ease-out;
     }
 
     .popup-box .tick {
-      font-size: 2.5rem;
+      font-size: 3.5rem;
       color: #00ff66;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      animation: tickPulse 0.5s ease-out;
     }
 
     @keyframes popupShow {
-      from { transform: scale(0.7); opacity: 0; }
+      from { transform: scale(0.8); opacity: 0; }
       to   { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes tickPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    /* Medicine Autocomplete Styles */
+    .autocomplete-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(20, 20, 20, 0.98);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border: 2px solid #00ff66 !important;
+      border-radius: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 2000 !important;
+      display: none;
+      margin-top: 4px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+    }
+    
+    .autocomplete-results.show {
+      display: block !important;
+    }
+    
+    .autocomplete-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s;
+    }
+    
+    .autocomplete-item:hover {
+      background: rgba(160, 0, 0, 0.4);
+      padding-left: 18px;
+    }
+    
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-item.empty {
+      text-align: center;
+      color: #888;
+      cursor: default;
+      padding: 12px 14px;
+    }
+
+    .autocomplete-item.empty:hover {
+      background: transparent;
+      padding-left: 14px;
+    }
+    
+    .medicine-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: white;
+      margin-bottom: 3px;
+    }
+    
+    .medicine-details {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.65);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    
+    .stock-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    
+    .stock-available {
+      background: rgba(0, 255, 102, 0.2);
+      color: #00ff66;
+      border: 1px solid rgba(0, 255, 102, 0.3);
+    }
+    
+    .stock-low {
+      background: rgba(255, 165, 0, 0.2);
+      color: #ffa500;
+      border: 1px solid rgba(255, 165, 0, 0.3);
+    }
+    
+    .stock-out {
+      background: rgba(255, 0, 0, 0.2);
+      color: #ff4444;
+      border: 1px solid rgba(255, 0, 0, 0.3);
+    }
+
+    /* Scrollbar Styles */
+    .autocomplete-results::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .autocomplete-results::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+    
+    .autocomplete-results::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    
+    .autocomplete-results::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
   </style>
 {% endblock style %}
 
-
     
 {% block content %}
- <div class="panel">
-    <h3>Doctor's Panel</h3>
-
-    <!-- Hamburger -->
-    <div class="hamburger" id="hamburger">
-      <span></span><span></span><span></span>
+  <div class="panel">
+    <!-- Panel Header -->
+    <div class="panel-header">
+      <h2>🩺 Doctor's Panel</h2>
+      
+      <div class="header-actions">
+        <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
+        <!-- Hamburger Menu -->
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
     </div>
 
-    <div class="flex">
-      <!-- Left Side -->
-      <div class="left">
-        <span class="section-title">ADD PRESCRIPTION</span>
-        <table id="prescriptionTable">
-          <tr>
-            <td>MEDICINE</td>
-            <td>DAYS</td>
-            <td>mon</td>
-            <td>eve</td>
-            <td>night</td>
-          </tr>
-          <tr>
-            <td><input type="text" placeholder="reference no..."></td>
-            <td>
-              <select>
-                <option value="1">1 day</option>
-                <option value="2">2 days</option>
-                <option value="3">3 days</option>
-                <option value="4">4 days</option>
-                <option value="5">5 days</option>
-                <option value="6">6 days</option>
-                <option value="7">7 days</option>
-              </select>
-            </td>
-            <td><input type="checkbox"></td>
-            <td><input type="checkbox"></td>
-            <td><input type="checkbox"></td>
-          </tr>
-        </table>
-        <button class="btn" id="addRowBtn">ADD ROW</button>
-        <br><br>
-        <button class="btn" id="printSaveBtn">PRINT/SAVE</button>
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Left Section: Prescription Form -->
+      <div class="card">
+        <h3 class="card-title">Add Prescription</h3>
+        
+        <div class="prescription-table-wrapper">
+          <table class="prescription-table" id="prescriptionTable">
+            <thead>
+              <tr>
+                <th>Medicine</th>
+                <th>Duration</th>
+                <th>Morning</th>
+                <th>Evening</th>
+                <th>Night</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="prescription-row">
+                <td class="medicine-input-cell">
+                  <div class="medicine-input-wrapper">
+                    <input type="text" 
+                           class="medicineSearch" 
+                           placeholder="Search medicine..." 
+                           autocomplete="off"
+                           title="Search for medicine">
+                    <div class="autocomplete-results"></div>
+                    <input type="hidden" class="medicine-id">
+                  </div>
+                </td>
+                <td class="days-cell">
+                  <select class="days-select" title="Select duration">
+                    <option value="1">1 day</option>
+                    <option value="2">2 days</option>
+                    <option value="3">3 days</option>
+                    <option value="4">4 days</option>
+                    <option value="5">5 days</option>
+                    <option value="6">6 days</option>
+                    <option value="7">7 days</option>
+                    <option value="10">10 days</option>
+                    <option value="14">14 days</option>
+                    <option value="30">30 days</option>
+                  </select>
+                </td>
+                <td class="checkbox-cell">
+                  <input type="checkbox" class="morning-check" title="Morning dose">
+                </td>
+                <td class="checkbox-cell">
+                  <input type="checkbox" class="evening-check" title="Evening dose">
+                </td>
+                <td class="checkbox-cell">
+                  <input type="checkbox" class="night-check" title="Night dose">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn" id="addRowBtn">➕ Add Medicine</button>
+          <button class="btn btn-primary" id="printSaveBtn">💾 Save & Print</button>
+        </div>
       </div>
 
-      <!-- Right Side -->
-      <div class="right">
-        <span class="section-title">Search Patients (Ref no.)</span>
-        <input type="text" placeholder="reference no...">
-        <button class="btn">Search</button>
-        <br><br>
-        <span class="section-title">PATIENT'S DETAILS</span>
-        <textarea placeholder=""></textarea>
+      <!-- Right Section: Patient Search -->
+      <div class="card">
+        <h3 class="card-title">Patient Information</h3>
+        
+        <div class="search-section">
+          <div class="form-group">
+            <label class="form-label">Search Patient</label>
+            <input type="text" 
+                   id="patientSearchInput" 
+                   placeholder="Enter reference no. or patient name...">
+          </div>
+          <button class="btn" id="searchPatientBtn">🔍 Search</button>
+        </div>
+        
+        <div id="searchMessage" class="search-message"></div>
+        
+        <div class="form-group">
+          <label class="form-label">Patient Details</label>
+          <textarea id="patientDetailsTextarea" 
+                    placeholder="Patient information will appear here after search..." 
+                    readonly></textarea>
+        </div>
       </div>
+
     </div>
   </div>
 
-  <!-- ✅ Side Menu (moved outside panel) -->
+  <!-- Side Menu -->
   <div class="side-menu" id="sideMenu">
     <span class="close-btn" id="closeMenu">&times;</span>
-    <h4>Menu</h4>
+    <h4>Navigation</h4>
     <ul>
-      <li><a href="#">🏠 Home</a></li>
-      <li><a href="#">⚙ Settings</a></li>
-      <li><a href="/template/index.html">🚪 Logout</a></li>
+      <li><a href="#">🏠 Dashboard</a></li>
+      <li><a href="#">📋 My Prescriptions</a></li>
+      <li><a href="#">👥 Patients</a></li>
+      <li><a href="#">⚙️ Settings</a></li>
+      <li><a href="/accounts/login/">🚪 Logout</a></li>
     </ul>
   </div>
 
   <!-- Overlay -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- ✅ Popup Modal -->
+  <!-- Success Popup -->
   <div class="popup-overlay" id="popup">
     <div class="popup-box">
       <div class="tick">✔</div>
-      <div>Saved! Please check your printer.</div>
+      <div>Prescription saved successfully!</div>
     </div>
   </div>
 
@@ -312,16 +768,143 @@
 
 
 {% block js %}
-       <script>
-  // Add new row
+<script>
+  // Initialize autocomplete for all medicine search inputs
+  function initAutocomplete(searchInput) {
+    const wrapper = searchInput.parentElement;
+    const resultsDiv = wrapper.querySelector('.autocomplete-results');
+    const hiddenIdInput = wrapper.querySelector('.medicine-id');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', function() {
+      const query = this.value.trim();
+      
+      console.log('Searching for:', query);
+      
+      clearTimeout(searchTimeout);
+      
+      if (query.length === 0) {
+        resultsDiv.classList.remove('show');
+        resultsDiv.innerHTML = '';
+        hiddenIdInput.value = '';
+        return;
+      }
+      
+      // Debounce search
+      searchTimeout = setTimeout(function() {
+        console.log('Fetching medicines for:', query);
+        fetch(`/doctor/api/search-medicines/?q=${encodeURIComponent(query)}`)
+          .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+          })
+          .then(data => {
+            console.log('Search results:', data);
+            if (data.results.length > 0) {
+              let html = '';
+              data.results.forEach(medicine => {
+                let stockBadge = '';
+                let stockClass = 'stock-out';
+                
+                if (medicine.stock > 10) {
+                  stockClass = 'stock-available';
+                  stockBadge = `<span class="stock-badge ${stockClass}">In Stock: ${medicine.stock}</span>`;
+                } else if (medicine.stock > 0) {
+                  stockClass = 'stock-low';
+                  stockBadge = `<span class="stock-badge ${stockClass}">Low: ${medicine.stock}</span>`;
+                } else {
+                  stockBadge = `<span class="stock-badge ${stockClass}">Out of Stock</span>`;
+                }
+                
+                html += `
+                  <div class="autocomplete-item" data-id="${medicine.id}" data-name="${medicine.name}">
+                    <div class="medicine-name">${medicine.name}</div>
+                    <div class="medicine-details">
+                      ${medicine.category ? medicine.category + ' • ' : ''}${medicine.dosage || 'No dosage info'}
+                      ${stockBadge}
+                    </div>
+                  </div>
+                `;
+              });
+              resultsDiv.innerHTML = html;
+              resultsDiv.style.display = 'block';
+              resultsDiv.style.position = 'absolute';
+              resultsDiv.style.zIndex = '9999';
+              resultsDiv.style.backgroundColor = 'rgb(20, 20, 20)';
+              resultsDiv.classList.add('show');
+              console.log('Dropdown should now be visible. Classes:', resultsDiv.className);
+              console.log('Dropdown display:', window.getComputedStyle(resultsDiv).display);
+              console.log('Dropdown position:', window.getComputedStyle(resultsDiv).position);
+              console.log('Dropdown zIndex:', window.getComputedStyle(resultsDiv).zIndex);
+              
+              // Add click handlers
+              resultsDiv.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const id = this.getAttribute('data-id');
+                  const name = this.getAttribute('data-name');
+                  console.log('Clicked medicine:', name, 'ID:', id);
+                  searchInput.value = name;
+                  hiddenIdInput.value = id;
+                  resultsDiv.classList.remove('show');
+                  resultsDiv.style.display = 'none';
+                  resultsDiv.innerHTML = '';
+                  console.log('Medicine selected and dropdown closed');
+                });
+              });
+            } else {
+              resultsDiv.innerHTML = '<div class="autocomplete-item empty">No medicines found</div>';
+              resultsDiv.classList.add('show');
+            }
+          })
+          .catch(error => {
+            console.error('Search error:', error);
+            resultsDiv.classList.remove('show');
+          });
+      }, 300);
+    });
+
+    // Close results when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!wrapper.contains(e.target)) {
+        resultsDiv.classList.remove('show');
+        resultsDiv.style.display = 'none';
+      }
+    });
+  }
+
+  // Initialize autocomplete for existing rows
+  document.querySelectorAll('.medicineSearch').forEach(input => {
+    console.log('Initializing autocomplete for input:', input);
+    const wrapper = input.parentElement;
+    const resultsDiv = wrapper.querySelector('.autocomplete-results');
+    console.log('Found wrapper:', wrapper);
+    console.log('Found resultsDiv:', resultsDiv);
+    initAutocomplete(input);
+  });
+
+  // Add new row functionality
   document.getElementById("addRowBtn").addEventListener("click", function() {
     const table = document.getElementById("prescriptionTable");
+    const tbody = table.querySelector('tbody');
     const newRow = document.createElement("tr");
+    newRow.className = "prescription-row";
 
     newRow.innerHTML = `
-      <td><input type="text" placeholder="reference no..."></td>
-      <td>
-        <select>
+      <td class="medicine-input-cell">
+        <div class="medicine-input-wrapper">
+          <input type="text" 
+                 class="medicineSearch" 
+                 placeholder="Search medicine..." 
+                 autocomplete="off"
+                 title="Search for medicine">
+          <div class="autocomplete-results"></div>
+          <input type="hidden" class="medicine-id">
+        </div>
+      </td>
+      <td class="days-cell">
+        <select class="days-select" title="Select duration">
           <option value="1">1 day</option>
           <option value="2">2 days</option>
           <option value="3">3 days</option>
@@ -329,27 +912,182 @@
           <option value="5">5 days</option>
           <option value="6">6 days</option>
           <option value="7">7 days</option>
+          <option value="10">10 days</option>
+          <option value="14">14 days</option>
+          <option value="30">30 days</option>
         </select>
       </td>
-      <td><input type="checkbox"></td>
-      <td><input type="checkbox"></td>
-      <td><input type="checkbox"></td>
+      <td class="checkbox-cell">
+        <input type="checkbox" class="morning-check" title="Morning dose">
+      </td>
+      <td class="checkbox-cell">
+        <input type="checkbox" class="evening-check" title="Evening dose">
+      </td>
+      <td class="checkbox-cell">
+        <input type="checkbox" class="night-check" title="Night dose">
+      </td>
     `;
 
-    table.appendChild(newRow);
+    tbody.appendChild(newRow);
+    
+    // Initialize autocomplete for the new row
+    const newSearchInput = newRow.querySelector('.medicineSearch');
+    initAutocomplete(newSearchInput);
   });
 
-  // Show popup on Print/Save
+  // Print/Save functionality - Collect all prescriptions and save
   document.getElementById("printSaveBtn").addEventListener("click", function() {
-    const popup = document.getElementById("popup");
-    popup.style.display = "flex";
-
-    setTimeout(() => {
-      popup.style.display = "none";
-    }, 2500); // Auto hide after 2.5s
+    const rows = document.querySelectorAll('.prescription-row');
+    const prescriptions = [];
+    
+    rows.forEach(row => {
+      const medicineId = row.querySelector('.medicine-id').value;
+      const medicineName = row.querySelector('.medicineSearch').value.trim();
+      const days = row.querySelector('.days-select').value;
+      const morning = row.querySelector('.morning-check').checked;
+      const evening = row.querySelector('.evening-check').checked;
+      const night = row.querySelector('.night-check').checked;
+      
+      if (medicineId && medicineName) {
+        prescriptions.push({
+          medicine_id: medicineId,
+          medicine_name: medicineName,
+          days: days,
+          morning: morning,
+          evening: evening,
+          night: night
+        });
+      }
+    });
+    
+    if (prescriptions.length === 0) {
+      alert('Please add at least one medicine!');
+      return;
+    }
+    
+    // Check if patient is selected
+    if (!currentPatientRefNo) {
+      alert('Please search and select a patient first!');
+      return;
+    }
+    
+    // Save prescriptions via AJAX
+    fetch('/doctor/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ 
+        prescriptions: prescriptions,
+        patient_ref_no: currentPatientRefNo 
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const popup = document.getElementById("popup");
+        popup.style.display = "flex";
+        
+        // Open print window
+        if (data.print_url) {
+          setTimeout(() => {
+            window.open(data.print_url, '_blank');
+          }, 500);
+        }
+        
+        setTimeout(() => {
+          popup.style.display = "none";
+          // Clear the form
+          document.querySelectorAll('.prescription-row').forEach((row, index) => {
+            if (index === 0) {
+              row.querySelector('.medicineSearch').value = '';
+              row.querySelector('.medicine-id').value = '';
+              row.querySelector('.days-select').value = '1';
+              row.querySelector('.morning-check').checked = false;
+              row.querySelector('.evening-check').checked = false;
+              row.querySelector('.night-check').checked = false;
+            } else {
+              row.remove();
+            }
+          });
+          
+          // Clear patient search
+          patientSearchInput.value = '';
+          patientDetailsTextarea.value = '';
+          currentPatientRefNo = null;
+        }, 2500);
+      } else {
+        alert('Error saving prescriptions: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error saving prescriptions!');
+    });
   });
 
-  // ✅ Menu toggle
+  // Patient Search Functionality
+  const searchPatientBtn = document.getElementById('searchPatientBtn');
+  const patientSearchInput = document.getElementById('patientSearchInput');
+  const patientDetailsTextarea = document.getElementById('patientDetailsTextarea');
+  const searchMessage = document.getElementById('searchMessage');
+  
+  // Store current patient reference number
+  let currentPatientRefNo = null;
+
+  function searchPatient() {
+    const query = patientSearchInput.value.trim();
+    
+    if (!query) {
+      searchMessage.textContent = 'Please enter reference number or patient name';
+      searchMessage.style.display = 'block';
+      searchMessage.className = 'search-message error';
+      currentPatientRefNo = null;
+      return;
+    }
+    
+    searchMessage.textContent = 'Searching...';
+    searchMessage.style.display = 'block';
+    searchMessage.className = 'search-message warning';
+    
+    fetch(`/doctor/api/search-patient/?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          patientDetailsTextarea.value = data.patient.details;
+          currentPatientRefNo = data.patient.ref_no;
+          searchMessage.textContent = '✓ Patient found!';
+          searchMessage.className = 'search-message success';
+          setTimeout(() => {
+            searchMessage.style.display = 'none';
+          }, 3000);
+        } else {
+          patientDetailsTextarea.value = '';
+          currentPatientRefNo = null;
+          searchMessage.textContent = '✗ ' + (data.error || 'Patient not found');
+          searchMessage.className = 'search-message error';
+        }
+      })
+      .catch(error => {
+        console.error('Search error:', error);
+        searchMessage.textContent = '✗ Error searching patient';
+        searchMessage.className = 'search-message error';
+        patientDetailsTextarea.value = '';
+        currentPatientRefNo = null;
+      });
+  }
+
+  searchPatientBtn.addEventListener('click', searchPatient);
+  
+  // Allow Enter key to search
+  patientSearchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      searchPatient();
+    }
+  });
+
+  // Menu toggle
   const hamburger = document.getElementById("hamburger");
   const sideMenu = document.getElementById("sideMenu");
   const overlay = document.getElementById("overlay");
@@ -369,5 +1107,5 @@
     sideMenu.classList.remove("active");
     overlay.classList.remove("active");
   });
-  </script>
+</script>
 {% endblock js %}

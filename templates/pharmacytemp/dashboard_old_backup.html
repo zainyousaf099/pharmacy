@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Reception - Panel {% endblock title %}
+
+{% block style %}
+<style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to top left, #202020 0%, #202020 40%, #0a4a00 90%, #006600 100%);
+      color: white;
+      height: 100vh;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 1280px;
+      margin: 20px auto;
+      padding: 20px;
+      position: relative;
+      border-radius: 6px;
+    }
+
+    .panel h3 {
+      margin: 0 0 15px 0;
+      margin-bottom: 117px;
+    }
+
+    /* ✅ Hamburger */
+    .hamburger {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 30px;
+      height: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 1100; /* ✅ above overlay */
+    }
+
+    .hamburger span {
+      display: block;
+      height: 4px;
+      width: 100%;
+      background: white;
+      border-radius: 4px;
+    }
+
+    /* ✅ Side Menu fixed correctly */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -318px; /* hidden */
+      width: 250px;
+      height: 100%;
+      background: rgba(24, 24, 24, 0.95);
+      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+      transition: right 0.4s ease;
+      padding: 20px;
+      z-index: 1001;
+    }
+
+    .side-menu.active {
+      right: 0;
+    }
+
+    .side-menu h4 {
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .side-menu ul li {
+      margin: 15px 0;
+    }
+
+    .side-menu ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .side-menu ul li a:hover {
+      color: #00ff66;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: white;
+    }
+
+    /* ✅ Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    /* ✅ Prescription layout */
+    .flex {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .left {
+      flex: 1.5;
+    }
+
+    .right {
+      flex: 1.5;
+      display: flex;
+      gap: 20px;
+    }
+
+    input[type="text"] {
+      padding: 6px;
+      border-radius: 5px;
+      border: 1px solid #aaa;
+      margin-bottom: 6px;
+    }
+
+    /* ✅ Smaller fields for days & PKR */
+    .small-input {
+      width: 60px;
+    }
+
+    /* .btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #a00;
+      color: white;
+      font-weight: bold;
+    } */
+
+    .btn:hover {
+      background: #c00;
+    }
+
+    table {
+      width: 61%;
+      border-spacing: 8px;
+      color: white;
+    }
+
+    /* ✅ Receipt + Patient boxes side by side */
+    .box {
+      flex: 1;
+      background: white;
+      color: black;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 200px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+    }
+    /* ✅ Popup overlay */
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      display: none;
+    }
+
+    .popup-box {
+      background: rgba(100, 100, 100, 0.247);  
+      padding: 30px 40px;
+      border-radius: 12px;
+      text-align: center;
+      color: white;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      animation: popupShow 0.4s ease-out;
+    }
+
+    .popup-box .tick {
+      font-size: 2.5rem;
+      color: #00ff66;
+      margin-bottom: 10px;
+    }
+
+    @keyframes popupShow {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    /* ✅ Button style */
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover { background: rgba(255, 255, 255, 0.4); }
+  </style>
+{% endblock style %}
+
+
+    
+{% block content %}
+ 
+
+   <div class="panel">
+    <h3>Pharmacy Panel</h3>
+
+    <!-- ✅ Hamburger -->
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="flex">
+      <!-- Left Side -->
+      <div class="left">
+        <span class="section-title">Print Prescription</span>
+        <input type="text" placeholder="reference no...">
+        <button class="btn">Search</button>
+
+        <br><br>
+        <span class="section-title">PRESCRIPTION</span>
+        <table>
+          <tr>
+            <td><input type="text" placeholder="medicine name"></td>
+            <td><input type="text" class="small-input" placeholder="days"></td>
+            <td><input type="text" class="small-input" placeholder="PKR"></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="medicine name"></td>
+            <td><input type="text" class="small-input" placeholder="days"></td>
+            <td><input type="text" class="small-input" placeholder="PKR"></td>
+          </tr>
+           <tr>
+            <td><input type="text" placeholder="medicine name"></td>
+            <td><input type="text" class="small-input" placeholder="days"></td>
+            <td><input type="text" class="small-input" placeholder="PKR"></td>
+          </tr>
+           <tr>
+            <td><input type="text" placeholder="medicine name"></td>
+            <td><input type="text" class="small-input" placeholder="days"></td>
+            <td><input type="text" class="small-input" placeholder="PKR"></td>
+          </tr>
+        </table>
+        <button class="btn" id="printSaveBtn">PRINT/SAVE</button>
+      </div>
+
+      <!-- Right Side -->
+      <div class="right">
+        <div class="box">
+          <span class="section-title">RECEIPT/BILL</span>
+        </div>
+        <div class="box">
+          <span class="section-title">Patient details</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Side Menu -->
+  <div class="side-menu" id="sideMenu">
+    <span class="close-btn" id="closeMenu">&times;</span>
+    <h4>Menu</h4>
+    <ul>
+      <li><a href="#">🏠 Home</a></li>
+       <li><a href="{% url 'inventory:dashboard' %}">inventory</a></li>
+      <li><a href="#">⚙ Settings</a></li>
+      <li><a href="/template/index.html">🚪 Logout</a></li>
+    </ul>
+  </div>
+
+  <!-- ✅ Overlay -->
+  <div class="overlay" id="overlay"></div>
+  <!-- ✅ Popup Modal -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-box">
+      <div class="tick">✔</div>
+      <div>Saved! Please check your printer.</div>
+    </div>
+  </div>
+
+
+{% endblock content %}
+
+
+{% block js %}
+<script>
+    // ✅ Menu toggle
+    const hamburger = document.getElementById("hamburger");
+    const sideMenu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("overlay");
+    const closeMenu = document.getElementById("closeMenu");
+
+    hamburger.addEventListener("click", () => {
+      sideMenu.classList.add("active");
+      overlay.classList.add("active");
+    });
+
+    closeMenu.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sideMenu.classList.remove("active");
+      overlay.classList.remove("active");
+      
+    });
+
+    // Show popup on Print/Save
+  document.getElementById("printSaveBtn").addEventListener("click", function() {
+    const popup = document.getElementById("popup");
+    popup.style.display = "flex";
+
+    setTimeout(() => {
+      popup.style.display = "none";
+    }, 2500); // Auto hide after 2.5s
+  });
+  </script>
+{% endblock js %}

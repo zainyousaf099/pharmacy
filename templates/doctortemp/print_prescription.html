@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription - {{ patient.ref_no }}</title>
+    <style>
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            @page {
+                margin: 20mm;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: white;
+            color: #333;
+            padding: 20px;
+        }
+
+        .prescription-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border: 2px solid #333;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #a00;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #a00;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .patient-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 10px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 100px;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .prescription-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #a00;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .medicines-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .medicines-table th {
+            background: #a00;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .medicines-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .medicines-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .timing {
+            display: inline-block;
+            padding: 4px 8px;
+            margin-right: 5px;
+            background: #00a000;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .signature-line {
+            border-top: 2px solid #333;
+            width: 200px;
+            padding-top: 10px;
+            text-align: center;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            background: #a00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: #c00;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">🖨️ Print</button>
+
+    <div class="prescription-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>℞ MEDICAL PRESCRIPTION</h1>
+            <p>Date: {{ date }} | Time: {{ time }}</p>
+        </div>
+
+        <!-- Patient Information -->
+        <div class="patient-info">
+            <div class="info-item">
+                <span class="info-label">Patient Name:</span>
+                <span class="info-value">{{ patient.name }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Reference No:</span>
+                <span class="info-value">{{ patient.ref_no }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Age:</span>
+                <span class="info-value">{{ patient.age|default:"N/A" }} years</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Phone:</span>
+                <span class="info-value">{{ patient.phone|default:"N/A" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Weight:</span>
+                <span class="info-value">{{ patient.weight|default:"N/A" }} kg</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Height:</span>
+                <span class="info-value">{{ patient.height|default:"N/A" }} cm</span>
+            </div>
+        </div>
+
+        <!-- Prescription -->
+        <div class="prescription-section">
+            <div class="section-title">Prescribed Medicines</div>
+            
+            {% if prescriptions %}
+            <table class="medicines-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 40%;">Medicine Name</th>
+                        <th style="width: 15%;">Duration</th>
+                        <th style="width: 40%;">Timing</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rx in prescriptions %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ rx.medicine.name }}</strong></td>
+                        <td>{{ rx.days }} day{% if rx.days > 1 %}s{% endif %}</td>
+                        <td>
+                            {% if rx.morning %}<span class="timing">Morning</span>{% endif %}
+                            {% if rx.evening %}<span class="timing">Evening</span>{% endif %}
+                            {% if rx.night %}<span class="timing">Night</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-message">No prescriptions recorded</p>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div>
+                <p><strong>Doctor's Notes:</strong></p>
+                <p style="margin-top: 10px; color: #666;">Follow the prescribed dosage and timing</p>
+            </div>
+            <div class="signature-line">
+                Doctor's Signature
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto print when page loads (optional - uncomment if needed)
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>

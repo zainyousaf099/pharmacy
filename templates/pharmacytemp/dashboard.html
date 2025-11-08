@@ -1,53 +1,89 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %} Reception - Panel {% endblock title %}
+{% block title %}Pharmacy - Panel{% endblock title %}
 
 {% block style %}
 <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to top left, #202020 0%, #202020 40%, #0a4a00 90%, #006600 100%);
-      color: white;
-      height: 100vh;
-    }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-    .panel {
-      width: 100%;
-      max-width: 1280px;
-      margin: 20px auto;
-      padding: 20px;
-      position: relative;
-      border-radius: 6px;
-    }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #004d00 0%, #00a000 50%, #44ff44 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+  }
 
-    .panel h3 {
-      margin: 0 0 15px 0;
-      margin-bottom: 117px;
-    }
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
 
-    /* ✅ Hamburger */
-    .hamburger {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      width: 30px;
-      height: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      cursor: pointer;
-      z-index: 1100; /* ✅ above overlay */
-    }
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
 
-    .hamburger span {
-      display: block;
-      height: 4px;
-      width: 100%;
-      background: white;
-      border-radius: 4px;
-    }
+  .header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Hamburger Menu */
+  .hamburger {
+    width: 30px;
+    height: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .hamburger:hover {
+    transform: scale(1.1);
+  }
+
+  .hamburger span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: white;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
 
     /* ✅ Side Menu fixed correctly */
     .side-menu {
@@ -216,103 +252,368 @@
       from { transform: scale(0.7); opacity: 0; }
       to   { transform: scale(1); opacity: 1; }
     }
-    /* ✅ Button style */
-    .btn {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 8px 14px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s;
+
+  /* Main Container */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 30px;
+  }
+
+  /* Card Style */
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 15px;
+  }
+
+  .card-title span {
+    font-size: 1.5rem;
+  }
+
+  /* Search Section */
+  .search-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .search-section input {
+    flex: 1;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .search-section input:focus {
+    outline: none;
+    border-color: rgba(68, 255, 68, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(68, 255, 68, 0.3);
+  }
+
+  .search-section input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .search-section button {
+    width: auto;
+    padding: 12px 25px;
+  }
+
+  /* Prescription Table */
+  .prescription-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin-bottom: 20px;
+  }
+
+  .prescription-table thead th {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .prescription-table tbody tr {
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .prescription-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.01);
+  }
+
+  .prescription-table td {
+    padding: 10px 12px;
+  }
+
+  .prescription-table td:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .prescription-table td:last-child {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .prescription-table input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+
+  .prescription-table input:focus {
+    outline: none;
+    border-color: rgba(68, 255, 68, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(68, 255, 68, 0.3);
+  }
+
+  .prescription-table input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .prescription-table .small-input {
+    width: 80px;
+  }
+
+  /* Button Styling */
+  .btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #44ff44 0%, #00a000 100%);
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #00a000 0%, #004d00 100%);
+  }
+
+  /* Info Boxes */
+  .info-boxes {
+    display: grid;
+    gap: 20px;
+  }
+
+  .info-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    min-height: 200px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .info-box-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 10px;
+  }
+
+  .info-box-content {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: pre-wrap;
+  }
+
+  .info-box-content strong {
+    color: #44ff44;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .container {
+      grid-template-columns: 1fr;
     }
-    .btn:hover { background: rgba(255, 255, 255, 0.4); }
+  }
+
+  @media (max-width: 768px) {
+    .header h1 {
+      font-size: 1.3rem;
+    }
+
+    .card {
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+    }
+
+    .prescription-table .small-input {
+      width: 60px;
+    }
+  }
   </style>
 {% endblock style %}
 
 
     
 {% block content %}
- 
-
-   <div class="panel">
-    <h3>Pharmacy Panel</h3>
-
-    <!-- ✅ Hamburger -->
+<!-- Header -->
+<div class="header">
+  <h1>💊 Pharmacy Panel</h1>
+  <div class="header-actions">
+    <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
     <div class="hamburger" id="hamburger">
-      <span></span><span></span><span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+  <!-- Left Card - Prescription Entry -->
+  <div class="card">
+    <div class="card-title">
+      <span>📋</span>
+      PRESCRIPTION PROCESSING
     </div>
 
-    <div class="flex">
-      <!-- Left Side -->
-      <div class="left">
-        <span class="section-title">Print Prescription</span>
-        <input type="text" placeholder="reference no...">
-        <button class="btn">Search</button>
+    <!-- Search Prescription -->
+    <div class="search-section">
+      <input 
+        type="text" 
+        placeholder="Enter patient reference number..."
+        id="refNoInput"
+      >
+      <button class="btn" onclick="searchPrescription()">🔍 Search</button>
+    </div>
 
-        <br><br>
-        <span class="section-title">PRESCRIPTION</span>
-        <table>
-          <tr>
-            <td><input type="text" placeholder="medicine name"></td>
-            <td><input type="text" class="small-input" placeholder="days"></td>
-            <td><input type="text" class="small-input" placeholder="PKR"></td>
-          </tr>
-          <tr>
-            <td><input type="text" placeholder="medicine name"></td>
-            <td><input type="text" class="small-input" placeholder="days"></td>
-            <td><input type="text" class="small-input" placeholder="PKR"></td>
-          </tr>
-           <tr>
-            <td><input type="text" placeholder="medicine name"></td>
-            <td><input type="text" class="small-input" placeholder="days"></td>
-            <td><input type="text" class="small-input" placeholder="PKR"></td>
-          </tr>
-           <tr>
-            <td><input type="text" placeholder="medicine name"></td>
-            <td><input type="text" class="small-input" placeholder="days"></td>
-            <td><input type="text" class="small-input" placeholder="PKR"></td>
-          </tr>
-        </table>
-        <button class="btn" id="printSaveBtn">PRINT/SAVE</button>
+    <!-- Prescription Table -->
+    <div class="card-title" style="font-size: 1.1rem; margin-bottom: 15px; margin-top: 20px;">
+      <span>💊</span>
+      Medicine Details
+    </div>
+
+    <table class="prescription-table">
+      <thead>
+        <tr>
+          <th>Medicine Name</th>
+          <th style="width: 100px;">Days</th>
+          <th style="width: 120px;">Price (PKR)</th>
+        </tr>
+      </thead>
+      <tbody id="prescriptionRows">
+        <tr>
+          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
+          <td><input type="number" placeholder="0" class="days-input small-input"></td>
+          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
+        </tr>
+        <tr>
+          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
+          <td><input type="number" placeholder="0" class="days-input small-input"></td>
+          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
+        </tr>
+        <tr>
+          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
+          <td><input type="number" placeholder="0" class="days-input small-input"></td>
+          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
+        </tr>
+        <tr>
+          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
+          <td><input type="number" placeholder="0" class="days-input small-input"></td>
+          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button class="btn btn-primary" id="printSaveBtn" onclick="processOrder()">
+      ✓ PRINT / SAVE
+    </button>
+  </div>
+
+  <!-- Right Card - Info Boxes -->
+  <div class="info-boxes">
+    <!-- Receipt/Bill Box -->
+    <div class="info-box">
+      <div class="info-box-title">
+        <span>🧾</span>
+        RECEIPT / BILL
       </div>
+      <div class="info-box-content" id="billContent">Total: PKR 0.00
 
-      <!-- Right Side -->
-      <div class="right">
-        <div class="box">
-          <span class="section-title">RECEIPT/BILL</span>
-        </div>
-        <div class="box">
-          <span class="section-title">Patient details</span>
-        </div>
+Click PRINT/SAVE to generate bill after entering medicine details.</div>
+    </div>
+
+    <!-- Patient Details Box -->
+    <div class="info-box">
+      <div class="info-box-title">
+        <span>👤</span>
+        Patient Details
       </div>
+      <div class="info-box-content" id="patientContent">No patient selected.
+
+Search by reference number to view patient details.</div>
     </div>
   </div>
+</div>
 
-  <!-- ✅ Side Menu -->
-  <div class="side-menu" id="sideMenu">
-    <span class="close-btn" id="closeMenu">&times;</span>
-    <h4>Menu</h4>
-    <ul>
-      <li><a href="#">🏠 Home</a></li>
-       <li><a href="#">inventory</a></li>
-      <li><a href="#">⚙ Settings</a></li>
-      <li><a href="/template/index.html">🚪 Logout</a></li>
-    </ul>
+<!-- Side Menu -->
+<div class="side-menu" id="sideMenu">
+  <span class="close-btn" id="closeMenu">&times;</span>
+  <h4>💊 Menu</h4>
+  <ul>
+    <li><a href="/">🏠 Home</a></li>
+    <li><a href="{% url 'inventory:product_list' %}">📦 Inventory</a></li>
+    <li><a href="#">⚙️ Settings</a></li>
+    <li><a href="/">🚪 Logout</a></li>
+  </ul>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Popup Modal -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+    <div class="tick">✔</div>
+    <div>Order processed successfully! Please check your printer.</div>
   </div>
-
-  <!-- ✅ Overlay -->
-  <div class="overlay" id="overlay"></div>
-  <!-- ✅ Popup Modal -->
-  <div class="popup-overlay" id="popup">
-    <div class="popup-box">
-      <div class="tick">✔</div>
-      <div>Saved! Please check your printer.</div>
-    </div>
-  </div>
-
+</div>
 
 {% endblock content %}
 

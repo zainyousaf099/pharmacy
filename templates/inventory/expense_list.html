@@ -1,0 +1,75 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Expenses{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-money-bill-wave me-2"></i>Clinic Expenses
+            </h1>
+            <p class="text-muted">Track daily clinic expenses</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a class="btn btn-primary btn-lg" href="{% url 'inventory:expense_create' %}">
+                <i class="fas fa-plus me-2"></i>Add Expense
+            </a>
+        </div>
+    </div>
+
+    <!-- Monthly Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-0">This Month's Total Expenses</h5>
+                    <h2 class="text-danger mb-0">PKR {{ monthly_total|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expenses Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in expenses %}
+                        <tr>
+                            <td>{{ expense.expense_date|date:"M d, Y" }}</td>
+                            <td class="fw-bold">{{ expense.title }}</td>
+                            <td><span class="badge bg-secondary">{{ expense.get_category_display }}</span></td>
+                            <td class="text-danger fw-bold">PKR {{ expense.amount|floatformat:2 }}</td>
+                            <td><small class="text-muted">{{ expense.notes|default:"—"|truncatewords:10 }}</small></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <i class="fas fa-inbox fa-4x text-muted mb-3 d-block"></i>
+                                <h5 class="text-muted">No expenses recorded</h5>
+                                <p class="text-muted">Start by adding your first expense</p>
+                                <a href="{% url 'inventory:expense_create' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>Add Expense
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

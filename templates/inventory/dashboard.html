@@ -1,108 +1,188 @@
-{% extends "base.html" %}
+{% extends "inventory/base.html" %}
+{% load static %}
+
 {% block title %}Inventory Dashboard{% endblock %}
 
 {% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 mb-0">
+                <i class="fas fa-warehouse me-2"></i>Inventory Dashboard
+            </h1>
+            <p class="text-muted">Manage your pharmacy inventory efficiently</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Products</p>
+                            <h2 class="mb-0 fw-bold">{{ total_products }}</h2>
+                        </div>
+                        <div class="icon-box bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-pills fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Categories</p>
+                            <h2 class="mb-0 fw-bold">{{ total_categories }}</h2>
+                        </div>
+                        <div class="icon-box bg-success bg-opacity-10 text-success">
+                            <i class="fas fa-layer-group fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Low Stock Alert</p>
+                            <h2 class="mb-0 fw-bold text-warning">{{ low_stock_products }}</h2>
+                        </div>
+                        <div class="icon-box bg-warning bg-opacity-10 text-warning">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Quick Actions</p>
+                            <a href="{% url 'inventory:product_create' %}" class="btn btn-primary btn-sm mt-2">
+                                <i class="fas fa-plus me-1"></i>Add Medicine
+                            </a>
+                        </div>
+                        <div class="icon-box bg-info bg-opacity-10 text-info">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'inventory:product_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-2"></i>View All Products
+                        </a>
+                        <a href="{% url 'inventory:product_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add New Medicine
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Transactions
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Type</th>
+                                    <th>Packs</th>
+                                    <th>Strips</th>
+                                    <th>Tablets</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for txn in recent_transactions %}
+                                <tr>
+                                    <td>{{ txn.created_at|date:"M d, Y H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'inventory:product_detail' txn.product.pk %}" class="text-decoration-none">
+                                            {{ txn.product.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if txn.transaction_type == 'PUR' %}
+                                            <span class="badge bg-success">Purchase</span>
+                                        {% elif txn.transaction_type == 'SALE' %}
+                                            <span class="badge bg-info">Sale</span>
+                                        {% elif txn.transaction_type == 'IN' %}
+                                            <span class="badge bg-primary">Incoming</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Outgoing</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ txn.quantity_boxes|floatformat:0 }}</td>
+                                    <td>{{ txn.quantity_items|floatformat:0 }}</td>
+                                    <td>{{ txn.quantity_subitems|floatformat:0 }}</td>
+                                    <td><small class="text-muted">{{ txn.notes|default:"—" }}</small></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                        No transactions yet
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-  .export-btn {
-    display: inline-flex;
+.icon-box {
+    width: 60px;
+    height: 60px;
+    display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 500;
-    border-radius: 10px;
-    padding: 8px 16px;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    color:rgb(255, 255, 255);
-    background-color:rgb(54, 54, 54);
-  }
+    justify-content: center;
+    border-radius: 12px;
+}
 
-  .export-btn i {
-    font-size: 1.2rem;
-  }
+.card-hover {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
 
-  .export-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  }
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
 </style>
-<div class="d-flex justify-content-end mb-3 gap-2">
-  <a href="{% url 'dashboard_export_pdf' %}" class="btn btn-danger export-btn">
-    <i class="bi bi-file-earmark-pdf"></i> Download PDF
-  </a>
-  <a href="{% url 'dashboard_export_excel' %}" class="btn btn-success export-btn">
-    <i class="bi bi-file-earmark-excel"></i> Download Excel
-  </a>
-</div>
-
-<div class="container mt-4">
-  <h2 class="text-center mb-4">Inventory Dashboard (Profit & Loss)</h2>
-
-  <div class="card p-3 mb-4">
-    <h4>Monthly Overview</h4>
-    <canvas id="monthlyChart" height="100"></canvas>
-  </div>
-
-  <div class="card p-3 mb-4">
-    <h4>Yearly Overview</h4>
-    <canvas id="yearlyChart" height="100"></canvas>
-  </div>
-
-  <div class="card p-3">
-    <h4 class="text-center">Summary Table</h4>
-    <table class="table table-bordered mt-3">
-      <thead>
-        <tr>
-          <th>Period</th>
-          <th>Sales</th>
-          <th>Purchases</th>
-          <th>Profit/Loss</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for month, data in monthly_data.items %}
-        <tr>
-          <td>{{ month }}</td>
-          <td>{{ data.Sale|floatformat:2 }}</td>
-          <td>{{ data.Purchase|floatformat:2 }}</td>
-          <td class="{% if data.Profit >= 0 %}text-success{% else %}text-danger{% endif %}">
-            {{ data.Profit|floatformat:2 }}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  const monthly = {{ monthly_data|safe }};
-  const yearly = {{ yearly_data|safe }};
-
-  new Chart(document.getElementById('monthlyChart'), {
-    type: 'bar',
-    data: {
-      labels: Object.keys(monthly),
-      datasets: [
-        { label: 'Sales', data: Object.values(monthly).map(v => v.Sale), backgroundColor: 'rgba(54, 162, 235, 0.6)' },
-        { label: 'Purchases', data: Object.values(monthly).map(v => v.Purchase), backgroundColor: 'rgba(255, 99, 132, 0.6)' },
-        { label: 'Profit/Loss', data: Object.values(monthly).map(v => v.Profit), backgroundColor: 'rgba(75, 192, 75, 0.6)' },
-      ]
-    },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-  });
-
-  new Chart(document.getElementById('yearlyChart'), {
-    type: 'bar',
-    data: {
-      labels: Object.keys(yearly),
-      datasets: [
-        { label: 'Sales', data: Object.values(yearly).map(v => v.Sale), backgroundColor: 'rgba(54, 162, 235, 0.6)' },
-        { label: 'Purchases', data: Object.values(yearly).map(v => v.Purchase), backgroundColor: 'rgba(255, 99, 132, 0.6)' },
-        { label: 'Profit/Loss', data: Object.values(yearly).map(v => v.Profit), backgroundColor: 'rgba(75, 192, 75, 0.6)' },
-      ]
-    },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-  });
-</script>
 {% endblock %}

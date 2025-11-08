@@ -93,20 +93,21 @@ class Product(models.Model):
             self.subitems_per_item = 1
 
         # compute purchase price per item and per subitem
-        # assume purchase_price corresponds to `products_in_box` units total price
+        # The purchase_price is for the TOTAL quantity (products_in_box packs)
+        # So if user enters 10 packs and purchase_price = 4000, then price per pack = 4000/10 = 400
         try:
-            # price per single product unit (box)
-            price_per_product_unit = Decimal(self.purchase_price) / Decimal(self.products_in_box)
+            # price per single pack/box
+            price_per_pack = Decimal(self.purchase_price) / Decimal(self.products_in_box)
         except Exception:
-            price_per_product_unit = Decimal('0')
+            price_per_pack = Decimal('0')
 
-        # price per item
+        # price per item (sheet/strip)
         try:
-            self.purchase_price_per_item = quantize_decimal(price_per_product_unit / Decimal(self.items_per_product), places=6)
+            self.purchase_price_per_item = quantize_decimal(price_per_pack / Decimal(self.items_per_product), places=6)
         except Exception:
             self.purchase_price_per_item = Decimal('0')
 
-        # price per subitem
+        # price per subitem (tablet/unit)
         try:
             self.purchase_price_per_subitem = quantize_decimal(self.purchase_price_per_item / Decimal(self.subitems_per_item), places=6)
         except Exception:
@@ -115,22 +116,17 @@ class Product(models.Model):
         # compute sale prices if not provided using purchase_margin_percent
         if (self.sale_price is None or self.sale_price == Decimal('0')) and self.purchase_margin_percent:
             margin = Decimal(self.purchase_margin_percent) / Decimal('100')
-            # sale price per product unit
+            # sale price for total quantity (same structure as purchase_price)
             self.sale_price = quantize_decimal(Decimal(self.purchase_price) * (Decimal('1') + margin), places=6)
 
-        if not self.sale_price_per_item:
-            if self.sale_price:
-                # sale_price may correspond to whole products_in_box; normalize to per product unit first
-                try:
-                    sale_per_product_unit = Decimal(self.sale_price) / Decimal(self.products_in_box)
-                except Exception:
-                    sale_per_product_unit = Decimal('0')
-                try:
-                    self.sale_price_per_item = quantize_decimal(sale_per_product_unit / Decimal(self.items_per_product), places=6)
-                except Exception:
-                    self.sale_price_per_item = Decimal('0')
-
-        if not self.sale_price_per_subitem:
+        # Calculate sale price per item and subitem
+        if self.sale_price:
+            try:
+                sale_per_pack = Decimal(self.sale_price) / Decimal(self.products_in_box)
+                self.sale_price_per_item = quantize_decimal(sale_per_pack / Decimal(self.items_per_product), places=6)
+            except Exception:
+                self.sale_price_per_item = Decimal('0')
+            
             try:
                 self.sale_price_per_subitem = quantize_decimal(self.sale_price_per_item / Decimal(self.subitems_per_item), places=6)
             except Exception:
@@ -139,7 +135,23 @@ class Product(models.Model):
         # update cached stock totals from InventoryTransaction records
         # Note: avoid heavy DB ops on save if used in loops; caching helps but you may
         # want to call Product.update_cached_stock() from management command or signals
+        
+        # Check if this is a new product (no pk yet)
+        is_new = self.pk is None
+        
         super().save(*args, **kwargs)
+        
+        # Initialize stock for new products by creating initial transaction
+        if is_new and self.products_in_box > 0:
+            InventoryTransaction.objects.create(
+                product=self,
+                transaction_type='PUR',
+                quantity_boxes=self.products_in_box,
+                quantity_items=Decimal(self.products_in_box) * Decimal(self.items_per_product),
+                quantity_subitems=Decimal(self.products_in_box) * Decimal(self.items_per_product) * Decimal(self.subitems_per_item),
+                unit_purchase_price=self.purchase_price / Decimal(self.products_in_box) if self.products_in_box else Decimal('0'),
+                notes=f"Initial stock for {self.name}"
+            )
 
     # helper methods to compute on-the-fly values
     def price_per_product_unit(self):
@@ -312,6 +324,41 @@ def yearly_balance_sheet(year):
     return results
 
 
+class Expense(models.Model):
+    """
+    Daily clinic expenses tracking.
+    Records all operational expenses like tea, electricity, salaries, etc.
+    """
+    EXPENSE_CATEGORIES = [
+        ('UTILITIES', 'Utilities (Electric, Water, Gas)'),
+        ('SALARIES', 'Staff Salaries'),
+        ('SUPPLIES', 'Office Supplies'),
+        ('MAINTENANCE', 'Maintenance & Repairs'),
+        ('FOOD', 'Tea/Coffee/Food'),
+        ('TRANSPORT', 'Transportation'),
+        ('RENT', 'Rent'),
+        ('MARKETING', 'Marketing & Advertising'),
+        ('MISC', 'Miscellaneous'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255, help_text='Brief description of expense')
+    category = models.CharField(max_length=20, choices=EXPENSE_CATEGORIES, default='MISC')
+    amount = models.DecimalField(max_digits=12, decimal_places=2, help_text='Amount in PKR')
+    expense_date = models.DateField(default=timezone.now, help_text='Date of expense')
+    notes = models.TextField(blank=True, null=True, help_text='Additional details')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-expense_date', '-created_at']
+        verbose_name = 'Expense'
+        verbose_name_plural = 'Expenses'
+    
+    def __str__(self):
+        return f"{self.title} - PKR {self.amount} ({self.expense_date})"
+
+
 # Notes for integration:
 # - Register Product and InventoryTransaction in admin to allow easy creation.
 # - When creating InventoryTransaction, supply quantities in the granularity you have.
@@ -322,7 +369,8 @@ def yearly_balance_sheet(year):
 
 # Example admin registration (put in admin.py):
 # from django.contrib import admin
-# from .models import Product, InventoryTransaction, ProductCategory
+# from .models import Product, InventoryTransaction, ProductCategory, Expense
 # admin.site.register(ProductCategory)
 # admin.site.register(Product)
 # admin.site.register(InventoryTransaction)
+# admin.site.register(Expense)
