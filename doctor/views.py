@@ -1,11 +1,12 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
+from django.contrib import messages
 from inventory.models import Product
 from opd.models import Patient
-from doctor.models import Prescription
+from doctor.models import Prescription, PrescriptionTemplate, PrescriptionTemplateMedicine
 import json
 
 # Create your views here.
@@ -135,3 +136,133 @@ def print_prescription(request, patient_ref_no):
     }
     
     return render(request, 'doctortemp/print_prescription.html', context)
+
+
+# Template Management Views
+def template_list(request):
+    """View to list all prescription templates"""
+    templates = PrescriptionTemplate.objects.all().order_by('-created_at')
+    context = {
+        'templates': templates
+    }
+    return render(request, 'doctortemp/templates_list.html', context)
+
+
+@csrf_exempt
+def template_create(request):
+    """View to create a new prescription template"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            name = data.get('name')
+            description = data.get('description', '')
+            medicines = data.get('medicines', [])
+            
+            if not name:
+                return JsonResponse({'success': False, 'error': 'Template name is required'})
+            
+            # Create template
+            template = PrescriptionTemplate.objects.create(
+                name=name,
+                description=description,
+                created_by=request.user if request.user.is_authenticated else None
+            )
+            
+            # Add medicines to template
+            for idx, med_data in enumerate(medicines):
+                medicine_id = med_data.get('medicine_id')
+                if medicine_id:
+                    try:
+                        medicine = Product.objects.get(id=medicine_id)
+                        PrescriptionTemplateMedicine.objects.create(
+                            template=template,
+                            medicine=medicine,
+                            days=med_data.get('days', 1),
+                            morning=med_data.get('morning', False),
+                            evening=med_data.get('evening', False),
+                            night=med_data.get('night', False),
+                            notes=med_data.get('notes', ''),
+                            order=idx + 1
+                        )
+                    except Product.DoesNotExist:
+                        continue
+            
+            return JsonResponse({'success': True, 'template_id': str(template.id)})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return render(request, 'doctortemp/template_create.html')
+
+
+def template_detail(request, template_id):
+    """View to show template details"""
+    template = get_object_or_404(PrescriptionTemplate, id=template_id)
+    medicines = PrescriptionTemplateMedicine.objects.filter(template=template).order_by('order')
+    
+    context = {
+        'template': template,
+        'medicines': medicines
+    }
+    return render(request, 'doctortemp/template_detail.html', context)
+
+
+@csrf_exempt
+def template_delete(request, template_id):
+    """View to delete a template"""
+    if request.method == 'POST':
+        try:
+            template = get_object_or_404(PrescriptionTemplate, id=template_id)
+            template.delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+def get_template_medicines_api(request, template_id):
+    """API endpoint to get all medicines from a template"""
+    try:
+        template = get_object_or_404(PrescriptionTemplate, id=template_id)
+        medicines = PrescriptionTemplateMedicine.objects.filter(template=template).order_by('order')
+        
+        results = []
+        for med in medicines:
+            results.append({
+                'medicine_id': str(med.medicine.id),
+                'medicine_name': med.medicine.name,
+                'days': med.days,
+                'morning': med.morning,
+                'evening': med.evening,
+                'night': med.night,
+                'notes': med.notes,
+                'category': med.medicine.category.name if med.medicine.category else '',
+                'dosage': med.medicine.weight_or_quantity or '',
+                'stock': med.medicine.total_items
+            })
+        
+        return JsonResponse({'success': True, 'medicines': results})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def get_all_templates_api(request):
+    """API endpoint to get all templates for dropdown"""
+    try:
+        templates = PrescriptionTemplate.objects.all().order_by('name')
+        results = []
+        for template in templates:
+            medicine_count = PrescriptionTemplateMedicine.objects.filter(template=template).count()
+            results.append({
+                'id': str(template.id),
+                'name': template.name,
+                'description': template.description,
+                'medicine_count': medicine_count
+            })
+        
+        return JsonResponse({'success': True, 'templates': results})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+

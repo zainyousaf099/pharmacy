@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Template{% endblock title %}
+
+{% block style %}
+<style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to top left, #202020 0%, #202020 30%, #5a0000 65%, #a00 100%);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .medicines-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .medicine-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 15px;
+    }
+
+    .medicine-table thead th {
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      text-align: left;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .medicine-table thead th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .medicine-table thead th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    .medicine-table tbody td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      vertical-align: middle;
+    }
+
+    .medicine-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .medicine-table select,
+    .medicine-table input[type="text"] {
+      width: 100%;
+      margin: 0;
+    }
+
+    input[type="checkbox"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      outline: none;
+      cursor: pointer;
+      background: transparent;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    input[type="checkbox"]:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    input[type="checkbox"]:checked {
+      background-color: #a00;
+      border-color: #a00;
+    }
+
+    input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: #a00;
+      border-color: #a00;
+    }
+
+    .btn-primary:hover {
+      background: #c00;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .autocomplete-results {
+      position: absolute;
+      width: 100%;
+      max-height: 250px;
+      overflow-y: auto;
+      background: rgba(40, 40, 40, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      margin-top: 5px;
+      z-index: 1000;
+      display: none;
+    }
+
+    .autocomplete-results.show {
+      display: block !important;
+    }
+
+    .autocomplete-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      transition: background 0.2s;
+    }
+
+    .autocomplete-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .medicine-input-wrapper {
+      position: relative;
+    }
+
+    .checkbox-cell {
+      text-align: center;
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <h2>➕ Create Prescription Template</h2>
+        <a href="{% url 'template_list' %}" class="btn">⬅ Back</a>
+    </div>
+
+    <div class="card">
+        <form id="templateForm">
+            <div class="form-group">
+                <label class="form-label">Template Name *</label>
+                <input type="text" id="templateName" placeholder="e.g., Headache Treatment, Fever Protocol" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea id="templateDescription" placeholder="Brief description of when to use this template..."></textarea>
+            </div>
+
+            <div class="medicines-section">
+                <h3 class="section-title">💊 Medicines</h3>
+                
+                <table class="medicine-table" id="medicineTable">
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th>Days</th>
+                            <th>Morning</th>
+                            <th>Evening</th>
+                            <th>Night</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="medicine-row">
+                            <td>
+                                <div class="medicine-input-wrapper">
+                                    <input type="text" class="medicineSearch" placeholder="Search medicine..." autocomplete="off">
+                                    <div class="autocomplete-results"></div>
+                                    <input type="hidden" class="medicine-id">
+                                </div>
+                            </td>
+                            <td>
+                                <select class="days-select">
+                                    <option value="1">1 day</option>
+                                    <option value="2">2 days</option>
+                                    <option value="3">3 days</option>
+                                    <option value="4">4 days</option>
+                                    <option value="5">5 days</option>
+                                    <option value="6">6 days</option>
+                                    <option value="7">7 days</option>
+                                    <option value="10">10 days</option>
+                                    <option value="14">14 days</option>
+                                    <option value="30">30 days</option>
+                                </select>
+                            </td>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="morning-check">
+                            </td>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="evening-check">
+                            </td>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="night-check">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button type="button" class="btn" id="addMedicineBtn">➕ Add Medicine</button>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">💾 Save Template</button>
+                <a href="{% url 'template_list' %}" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Initialize autocomplete for medicine search
+    function initAutocomplete(searchInput) {
+        const wrapper = searchInput.parentElement;
+        const resultsDiv = wrapper.querySelector('.autocomplete-results');
+        const hiddenIdInput = wrapper.querySelector('.medicine-id');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            clearTimeout(searchTimeout);
+            
+            if (query.length === 0) {
+                resultsDiv.classList.remove('show');
+                resultsDiv.innerHTML = '';
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                fetch(`/doctor/api/search-medicines/?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsDiv.innerHTML = '';
+                        
+                        if (data.results && data.results.length > 0) {
+                            data.results.forEach(medicine => {
+                                const div = document.createElement('div');
+                                div.className = 'autocomplete-item';
+                                div.textContent = `${medicine.name} - ${medicine.category || 'N/A'} (Stock: ${medicine.stock})`;
+                                div.setAttribute('data-id', medicine.id);
+                                div.setAttribute('data-name', medicine.name);
+                                resultsDiv.appendChild(div);
+                            });
+                            
+                            resultsDiv.classList.add('show');
+                            
+                            resultsDiv.querySelectorAll('.autocomplete-item').forEach(item => {
+                                item.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const id = this.getAttribute('data-id');
+                                    const name = this.getAttribute('data-name');
+                                    searchInput.value = name;
+                                    hiddenIdInput.value = id;
+                                    resultsDiv.classList.remove('show');
+                                    resultsDiv.innerHTML = '';
+                                });
+                            });
+                        } else {
+                            resultsDiv.innerHTML = '<div class="autocomplete-item">No medicines found</div>';
+                            resultsDiv.classList.add('show');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        resultsDiv.classList.remove('show');
+                    });
+            }, 300);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!wrapper.contains(e.target)) {
+                resultsDiv.classList.remove('show');
+            }
+        });
+    }
+
+    // Initialize existing rows
+    document.querySelectorAll('.medicineSearch').forEach(input => {
+        initAutocomplete(input);
+    });
+
+    // Add new medicine row
+    document.getElementById('addMedicineBtn').addEventListener('click', function() {
+        const tbody = document.querySelector('#medicineTable tbody');
+        const newRow = document.createElement('tr');
+        newRow.className = 'medicine-row';
+        newRow.innerHTML = `
+            <td>
+                <div class="medicine-input-wrapper">
+                    <input type="text" class="medicineSearch" placeholder="Search medicine..." autocomplete="off">
+                    <div class="autocomplete-results"></div>
+                    <input type="hidden" class="medicine-id">
+                </div>
+            </td>
+            <td>
+                <select class="days-select">
+                    <option value="1">1 day</option>
+                    <option value="2">2 days</option>
+                    <option value="3">3 days</option>
+                    <option value="4">4 days</option>
+                    <option value="5">5 days</option>
+                    <option value="6">6 days</option>
+                    <option value="7">7 days</option>
+                    <option value="10">10 days</option>
+                    <option value="14">14 days</option>
+                    <option value="30">30 days</option>
+                </select>
+            </td>
+            <td class="checkbox-cell">
+                <input type="checkbox" class="morning-check">
+            </td>
+            <td class="checkbox-cell">
+                <input type="checkbox" class="evening-check">
+            </td>
+            <td class="checkbox-cell">
+                <input type="checkbox" class="night-check">
+            </td>
+        `;
+        
+        tbody.appendChild(newRow);
+        
+        const searchInput = newRow.querySelector('.medicineSearch');
+        initAutocomplete(searchInput);
+    });
+
+    // Handle form submission
+    document.getElementById('templateForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('templateName').value.trim();
+        const description = document.getElementById('templateDescription').value.trim();
+        
+        if (!name) {
+            Modal.warning('Please enter a name for the template!', 'Name Required');
+            return;
+        }
+        
+        // Collect medicines
+        const medicines = [];
+        document.querySelectorAll('.medicine-row').forEach(row => {
+            const medicineId = row.querySelector('.medicine-id').value;
+            const medicineName = row.querySelector('.medicineSearch').value.trim();
+            
+            if (medicineId && medicineName) {
+                const days = parseInt(row.querySelector('.days-select').value);
+                const morning = row.querySelector('.morning-check').checked;
+                const evening = row.querySelector('.evening-check').checked;
+                const night = row.querySelector('.night-check').checked;
+                
+                medicines.push({
+                    medicine_id: medicineId,
+                    days: days,
+                    morning: morning,
+                    evening: evening,
+                    night: night
+                });
+            }
+        });
+        
+        if (medicines.length === 0) {
+            Modal.warning('Please add at least one medicine to the template!', 'No Medicines Added');
+            return;
+        }
+        
+        // Show loading
+        Modal.loading('Creating template...', 'Please Wait');
+        
+        // Send to server
+        fetch('/doctor/templates/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                name: name,
+                description: description,
+                medicines: medicines
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            Modal.close();
+            
+            if (data.success) {
+                Modal.success(`Template <strong>"${name}"</strong> created successfully!<br>You can now use it in prescriptions.`, 'Template Created', 2000);
+                setTimeout(() => {
+                    window.location.href = '{% url "template_list" %}';
+                }, 2000);
+            } else {
+                Modal.error('Error creating template: ' + (data.error || 'Unknown error'), 'Creation Failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Modal.close();
+            Modal.error('Failed to create template. Please check your connection and try again.', 'Connection Error');
+        });
+    });
+</script>
+{% endblock content %}

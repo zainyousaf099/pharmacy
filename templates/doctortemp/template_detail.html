@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ template.name }} - Template Details{% endblock title %}
+
+{% block style %}
+<style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to top left, #202020 0%, #202020 30%, #5a0000 65%, #a00 100%);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .template-info {
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .template-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+    }
+
+    .template-description {
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      font-size: 1rem;
+      margin: 0 0 15px 0;
+    }
+
+    .template-meta {
+      display: flex;
+      gap: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+      color: white;
+    }
+
+    .medicine-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .medicine-table thead th {
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      text-align: left;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .medicine-table thead th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .medicine-table thead th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    .medicine-table tbody td {
+      padding: 15px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .medicine-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .medicine-name {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .timing-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      margin-right: 5px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .timing-badge.active {
+      background: #a00;
+      border-color: #a00;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <h2>📋 Template Details</h2>
+        <a href="{% url 'template_list' %}" class="btn">⬅ Back to Templates</a>
+    </div>
+
+    <div class="card">
+        <div class="template-info">
+            <h3 class="template-name">{{ template.name }}</h3>
+            <p class="template-description">{{ template.description|default:"No description provided." }}</p>
+            
+            <div class="template-meta">
+                <span>💊 {{ medicines.count }} medicine(s)</span>
+                <span>📅 Created: {{ template.created_at|date:"d M Y, h:i A" }}</span>
+                {% if template.created_by %}
+                <span>👤 By: {{ template.created_by.username }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <h4 class="section-title">Medicines</h4>
+        
+        {% if medicines %}
+        <table class="medicine-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine Name</th>
+                    <th>Duration</th>
+                    <th>Timing</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in medicines %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="medicine-name">{{ med.medicine.name }}</td>
+                    <td>{{ med.days }} day{{ med.days|pluralize }}</td>
+                    <td>
+                        <span class="timing-badge {% if med.morning %}active{% endif %}">Morning</span>
+                        <span class="timing-badge {% if med.evening %}active{% endif %}">Evening</span>
+                        <span class="timing-badge {% if med.night %}active{% endif %}">Night</span>
+                    </td>
+                    <td>{{ med.notes|default:"-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <p>No medicines added to this template yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

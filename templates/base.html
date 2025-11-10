@@ -4,6 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock title %}</title>
+    
+    <!-- Universal Modal Styles -->
+    <style>
+        /* Universal Modal System */
+        .universal-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .universal-modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .universal-modal {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.7) translateY(-20px);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .universal-modal-overlay.active .universal-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .universal-modal-header {
+            padding: 25px 30px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .universal-modal-header.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .universal-modal-header.error {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        .universal-modal-header.warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .universal-modal-header.info {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+        }
+
+        .universal-modal-header.confirm {
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+            color: white;
+        }
+
+        .universal-modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .universal-modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            flex: 1;
+        }
+
+        .universal-modal-body {
+            padding: 30px;
+            color: #333;
+            font-size: 1rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .universal-modal-footer {
+            padding: 20px 30px;
+            border-top: 2px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .universal-modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .universal-modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .universal-modal-btn:active {
+            transform: translateY(0);
+        }
+
+        .universal-modal-btn-primary {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+        }
+
+        .universal-modal-btn-success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .universal-modal-btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        .universal-modal-btn-secondary {
+            background: linear-gradient(135deg, #757575 0%, #616161 100%);
+            color: white;
+        }
+
+        /* Loading Spinner */
+        .universal-modal-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Input field for prompt */
+        .universal-modal-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .universal-modal-input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        /* Auto-dismiss timer bar */
+        .universal-modal-timer {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .universal-modal-timer-bar {
+            height: 100%;
+            background: white;
+            transition: width linear;
+        }
+    </style>
 </head>
 {% block style %}
   <style>
@@ -11,12 +231,268 @@
   </style>
 {% endblock style %}
 <body>
+    <!-- Universal Modal Structure -->
+    <div class="universal-modal-overlay" id="universalModal">
+        <div class="universal-modal">
+            <div class="universal-modal-header" id="modalHeader">
+                <div class="universal-modal-icon" id="modalIcon"></div>
+                <h3 class="universal-modal-title" id="modalTitle"></h3>
+            </div>
+            <div class="universal-modal-body" id="modalBody"></div>
+            <div class="universal-modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
 
-    
-    {% block       content %}
+    {% block content %}
       
     {% endblock content %}
 
+    <!-- Universal Modal JavaScript -->
+    <script>
+        // Universal Modal System
+        const UniversalModal = {
+            overlay: null,
+            modal: null,
+            header: null,
+            icon: null,
+            title: null,
+            body: null,
+            footer: null,
+            currentCallback: null,
+            autoDismissTimer: null,
+
+            init() {
+                this.overlay = document.getElementById('universalModal');
+                this.modal = this.overlay.querySelector('.universal-modal');
+                this.header = document.getElementById('modalHeader');
+                this.icon = document.getElementById('modalIcon');
+                this.title = document.getElementById('modalTitle');
+                this.body = document.getElementById('modalBody');
+                this.footer = document.getElementById('modalFooter');
+
+                // Close on overlay click
+                this.overlay.addEventListener('click', (e) => {
+                    if (e.target === this.overlay) {
+                        this.close();
+                    }
+                });
+
+                // Close on Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.overlay.classList.contains('active')) {
+                        this.close();
+                    }
+                });
+            },
+
+            show(options = {}) {
+                const {
+                    type = 'info',
+                    title = 'Notice',
+                    message = '',
+                    icon = null,
+                    buttons = [],
+                    autoDismiss = 0,
+                    onClose = null
+                } = options;
+
+                // Set header type
+                this.header.className = 'universal-modal-header ' + type;
+
+                // Set icon
+                const icons = {
+                    success: '✓',
+                    error: '✕',
+                    warning: '⚠',
+                    info: 'ℹ',
+                    confirm: '?'
+                };
+                this.icon.textContent = icon || icons[type] || 'ℹ';
+
+                // Set title and message
+                this.title.textContent = title;
+                this.body.innerHTML = message;
+
+                // Set buttons
+                this.footer.innerHTML = '';
+                if (buttons.length === 0) {
+                    const okBtn = this.createButton('OK', 'primary', () => this.close());
+                    this.footer.appendChild(okBtn);
+                } else {
+                    buttons.forEach(btn => {
+                        const button = this.createButton(
+                            btn.text || 'Button',
+                            btn.style || 'secondary',
+                            btn.onClick || (() => this.close())
+                        );
+                        this.footer.appendChild(button);
+                    });
+                }
+
+                // Set callback
+                this.currentCallback = onClose;
+
+                // Show modal
+                this.overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                // Auto dismiss
+                if (autoDismiss > 0) {
+                    this.autoDismissTimer = setTimeout(() => {
+                        this.close();
+                    }, autoDismiss);
+                }
+            },
+
+            close(returnValue = null) {
+                clearTimeout(this.autoDismissTimer);
+                
+                this.overlay.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    this.overlay.classList.remove('active');
+                    this.overlay.style.animation = '';
+                    document.body.style.overflow = '';
+                    
+                    if (this.currentCallback) {
+                        this.currentCallback(returnValue);
+                        this.currentCallback = null;
+                    }
+                }, 300);
+            },
+
+            createButton(text, style, onClick) {
+                const btn = document.createElement('button');
+                btn.className = `universal-modal-btn universal-modal-btn-${style}`;
+                btn.textContent = text;
+                btn.onclick = () => {
+                    onClick();
+                };
+                return btn;
+            },
+
+            // Preset methods
+            success(message, title = 'Success!', autoDismiss = 3000) {
+                this.show({
+                    type: 'success',
+                    title: title,
+                    message: message,
+                    autoDismiss: autoDismiss
+                });
+            },
+
+            error(message, title = 'Error!', autoDismiss = 0) {
+                this.show({
+                    type: 'error',
+                    title: title,
+                    message: message,
+                    autoDismiss: autoDismiss
+                });
+            },
+
+            warning(message, title = 'Warning!', autoDismiss = 0) {
+                this.show({
+                    type: 'warning',
+                    title: title,
+                    message: message,
+                    autoDismiss: autoDismiss
+                });
+            },
+
+            info(message, title = 'Information', autoDismiss = 0) {
+                this.show({
+                    type: 'info',
+                    title: title,
+                    message: message,
+                    autoDismiss: autoDismiss
+                });
+            },
+
+            confirm(message, onConfirm, onCancel, title = 'Confirm Action') {
+                this.show({
+                    type: 'confirm',
+                    title: title,
+                    message: message,
+                    buttons: [
+                        {
+                            text: 'Cancel',
+                            style: 'secondary',
+                            onClick: () => {
+                                this.close();
+                                if (onCancel) onCancel();
+                            }
+                        },
+                        {
+                            text: 'Confirm',
+                            style: 'primary',
+                            onClick: () => {
+                                this.close();
+                                if (onConfirm) onConfirm();
+                            }
+                        }
+                    ]
+                });
+            },
+
+            loading(message = 'Loading...', title = 'Please Wait') {
+                this.show({
+                    type: 'info',
+                    title: title,
+                    message: `<div class="universal-modal-spinner"></div><p>${message}</p>`,
+                    buttons: []
+                });
+            },
+
+            prompt(message, onSubmit, defaultValue = '', title = 'Input Required') {
+                this.show({
+                    type: 'info',
+                    title: title,
+                    message: `
+                        <p>${message}</p>
+                        <input type="text" class="universal-modal-input" id="modalPromptInput" value="${defaultValue}" placeholder="Enter value...">
+                    `,
+                    buttons: [
+                        {
+                            text: 'Cancel',
+                            style: 'secondary',
+                            onClick: () => this.close()
+                        },
+                        {
+                            text: 'Submit',
+                            style: 'primary',
+                            onClick: () => {
+                                const input = document.getElementById('modalPromptInput');
+                                const value = input ? input.value : '';
+                                this.close();
+                                if (onSubmit) onSubmit(value);
+                            }
+                        }
+                    ]
+                });
+
+                // Focus input after modal opens
+                setTimeout(() => {
+                    const input = document.getElementById('modalPromptInput');
+                    if (input) {
+                        input.focus();
+                        input.select();
+                    }
+                }, 100);
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            UniversalModal.init();
+        });
+
+        // Make it globally accessible
+        window.Modal = UniversalModal;
+
+        // Replace default alert, confirm
+        window.alert = function(message) {
+            UniversalModal.info(message, 'Notice');
+        };
+    </script>
 
     {% block js %}
       

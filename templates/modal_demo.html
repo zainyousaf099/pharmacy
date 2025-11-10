@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}Modal System Demo{% endblock %}
+
+{% block style %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 50px 20px;
+    }
+
+    .demo-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 40px;
+    }
+
+    .demo-section {
+        margin-bottom: 40px;
+    }
+
+    .demo-section h2 {
+        color: #444;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .demo-btn {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .demo-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    }
+
+    .btn-error {
+        background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    }
+
+    .btn-info {
+        background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    }
+
+    .btn-confirm {
+        background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+    }
+
+    .btn-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    code {
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        color: #d32f2f;
+    }
+
+    .code-block {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin-top: 10px;
+    }
+
+    .code-block pre {
+        margin: 0;
+        font-family: 'Courier New', monospace;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demo-container">
+    <h1>🎨 Universal Modal System Demo</h1>
+    <p class="subtitle">Professional popups and dialogs for your clinic app</p>
+
+    <!-- Basic Modals -->
+    <div class="demo-section">
+        <h2>Basic Modals</h2>
+        <div class="button-grid">
+            <button class="demo-btn btn-success" onclick="showSuccess()">✓ Success Modal</button>
+            <button class="demo-btn btn-error" onclick="showError()">✕ Error Modal</button>
+            <button class="demo-btn btn-warning" onclick="showWarning()">⚠ Warning Modal</button>
+            <button class="demo-btn btn-info" onclick="showInfo()">ℹ Info Modal</button>
+        </div>
+    </div>
+
+    <!-- Interactive Modals -->
+    <div class="demo-section">
+        <h2>Interactive Modals</h2>
+        <div class="button-grid">
+            <button class="demo-btn btn-confirm" onclick="showConfirm()">? Confirm Dialog</button>
+            <button class="demo-btn btn-info" onclick="showPrompt()">✏ Prompt Input</button>
+            <button class="demo-btn btn-info" onclick="showLoading()">⏳ Loading Modal</button>
+        </div>
+    </div>
+
+    <!-- Auto-Dismiss -->
+    <div class="demo-section">
+        <h2>Auto-Dismiss (3 seconds)</h2>
+        <div class="button-grid">
+            <button class="demo-btn btn-success" onclick="showAutoDismiss()">⏱ Auto Close</button>
+        </div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div class="demo-section">
+        <h2>Custom Modal</h2>
+        <div class="button-grid">
+            <button class="demo-btn btn-custom" onclick="showCustom()">🎨 Custom Buttons</button>
+        </div>
+    </div>
+
+    <!-- HTML Content -->
+    <div class="demo-section">
+        <h2>HTML Content</h2>
+        <div class="button-grid">
+            <button class="demo-btn btn-info" onclick="showHtmlContent()">📝 Rich Content</button>
+        </div>
+    </div>
+
+    <!-- Code Examples -->
+    <div class="demo-section">
+        <h2>Code Examples</h2>
+        <p><strong>Success Modal:</strong></p>
+        <div class="code-block">
+            <pre>Modal.success('Operation completed!', 'Success', 3000);</pre>
+        </div>
+
+        <p style="margin-top: 20px;"><strong>Confirm Dialog:</strong></p>
+        <div class="code-block">
+            <pre>Modal.confirm('Are you sure?', () => {
+    console.log('Confirmed!');
+}, null, 'Confirm Action');</pre>
+        </div>
+
+        <p style="margin-top: 20px;"><strong>Loading with AJAX:</strong></p>
+        <div class="code-block">
+            <pre>Modal.loading('Saving...', 'Please Wait');
+fetch('/api/save')
+    .then(() => {
+        Modal.close();
+        Modal.success('Saved!', 'Success', 2000);
+    });</pre>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 2px solid #eee;">
+        <p style="color: #666;">This modal system is globally available on all pages</p>
+        <p style="color: #999; font-size: 0.9rem;">Use <code>Modal.success()</code>, <code>Modal.error()</code>, <code>Modal.confirm()</code>, etc.</p>
+    </div>
+</div>
+
+<script>
+    function showSuccess() {
+        Modal.success('Your prescription has been saved successfully!', 'Success!', 3000);
+    }
+
+    function showError() {
+        Modal.error('Unable to connect to the database. Please try again.', 'Connection Error');
+    }
+
+    function showWarning() {
+        Modal.warning('Please fill in all required fields before proceeding.', 'Incomplete Form');
+    }
+
+    function showInfo() {
+        Modal.info('The clinic will be closed on Sunday for maintenance.', 'Notice');
+    }
+
+    function showConfirm() {
+        Modal.confirm(
+            'Are you sure you want to delete this patient record?<br><br><strong>This action cannot be undone!</strong>',
+            () => {
+                Modal.success('Record deleted successfully!', 'Deleted', 2000);
+            },
+            () => {
+                Modal.info('Action cancelled. Record was not deleted.', 'Cancelled', 2000);
+            },
+            'Confirm Deletion'
+        );
+    }
+
+    function showPrompt() {
+        Modal.prompt(
+            'Enter the patient\'s reference number:',
+            (value) => {
+                if (value) {
+                    Modal.success(`Searching for patient: <strong>${value}</strong>`, 'Processing', 2000);
+                } else {
+                    Modal.warning('No reference number entered!', 'Empty Input');
+                }
+            },
+            'REF-',
+            'Patient Search'
+        );
+    }
+
+    function showLoading() {
+        Modal.loading('Fetching patient records from database...', 'Loading');
+        
+        // Simulate loading
+        setTimeout(() => {
+            Modal.close();
+            Modal.success('Data loaded successfully!', 'Complete', 2000);
+        }, 3000);
+    }
+
+    function showAutoDismiss() {
+        Modal.success('This message will automatically close in 3 seconds!', 'Auto-Dismiss Demo', 3000);
+    }
+
+    function showCustom() {
+        Modal.show({
+            type: 'info',
+            title: 'Select an Action',
+            message: 'Choose how you want to proceed with this patient:',
+            buttons: [
+                {
+                    text: 'View History',
+                    style: 'primary',
+                    onClick: () => {
+                        Modal.close();
+                        Modal.info('Loading patient history...', 'History', 2000);
+                    }
+                },
+                {
+                    text: 'New Prescription',
+                    style: 'success',
+                    onClick: () => {
+                        Modal.close();
+                        Modal.success('Opening prescription form...', 'Prescription', 2000);
+                    }
+                },
+                {
+                    text: 'Delete Record',
+                    style: 'danger',
+                    onClick: () => {
+                        Modal.close();
+                        Modal.warning('Delete action selected', 'Warning', 2000);
+                    }
+                },
+                {
+                    text: 'Cancel',
+                    style: 'secondary',
+                    onClick: () => Modal.close()
+                }
+            ]
+        });
+    }
+
+    function showHtmlContent() {
+        Modal.info(`
+            <h3 style="margin-top: 0; color: #2196F3;">Patient Information</h3>
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Age:</strong> 35 years</p>
+            <p><strong>Blood Group:</strong> O+</p>
+            <p><strong>Last Visit:</strong> 10 Nov 2025</p>
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 15px 0;">
+            <p style="color: #666; font-size: 0.9rem;"><em>Click OK to close this dialog</em></p>
+        `, 'Patient Details');
+    }
+</script>
+{% endblock %}

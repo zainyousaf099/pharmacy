@@ -655,6 +655,20 @@
       <div class="card">
         <h3 class="card-title">Add Prescription</h3>
         
+        <!-- Template Selection -->
+        <div class="template-section" style="margin-bottom: 20px;">
+          <div class="form-group">
+            <label class="form-label">📋 Load Template (Optional)</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <select id="templateSelect" style="flex: 1;">
+                <option value="">-- Select a template --</option>
+              </select>
+              <button class="btn" id="loadTemplateBtn" style="padding: 12px 20px;">Load</button>
+              <a href="{% url 'template_list' %}" class="btn" style="padding: 12px 20px; text-decoration: none;">Manage</a>
+            </div>
+          </div>
+        </div>
+        
         <div class="prescription-table-wrapper">
           <table class="prescription-table" id="prescriptionTable">
             <thead>
@@ -709,7 +723,7 @@
         
         <div class="btn-group">
           <button class="btn" id="addRowBtn">➕ Add Medicine</button>
-          <button class="btn btn-primary" id="printSaveBtn">💾 Save & Print</button>
+          <button class="btn btn-primary" id="printSaveBtn"> Save & Print</button>
         </div>
       </div>
 
@@ -961,15 +975,18 @@
     });
     
     if (prescriptions.length === 0) {
-      alert('Please add at least one medicine!');
+      Modal.warning('Please add at least one medicine to the prescription!', 'No Medicines Added');
       return;
     }
     
     // Check if patient is selected
     if (!currentPatientRefNo) {
-      alert('Please search and select a patient first!');
+      Modal.error('Please search and select a patient first!', 'Patient Not Selected');
       return;
     }
+    
+    // Show loading
+    Modal.loading('Saving prescription...', 'Please Wait');
     
     // Save prescriptions via AJAX
     fetch('/doctor/', {
@@ -985,9 +1002,10 @@
     })
     .then(response => response.json())
     .then(data => {
+      Modal.close();
+      
       if (data.success) {
-        const popup = document.getElementById("popup");
-        popup.style.display = "flex";
+        Modal.success('Prescription saved successfully!', 'Success', 2000);
         
         // Open print window
         if (data.print_url) {
@@ -997,7 +1015,6 @@
         }
         
         setTimeout(() => {
-          popup.style.display = "none";
           // Clear the form
           document.querySelectorAll('.prescription-row').forEach((row, index) => {
             if (index === 0) {
@@ -1016,14 +1033,15 @@
           patientSearchInput.value = '';
           patientDetailsTextarea.value = '';
           currentPatientRefNo = null;
-        }, 2500);
+        }, 2000);
       } else {
-        alert('Error saving prescriptions: ' + (data.error || 'Unknown error'));
+        Modal.error('Error saving prescriptions: ' + (data.error || 'Unknown error'), 'Save Failed');
       }
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('Error saving prescriptions!');
+      Modal.close();
+      Modal.error('An error occurred while saving the prescription. Please try again.', 'Connection Error');
     });
   });
 
@@ -1107,5 +1125,122 @@
     sideMenu.classList.remove("active");
     overlay.classList.remove("active");
   });
+
+  // ============ PRESCRIPTION TEMPLATE FUNCTIONALITY ============
+  
+  // Load all templates on page load
+  function loadTemplates() {
+    fetch('/doctor/api/templates/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const templateSelect = document.getElementById('templateSelect');
+          templateSelect.innerHTML = '<option value="">-- Select a template --</option>';
+          
+          data.templates.forEach(template => {
+            const option = document.createElement('option');
+            option.value = template.id;
+            option.textContent = `${template.name} (${template.medicine_count} medicines)`;
+            option.setAttribute('data-description', template.description);
+            templateSelect.appendChild(option);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error loading templates:', error);
+      });
+  }
+
+  // Load template medicines when "Load" button is clicked
+  document.getElementById('loadTemplateBtn').addEventListener('click', function() {
+    const templateSelect = document.getElementById('templateSelect');
+    const templateId = templateSelect.value;
+    
+    if (!templateId) {
+      Modal.warning('Please select a template from the dropdown first!', 'No Template Selected');
+      return;
+    }
+    
+    // Show loading
+    Modal.loading('Loading template medicines...', 'Please Wait');
+    
+    // Fetch template medicines
+    fetch(`/doctor/api/templates/${templateId}/medicines/`)
+      .then(response => response.json())
+      .then(data => {
+        Modal.close();
+        
+        if (data.success && data.medicines.length > 0) {
+          // Clear existing prescription rows
+          const tbody = document.querySelector('#prescriptionTable tbody');
+          tbody.innerHTML = '';
+          
+          // Add each medicine from template
+          data.medicines.forEach((medicine, index) => {
+            const newRow = document.createElement('tr');
+            newRow.className = 'prescription-row';
+            newRow.innerHTML = `
+              <td class="medicine-input-cell">
+                <div class="medicine-input-wrapper">
+                  <input type="text" 
+                         class="medicineSearch" 
+                         placeholder="Search medicine..." 
+                         autocomplete="off"
+                         value="${medicine.medicine_name}"
+                         title="Search for medicine">
+                  <div class="autocomplete-results"></div>
+                  <input type="hidden" class="medicine-id" value="${medicine.medicine_id}">
+                </div>
+              </td>
+              <td class="days-cell">
+                <select class="days-select" title="Select duration">
+                  <option value="1" ${medicine.days === 1 ? 'selected' : ''}>1 day</option>
+                  <option value="2" ${medicine.days === 2 ? 'selected' : ''}>2 days</option>
+                  <option value="3" ${medicine.days === 3 ? 'selected' : ''}>3 days</option>
+                  <option value="4" ${medicine.days === 4 ? 'selected' : ''}>4 days</option>
+                  <option value="5" ${medicine.days === 5 ? 'selected' : ''}>5 days</option>
+                  <option value="6" ${medicine.days === 6 ? 'selected' : ''}>6 days</option>
+                  <option value="7" ${medicine.days === 7 ? 'selected' : ''}>7 days</option>
+                  <option value="10" ${medicine.days === 10 ? 'selected' : ''}>10 days</option>
+                  <option value="14" ${medicine.days === 14 ? 'selected' : ''}>14 days</option>
+                  <option value="30" ${medicine.days === 30 ? 'selected' : ''}>30 days</option>
+                </select>
+              </td>
+              <td class="checkbox-cell">
+                <input type="checkbox" class="morning-check" ${medicine.morning ? 'checked' : ''} title="Morning dose">
+              </td>
+              <td class="checkbox-cell">
+                <input type="checkbox" class="evening-check" ${medicine.evening ? 'checked' : ''} title="Evening dose">
+              </td>
+              <td class="checkbox-cell">
+                <input type="checkbox" class="night-check" ${medicine.night ? 'checked' : ''} title="Night dose">
+              </td>
+            `;
+            
+            tbody.appendChild(newRow);
+            
+            // Initialize autocomplete for the new row
+            const searchInput = newRow.querySelector('.medicineSearch');
+            initAutocomplete(searchInput);
+          });
+          
+          // Show success message
+          Modal.success(`Template loaded successfully!<br><strong>${data.medicines.length} medicine(s)</strong> added to prescription.`, 'Template Loaded', 3000);
+          
+          // Reset template selection
+          templateSelect.value = '';
+        } else {
+          Modal.warning('This template has no medicines configured. Please add medicines to the template first.', 'Empty Template');
+        }
+      })
+      .catch(error => {
+        console.error('Error loading template medicines:', error);
+        Modal.close();
+        Modal.error('Failed to load template. Please check your connection and try again.', 'Loading Failed');
+      });
+  });
+
+  // Load templates when page loads
+  loadTemplates();
 </script>
 {% endblock js %}
