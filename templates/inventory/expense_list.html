@@ -13,6 +13,9 @@
             <p class="text-muted">Track daily clinic expenses</p>
         </div>
         <div class="col-md-6 text-end">
+            <a class="btn btn-outline-primary btn-lg me-2" href="{% url 'inventory:expense_reports' %}">
+                <i class="fas fa-chart-line me-2"></i>View Reports
+            </a>
             <a class="btn btn-primary btn-lg" href="{% url 'inventory:expense_create' %}">
                 <i class="fas fa-plus me-2"></i>Add Expense
             </a>

@@ -1,11 +1,12 @@
 # inventory/admin.py
 from django.contrib import admin
-from .models import Product, InventoryTransaction, ProductCategory, Expense
+from .models import Product, InventoryTransaction, ProductCategory, Expense, Distributor
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "total_boxes", "total_items", "total_subitems", "purchase_price")
-    search_fields = ("name",)
+    list_display = ("name", "category", "distributor", "total_boxes", "total_items", "total_subitems", "purchase_price")
+    search_fields = ("name", "distributor")
+    list_filter = ("category",)
 
 @admin.register(InventoryTransaction)
 class InventoryTransactionAdmin(admin.ModelAdmin):
@@ -17,6 +18,12 @@ class ExpenseAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "amount", "expense_date", "created_at")
     list_filter = ("category", "expense_date")
     search_fields = ("title", "notes")
+
+@admin.register(Distributor)
+class DistributorAdmin(admin.ModelAdmin):
+    list_display = ("name", "contact_person", "phone", "email", "created_at")
+    search_fields = ("name", "contact_person", "phone", "email")
+    list_filter = ("created_at",)
 
 admin.site.register(ProductCategory)
     

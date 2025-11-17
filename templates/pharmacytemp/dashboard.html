@@ -358,6 +358,61 @@
 
   .prescription-table td {
     padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  .prescription-table input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+
+  .prescription-table input:focus {
+    outline: none;
+    border-color: rgba(68, 255, 68, 0.6);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(68, 255, 68, 0.3);
+  }
+
+  .prescription-table input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .prescription-table input:read-only {
+    background: rgba(255, 255, 255, 0.05);
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .prescription-table .small-input {
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* Search Status Message */
+  #searchStatus {
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   }
 
   .prescription-table td:first-child {
@@ -517,11 +572,14 @@
     <div class="search-section">
       <input 
         type="text" 
-        placeholder="Enter patient reference number..."
+        placeholder="Enter patient reference number or name..."
         id="refNoInput"
       >
       <button class="btn" onclick="searchPrescription()">🔍 Search</button>
     </div>
+
+    <!-- Search Status Message -->
+    <div id="searchStatus" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; display: none;"></div>
 
     <!-- Prescription Table -->
     <div class="card-title" style="font-size: 1.1rem; margin-bottom: 15px; margin-top: 20px;">
@@ -533,31 +591,13 @@
       <thead>
         <tr>
           <th>Medicine Name</th>
-          <th style="width: 100px;">Days</th>
+          <th style="width: 80px;">Days</th>
+          <th style="width: 150px;">Timing</th>
           <th style="width: 120px;">Price (PKR)</th>
         </tr>
       </thead>
       <tbody id="prescriptionRows">
-        <tr>
-          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
-          <td><input type="number" placeholder="0" class="days-input small-input"></td>
-          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
-        </tr>
-        <tr>
-          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
-          <td><input type="number" placeholder="0" class="days-input small-input"></td>
-          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
-        </tr>
-        <tr>
-          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
-          <td><input type="number" placeholder="0" class="days-input small-input"></td>
-          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
-        </tr>
-        <tr>
-          <td><input type="text" placeholder="Enter medicine name" class="medicine-input"></td>
-          <td><input type="number" placeholder="0" class="days-input small-input"></td>
-          <td><input type="number" placeholder="0.00" class="price-input small-input"></td>
-        </tr>
+        <!-- Medicines will be loaded here -->
       </tbody>
     </table>
 
@@ -620,6 +660,10 @@ Search by reference number to view patient details.</div>
 
 {% block js %}
 <script>
+    // Global variables
+    let currentPatient = null;
+    let currentPrescriptions = [];
+
     // ✅ Menu toggle
     const hamburger = document.getElementById("hamburger");
     const sideMenu = document.getElementById("sideMenu");
@@ -639,17 +683,262 @@ Search by reference number to view patient details.</div>
     overlay.addEventListener("click", () => {
       sideMenu.classList.remove("active");
       overlay.classList.remove("active");
-      
     });
 
-    // Show popup on Print/Save
-  document.getElementById("printSaveBtn").addEventListener("click", function() {
-    const popup = document.getElementById("popup");
-    popup.style.display = "flex";
+    // Search patient and load prescriptions
+    function searchPrescription() {
+        const refNo = document.getElementById('refNoInput').value.trim();
+        const searchStatus = document.getElementById('searchStatus');
+        
+        if (!refNo) {
+            Modal.warning('Please enter a patient reference number or name!', 'Search Required');
+            return;
+        }
+        
+        // Show loading
+        Modal.loading('Searching patient and prescriptions...', 'Please Wait');
+        searchStatus.style.display = 'none';
+        
+        fetch(`/pharmacy/api/search-patient/?q=${encodeURIComponent(refNo)}`)
+            .then(response => response.json())
+            .then(data => {
+                Modal.close();
+                
+                if (data.success) {
+                    currentPatient = data.patient;
+                    currentPrescriptions = data.prescriptions;
+                    
+                    // Show success message
+                    searchStatus.textContent = `✓ Found ${data.total_medicines} prescription(s) for ${data.patient.name}`;
+                    searchStatus.style.display = 'block';
+                    searchStatus.style.background = 'rgba(76, 175, 80, 0.3)';
+                    searchStatus.style.color = 'white';
+                    
+                    // Load prescriptions into table
+                    loadPrescriptionsToTable(data.prescriptions);
+                    
+                    // Update patient details
+                    document.getElementById('patientContent').textContent = data.patient.details;
+                    
+                    // Calculate and show bill
+                    calculateBill();
+                    
+                    Modal.success(`Found ${data.total_medicines} prescribed medicine(s) for <strong>${data.patient.name}</strong>`, 'Prescriptions Loaded', 3000);
+                } else {
+                    searchStatus.textContent = '✗ ' + data.error;
+                    searchStatus.style.display = 'block';
+                    searchStatus.style.background = 'rgba(244, 67, 54, 0.3)';
+                    searchStatus.style.color = 'white';
+                    
+                    // Clear table
+                    document.getElementById('prescriptionRows').innerHTML = '';
+                    
+                    // If patient found but no prescriptions
+                    if (data.patient) {
+                        document.getElementById('patientContent').textContent = data.patient.details || 
+                            `Reference No: ${data.patient.ref_no}\nName: ${data.patient.name}\nPhone: ${data.patient.phone}\nAge: ${data.patient.age} years`;
+                        Modal.warning('This patient has no prescriptions yet. Please ask them to visit the doctor first.', 'No Prescriptions');
+                    } else {
+                        document.getElementById('patientContent').textContent = 'No patient selected.\n\nSearch by reference number to view patient details.';
+                        Modal.error(data.error, 'Patient Not Found');
+                    }
+                    
+                    // Reset bill
+                    document.getElementById('billContent').textContent = 'Total: PKR 0.00\n\nClick PRINT/SAVE to generate bill after entering medicine details.';
+                }
+            })
+            .catch(error => {
+                Modal.close();
+                console.error('Search error:', error);
+                Modal.error('Failed to search patient. Please check your connection and try again.', 'Search Failed');
+                
+                searchStatus.textContent = '✗ Connection error';
+                searchStatus.style.display = 'block';
+                searchStatus.style.background = 'rgba(244, 67, 54, 0.3)';
+                searchStatus.style.color = 'white';
+            });
+    }
 
-    setTimeout(() => {
-      popup.style.display = "none";
-    }, 2500); // Auto hide after 2.5s
-  });
-  </script>
+    // Load prescriptions into the table
+    function loadPrescriptionsToTable(prescriptions) {
+        const tbody = document.getElementById('prescriptionRows');
+        tbody.innerHTML = '';
+        
+        prescriptions.forEach((rx, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <input type="text" 
+                           value="${rx.medicine_name}" 
+                           class="medicine-input" 
+                           readonly
+                           style="background: rgba(255, 255, 255, 0.1); cursor: not-allowed;"
+                           data-medicine-id="${rx.medicine_id}">
+                </td>
+                <td>
+                    <input type="number" 
+                           value="${rx.days}" 
+                           class="days-input small-input" 
+                           readonly
+                           style="background: rgba(255, 255, 255, 0.1); cursor: not-allowed; text-align: center;">
+                </td>
+                <td>
+                    <span style="display: block; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; font-size: 0.85rem;">
+                        ${rx.timing}
+                    </span>
+                </td>
+                <td>
+                    <input type="number" 
+                           value="${rx.price.toFixed(2)}" 
+                           class="price-input small-input" 
+                           step="0.01"
+                           min="0"
+                           onchange="calculateBill()"
+                           style="text-align: center;">
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Calculate total bill
+    function calculateBill() {
+        const priceInputs = document.querySelectorAll('.price-input');
+        let total = 0;
+        let itemsCount = 0;
+        let billDetails = '';
+        
+        priceInputs.forEach((input, index) => {
+            const price = parseFloat(input.value) || 0;
+            if (price > 0) {
+                const medicineInput = input.closest('tr').querySelector('.medicine-input');
+                const daysInput = input.closest('tr').querySelector('.days-input');
+                const medicineName = medicineInput.value;
+                const days = daysInput.value;
+                
+                total += price;
+                itemsCount++;
+                billDetails += `${itemsCount}. ${medicineName} (${days} days) - PKR ${price.toFixed(2)}\n`;
+            }
+        });
+        
+        const billContent = `${billDetails}
+${'─'.repeat(40)}
+Total Items: ${itemsCount}
+Total Amount: PKR ${total.toFixed(2)}
+
+Patient: ${currentPatient ? currentPatient.name : 'N/A'}
+Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
+        
+        document.getElementById('billContent').textContent = billContent;
+    }
+
+    // Process order
+    function processOrder() {
+        if (!currentPatient) {
+            Modal.error('Please search and select a patient first!', 'No Patient Selected');
+            return;
+        }
+        
+        const medicines = [];
+        const rows = document.querySelectorAll('#prescriptionRows tr');
+        
+        rows.forEach(row => {
+            const medicineInput = row.querySelector('.medicine-input');
+            const daysInput = row.querySelector('.days-input');
+            const priceInput = row.querySelector('.price-input');
+            
+            if (medicineInput && priceInput) {
+                const medicineName = medicineInput.value.trim();
+                const medicineId = medicineInput.getAttribute('data-medicine-id');
+                const days = parseInt(daysInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+                
+                if (medicineName && price > 0) {
+                    medicines.push({
+                        medicine_id: medicineId,
+                        medicine_name: medicineName,
+                        days: days,
+                        price: price
+                    });
+                }
+            }
+        });
+        
+        if (medicines.length === 0) {
+            Modal.warning('Please enter prices for the medicines!', 'No Items to Process');
+            return;
+        }
+        
+        const totalAmount = medicines.reduce((sum, item) => sum + item.price, 0);
+        
+        // Show loading
+        Modal.loading('Processing order and generating bill...', 'Please Wait');
+        
+        // Send order to server
+        fetch('/pharmacy/api/process-order/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                patient_ref_no: currentPatient.ref_no,
+                medicines: medicines,
+                total_amount: totalAmount
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            Modal.close();
+            
+            if (data.success) {
+                Modal.success(
+                    `Order processed successfully!<br><br>
+                    <strong>Patient:</strong> ${data.patient_name}<br>
+                    <strong>Items:</strong> ${data.items_count}<br>
+                    <strong>Total:</strong> PKR ${data.total_amount.toFixed(2)}<br><br>
+                    <small>Bill is ready to print.</small>`,
+                    'Order Complete',
+                    4000
+                );
+                
+                // Print window (optional)
+                setTimeout(() => {
+                    window.print();
+                }, 1000);
+                
+                // Clear after some time
+                setTimeout(() => {
+                    resetForm();
+                }, 5000);
+            } else {
+                Modal.error('Failed to process order: ' + (data.error || 'Unknown error'), 'Processing Failed');
+            }
+        })
+        .catch(error => {
+            Modal.close();
+            console.error('Process error:', error);
+            Modal.error('Connection error. Please try again.', 'Network Error');
+        });
+    }
+
+    // Reset form
+    function resetForm() {
+        document.getElementById('refNoInput').value = '';
+        document.getElementById('prescriptionRows').innerHTML = '';
+        document.getElementById('patientContent').textContent = 'No patient selected.\n\nSearch by reference number to view patient details.';
+        document.getElementById('billContent').textContent = 'Total: PKR 0.00\n\nClick PRINT/SAVE to generate bill after entering medicine details.';
+        document.getElementById('searchStatus').style.display = 'none';
+        currentPatient = null;
+        currentPrescriptions = [];
+    }
+
+    // Allow Enter key to search
+    document.getElementById('refNoInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchPrescription();
+        }
+    });
+</script>
 {% endblock js %}

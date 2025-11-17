@@ -1,13 +1,13 @@
 # inventory/forms.py
 from django import forms
 from decimal import Decimal
-from .models import Product, InventoryTransaction, ProductCategory, Expense
+from .models import Product, InventoryTransaction, ProductCategory, Expense, Distributor
 
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            "name", "category", "products_in_box", "items_per_product", "subitems_per_item",
+            "name", "category", "distributor", "products_in_box", "items_per_product", "subitems_per_item",
             "weight_or_quantity", "purchase_price", "purchase_margin_percent",
             "rack_no", "expiry_date", "batch_no" 
         ]
@@ -17,6 +17,10 @@ class ProductForm(forms.ModelForm):
                 "placeholder": "e.g., Panadol, Disprin, etc."
             }),
             "category": forms.Select(attrs={"class": "form-select"}),
+            "distributor": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Enter distributor/supplier name"
+            }),
             "products_in_box": forms.NumberInput(attrs={
                 "class": "form-control",
                 "placeholder": "How many packs/boxes purchased?",
@@ -62,6 +66,7 @@ class ProductForm(forms.ModelForm):
         labels = {
             "name": "Medicine Name",
             "category": "Category",
+            "distributor": "Distributor/Supplier",
             "products_in_box": "Number of Packs/Boxes",
             "items_per_product": "Items per Pack (Strips/Sheets)",
             "subitems_per_item": "Units per Item (Tablets/Capsules)",

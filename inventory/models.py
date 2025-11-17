@@ -18,6 +18,24 @@ class ProductCategory(models.Model):
         return self.name
 
 
+class Distributor(models.Model):
+    """Medicine distributor/supplier information"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, unique=True, help_text='Distributor/Supplier name')
+    contact_person = models.CharField(max_length=255, blank=True, null=True, help_text='Contact person name')
+    phone = models.CharField(max_length=20, blank=True, null=True, help_text='Phone number')
+    email = models.EmailField(blank=True, null=True, help_text='Email address')
+    address = models.TextField(blank=True, null=True, help_text='Complete address')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
     """
     Top-level product model representing a product *box* (e.g. Panadol box).
@@ -40,6 +58,7 @@ class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    distributor = models.CharField(max_length=255, blank=True, null=True, help_text='Medicine distributor/supplier name')
 
     # counts
     products_in_box = models.PositiveIntegerField(default=1, help_text='How many product-units in this entry (usually 1 box)')    

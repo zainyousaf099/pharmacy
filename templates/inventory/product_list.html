@@ -54,12 +54,12 @@
                             </td>
                             <td>{{ p.weight_or_quantity|default:"—" }}</td>
                             <td>
-                                <span class="badge {% if p.current_stock_boxes < 5 %}bg-danger{% else %}bg-success{% endif %}">
-                                    {{ p.current_stock_boxes|floatformat:0 }}
+                                <span class="badge {% if p.total_boxes < 5 %}bg-danger{% else %}bg-success{% endif %}">
+                                    {{ p.total_boxes|floatformat:0 }}
                                 </span>
                             </td>
-                            <td>{{ p.current_stock_items|floatformat:0 }}</td>
-                            <td>{{ p.current_stock_subitems|floatformat:0 }}</td>
+                            <td>{{ p.total_items|floatformat:0 }}</td>
+                            <td>{{ p.total_subitems|floatformat:0 }}</td>
                             <td>Rs. {{ p.purchase_price|floatformat:2 }}</td>
                             <td class="text-success fw-bold">Rs. {{ p.sale_price|floatformat:2 }}</td>
                             <td>
