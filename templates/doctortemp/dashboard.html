@@ -50,6 +50,37 @@
       gap: 10px;
     }
 
+    .nav-controls {
+      display: flex;
+      gap: 8px;
+      margin-right: 15px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 1.2rem;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-btn:active {
+      transform: translateY(0);
+    }
+
     .header-actions {
       display: flex;
       gap: 15px;
@@ -72,41 +103,42 @@
       transform: translateY(-2px);
     }
 
-    /* Hamburger */
+    /* Hamburger Menu */
     .hamburger {
+      width: 30px;
+      height: 25px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      justify-content: space-between;
       cursor: pointer;
-      padding: 8px;
-      transition: all 0.3s;
+      transition: transform 0.3s ease;
+      margin-left: 10px;
     }
 
     .hamburger:hover {
-      opacity: 0.8;
+      transform: scale(1.1);
     }
 
     .hamburger span {
       display: block;
       height: 3px;
-      width: 28px;
+      width: 100%;
       background: white;
       border-radius: 3px;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
     }
 
     /* Side Menu */
     .side-menu {
       position: fixed;
       top: 0;
-      right: -300px;
-      width: 280px;
+      right: -318px;
+      width: 250px;
       height: 100%;
       background: rgba(24, 24, 24, 0.95);
-      backdrop-filter: blur(10px);
-      box-shadow: -4px 0 20px rgba(0,0,0,0.5);
-      transition: right 0.3s ease;
-      padding: 30px 25px;
+      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+      transition: right 0.4s ease;
+      padding: 20px;
       z-index: 1001;
     }
 
@@ -117,70 +149,50 @@
     .side-menu h4 {
       margin-top: 0;
       color: #fff;
-      border-bottom: 2px solid rgba(255,255,255,0.2);
-      padding-bottom: 15px;
-      font-size: 1.3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
     }
 
     .side-menu ul {
       list-style: none;
       padding: 0;
-      margin: 25px 0;
-    }
-
-    .side-menu ul li {
       margin: 20px 0;
     }
 
+    .side-menu ul li {
+      margin: 15px 0;
+    }
+
     .side-menu ul li a {
-      color: rgba(255, 255, 255, 0.9);
+      color: white;
       text-decoration: none;
-      font-size: 1.05rem;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px;
-      border-radius: 6px;
+      font-size: 1rem;
+      transition: color 0.3s;
     }
 
     .side-menu ul li a:hover {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-      padding-left: 15px;
+      color: #ff6b6b;
     }
 
     .close-btn {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 2rem;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
       cursor: pointer;
       color: white;
-      width: 35px;
-      height: 35px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: all 0.3s;
-    }
-
-    .close-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: rotate(90deg);
     }
 
     /* Overlay */
     .overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(3px);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
       z-index: 1000;
       display: none;
-      transition: all 0.3s;
     }
 
     .overlay.active {
@@ -258,6 +270,12 @@
       font-size: 0.95rem;
       transition: all 0.3s;
       font-family: inherit;
+    }
+
+    select option {
+      background-color: #1a1a1a !important;
+      color: white !important;
+      padding: 8px 12px;
     }
 
     input[type="text"]:focus,
@@ -431,6 +449,16 @@
       border-color: #c00;
     }
 
+    .btn-success {
+      background: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+      border-color: #1e7e34;
+    }
+
     .btn-group {
       display: flex;
       gap: 12px;
@@ -512,6 +540,81 @@
     @keyframes tickPulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.1); }
+    }
+
+    /* Admission Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      display: none;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(40, 40, 40, 0.98);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 16px;
+      color: white;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      max-width: 500px;
+      width: 90%;
+      animation: modalShow 0.3s ease-out;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(90deg);
+    }
+
+    @keyframes modalShow {
+      from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
     }
     
     /* Medicine Autocomplete Styles */
@@ -627,19 +730,354 @@
     .autocomplete-results::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.3);
     }
+
+    /* Patient Queue Panel Styles */
+    .queue-toggle-btn {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #a00 0%, #700 100%);
+      color: white;
+      padding: 15px 8px;
+      border-radius: 0 10px 10px 0;
+      cursor: pointer;
+      z-index: 999;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .queue-toggle-btn:hover {
+      padding-left: 12px;
+      background: linear-gradient(135deg, #c00 0%, #900 100%);
+    }
+
+    .queue-toggle-btn .queue-count {
+      background: #00ff66;
+      color: #000;
+      padding: 4px 6px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      writing-mode: horizontal-tb;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .queue-panel {
+      position: fixed;
+      left: -350px;
+      top: 0;
+      width: 320px;
+      height: 100%;
+      background: rgba(20, 20, 20, 0.98);
+      backdrop-filter: blur(15px);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.6);
+      transition: left 0.4s ease;
+      z-index: 1002;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .queue-panel.active {
+      left: 0;
+    }
+
+    .queue-panel-header {
+      padding: 20px;
+      background: linear-gradient(135deg, #a00 0%, #700 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .queue-panel-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .queue-close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .queue-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .queue-stats {
+      display: flex;
+      gap: 10px;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .queue-stat {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+    }
+
+    .queue-stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00ff66;
+    }
+
+    .queue-stat-label {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .queue-stat.active .queue-stat-number {
+      color: #ffa500;
+    }
+
+    .queue-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .queue-item {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .queue-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(5px);
+    }
+
+    .queue-item.with-doctor {
+      border-color: #ffa500;
+      background: rgba(255, 165, 0, 0.15);
+    }
+
+    .queue-item.with-doctor::before {
+      content: 'IN PROGRESS';
+      position: absolute;
+      top: -8px;
+      right: 10px;
+      background: #ffa500;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .queue-number {
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #a00 0%, #700 100%);
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .queue-item-content {
+      margin-left: 30px;
+    }
+
+    .queue-patient-name {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+
+    .queue-patient-details {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .queue-patient-ref {
+      color: #00ff66;
+      font-weight: 500;
+    }
+
+    .queue-time {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 5px;
+    }
+
+    .queue-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .queue-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .queue-refresh-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .queue-refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .queue-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1001;
+      display: none;
+    }
+
+    .queue-overlay.active {
+      display: block;
+    }
+
+    /* Queue list scrollbar */
+    .queue-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .queue-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .queue-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .queue-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(0, 255, 102, 0); }
+    }
+
+    .queue-toggle-btn.has-waiting {
+      animation: pulseGreen 2s infinite;
+    }
   </style>
 {% endblock style %}
 
     
 {% block content %}
+  <!-- Patient Queue Toggle Button -->
+  <button class="queue-toggle-btn" id="queueToggleBtn" title="Patient Queue">
+    <span class="queue-count" id="queueCountBadge">0</span>
+    <i class="fas fa-clipboard-list"></i> QUEUE
+  </button>
+
+  <!-- Queue Overlay -->
+  <div class="queue-overlay" id="queueOverlay"></div>
+
+  <!-- Patient Queue Panel -->
+  <div class="queue-panel" id="queuePanel">
+    <div class="queue-panel-header">
+      <h3><i class="fas fa-clipboard-list"></i> Patient Queue</h3>
+      <button class="queue-close-btn" id="queueCloseBtn">&times;</button>
+    </div>
+    
+    <div class="queue-stats">
+      <div class="queue-stat">
+        <div class="queue-stat-number" id="waitingCount">0</div>
+        <div class="queue-stat-label">Waiting</div>
+      </div>
+      <div class="queue-stat active">
+        <div class="queue-stat-number" id="withDoctorCount">0</div>
+        <div class="queue-stat-label">With Doctor</div>
+      </div>
+    </div>
+    
+    <div class="queue-list" id="queueList">
+      <div class="queue-empty">
+        <div class="queue-empty-icon"><i class="fas fa-clock"></i></div>
+        <p>No patients in queue</p>
+        <p style="font-size: 0.8rem;">Patients will appear here when added from OPD</p>
+      </div>
+    </div>
+    
+    <div style="padding: 15px;">
+      <button class="queue-refresh-btn" id="refreshQueueBtn"><i class="fas fa-sync-alt"></i> Refresh Queue</button>
+    </div>
+  </div>
+
   <div class="panel">
     <!-- Panel Header -->
     <div class="panel-header">
-      <h2>🩺 Doctor's Panel</h2>
+      <h2><i class="fas fa-stethoscope"></i> Doctor's Panel</h2>
       
       <div class="header-actions">
-        <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
-        <!-- Hamburger Menu -->
+        <div class="nav-controls">
+          <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+          <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+          <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+        </div>
+        <a href="{% url 'doctor_admitted_patients_list' %}" class="back-btn" style="background: #28a745; border-color: #28a745;"><i class="fas fa-hospital"></i> Admitted Patients</a>
+        <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
         <div class="hamburger" id="hamburger">
           <span></span>
           <span></span>
@@ -658,7 +1096,7 @@
         <!-- Template Selection -->
         <div class="template-section" style="margin-bottom: 20px;">
           <div class="form-group">
-            <label class="form-label">📋 Load Template (Optional)</label>
+            <label class="form-label"><i class="fas fa-clipboard-list"></i> Load Template (Optional)</label>
             <div style="display: flex; gap: 10px; align-items: center;">
               <select id="templateSelect" style="flex: 1;">
                 <option value="">-- Select a template --</option>
@@ -722,10 +1160,13 @@
         </div>
         
         <div class="btn-group">
-          <button class="btn" id="addRowBtn">➕ Add Medicine</button>
-          <button class="btn btn-primary" id="printSaveBtn"> Save & Print</button>
+          <button class="btn" id="addRowBtn"><i class="fas fa-plus"></i> Add Medicine</button>
+          <button class="btn btn-primary" id="printSaveBtn"><i class="fas fa-save"></i> Save & Print</button>
+          <button class="btn btn-success" id="admitPatientBtn"><i class="fas fa-hospital"></i> Admit Patient</button>
         </div>
       </div>
+
+        
 
       <!-- Right Section: Patient Search -->
       <div class="card">
@@ -738,7 +1179,7 @@
                    id="patientSearchInput" 
                    placeholder="Enter reference no. or patient name...">
           </div>
-          <button class="btn" id="searchPatientBtn">🔍 Search</button>
+          <button class="btn" id="searchPatientBtn"><i class="fas fa-search"></i> Search</button>
         </div>
         
         <div id="searchMessage" class="search-message"></div>
@@ -754,21 +1195,7 @@
     </div>
   </div>
 
-  <!-- Side Menu -->
-  <div class="side-menu" id="sideMenu">
-    <span class="close-btn" id="closeMenu">&times;</span>
-    <h4>Navigation</h4>
-    <ul>
-      <li><a href="#">🏠 Dashboard</a></li>
-      <li><a href="#">📋 My Prescriptions</a></li>
-      <li><a href="#">👥 Patients</a></li>
-      <li><a href="#">⚙️ Settings</a></li>
-      <li><a href="/accounts/login/">🚪 Logout</a></li>
-    </ul>
-  </div>
-
-  <!-- Overlay -->
-  <div class="overlay" id="overlay"></div>
+  <!-- Side Menu and Overlay - Removed (now in base.html) -->
 
   <!-- Success Popup -->
   <div class="popup-overlay" id="popup">
@@ -778,11 +1205,89 @@
     </div>
   </div>
 
+  <!-- Admit Patient Modal -->
+  <div class="modal-overlay" id="admitModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-hospital"></i> Admit Patient</h3>
+        <button class="modal-close" id="closeAdmitModal">&times;</button>
+      </div>
+      
+      <form id="admitPatientForm">
+        <div class="form-group">
+          <label class="form-label">Patient Reference Number</label>
+          <input type="text" id="admitPatientRef" readonly placeholder="Search a patient first...">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Patient Name</label>
+          <input type="text" id="admitPatientName" readonly>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Admission Reason *</label>
+          <textarea id="admitReason" placeholder="Enter reason for admission..." style="min-height: 100px;" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Initial Diagnosis</label>
+          <textarea id="admitDiagnosis" placeholder="Enter initial diagnosis..." style="min-height: 100px;"></textarea>
+        </div>
+        
+        <div class="btn-group">
+          <button type="button" class="btn" id="cancelAdmit">Cancel</button>
+          <button type="submit" class="btn btn-success">Admit Patient</button>
+        </div>
+      </form>
+      
+      <div id="admitMessage" class="search-message"></div>
+    </div>
+  </div>
+
+<!-- Side Menu -->
+<div class="side-menu" id="sideMenu">
+  <span class="close-btn" id="closeMenu">&times;</span>
+  <h4><i class="fas fa-stethoscope"></i> Menu</h4>
+  <ul>
+    <li><a href="{% url 'doctor_panel' %}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li><a href="{% url 'template_list' %}"><i class="fas fa-clipboard-list"></i> My Templates</a></li>
+    <li><a href="{% url 'patient_statistics' %}"><i class="fas fa-users"></i> Patients</a></li>
+    <li><a href="{% url 'doctor_admitted_patients_list' %}"><i class="fas fa-hospital"></i> Admitted Patients</a></li>
+    <li><a href="/admin/" target="_blank"><i class="fas fa-cog"></i> Admin Panel</a></li>
+    <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
+    <li><a href="/accounts/login/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+  </ul>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
 {% endblock content %}
 
 
 {% block js %}
 <script>
+  // Menu toggle
+  const hamburger = document.getElementById("hamburger");
+  const sideMenu = document.getElementById("sideMenu");
+  const overlay = document.getElementById("overlay");
+  const closeMenu = document.getElementById("closeMenu");
+
+  hamburger.addEventListener("click", () => {
+    sideMenu.classList.add("active");
+    overlay.classList.add("active");
+  });
+
+  closeMenu.addEventListener("click", () => {
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+
+  overlay.addEventListener("click", () => {
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+
   // Initialize autocomplete for all medicine search inputs
   function initAutocomplete(searchInput) {
     const wrapper = searchInput.parentElement;
@@ -1007,10 +1512,32 @@
       if (data.success) {
         Modal.success('Prescription saved successfully!', 'Success', 2000);
         
-        // Open print window
+        // Mark patient as checked in queue
+        if (currentPatientRefNo) {
+          fetch('/doctor/api/mark-checked/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ patient_ref_no: currentPatientRefNo })
+          })
+          .then(resp => resp.json())
+          .then(qData => {
+            if (qData.success) {
+              console.log('Patient marked as checked');
+              // Refresh queue count
+              fetchPatientQueue();
+            }
+          })
+          .catch(err => console.error('Error marking patient checked:', err));
+        }
+        
+        // Open print window with template_id if available
         if (data.print_url) {
           setTimeout(() => {
-            window.open(data.print_url, '_blank');
+            const printUrl = data.print_url + (currentTemplateId ? `&template_id=${currentTemplateId}` : '');
+            window.open(printUrl, '_blank');
           }, 500);
         }
         
@@ -1033,6 +1560,7 @@
           patientSearchInput.value = '';
           patientDetailsTextarea.value = '';
           currentPatientRefNo = null;
+          currentTemplateId = null; // Reset template
         }, 2000);
       } else {
         Modal.error('Error saving prescriptions: ' + (data.error || 'Unknown error'), 'Save Failed');
@@ -1053,6 +1581,7 @@
   
   // Store current patient reference number
   let currentPatientRefNo = null;
+  let currentTemplateId = null; // Track loaded template
 
   function searchPatient() {
     const query = patientSearchInput.value.trim();
@@ -1105,26 +1634,7 @@
     }
   });
 
-  // Menu toggle
-  const hamburger = document.getElementById("hamburger");
-  const sideMenu = document.getElementById("sideMenu");
-  const overlay = document.getElementById("overlay");
-  const closeMenu = document.getElementById("closeMenu");
-
-  hamburger.addEventListener("click", () => {
-    sideMenu.classList.add("active");
-    overlay.classList.add("active");
-  });
-
-  closeMenu.addEventListener("click", () => {
-    sideMenu.classList.remove("active");
-    overlay.classList.remove("active");
-  });
-
-  overlay.addEventListener("click", () => {
-    sideMenu.classList.remove("active");
-    overlay.classList.remove("active");
-  });
+  // Menu toggle - Removed (now in base.html)
 
   // ============ PRESCRIPTION TEMPLATE FUNCTIONALITY ============
   
@@ -1227,6 +1737,9 @@
           // Show success message
           Modal.success(`Template loaded successfully!<br><strong>${data.medicines.length} medicine(s)</strong> added to prescription.`, 'Template Loaded', 3000);
           
+          // Store the template ID for later use
+          currentTemplateId = templateId;
+          
           // Reset template selection
           templateSelect.value = '';
         } else {
@@ -1242,5 +1755,278 @@
 
   // Load templates when page loads
   loadTemplates();
+
+  // ========== ADMIT PATIENT FUNCTIONALITY ==========
+  const admitPatientBtn = document.getElementById('admitPatientBtn');
+  const admitModal = document.getElementById('admitModal');
+  const closeAdmitModal = document.getElementById('closeAdmitModal');
+  const cancelAdmit = document.getElementById('cancelAdmit');
+  const admitPatientForm = document.getElementById('admitPatientForm');
+  const admitMessage = document.getElementById('admitMessage');
+
+  // Open admit modal
+  admitPatientBtn.addEventListener('click', function() {
+    if (!currentPatientRefNo) {
+      Modal.error('Please search and select a patient first!', 'Patient Not Selected');
+      return;
+    }
+    
+    // Fill in patient details
+    document.getElementById('admitPatientRef').value = currentPatientRefNo;
+    document.getElementById('admitPatientName').value = patientDetailsTextarea.value.split('\n')[0].replace('Name: ', '').trim();
+    
+    // Clear previous inputs
+    document.getElementById('admitReason').value = '';
+    document.getElementById('admitDiagnosis').value = '';
+    admitMessage.textContent = '';
+    admitMessage.style.display = 'none';
+    
+    admitModal.classList.add('show');
+  });
+
+  // Close modal functions
+  closeAdmitModal.addEventListener('click', function() {
+    admitModal.classList.remove('show');
+  });
+
+  cancelAdmit.addEventListener('click', function() {
+    admitModal.classList.remove('show');
+  });
+
+  admitModal.addEventListener('click', function(e) {
+    if (e.target === admitModal) {
+      admitModal.classList.remove('show');
+    }
+  });
+
+  // Submit admission form
+  admitPatientForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const patientRef = document.getElementById('admitPatientRef').value;
+    const admissionReason = document.getElementById('admitReason').value.trim();
+    const initialDiagnosis = document.getElementById('admitDiagnosis').value.trim();
+    
+    if (!admissionReason) {
+      admitMessage.textContent = 'Please enter admission reason';
+      admitMessage.style.display = 'block';
+      admitMessage.className = 'search-message error';
+      return;
+    }
+    
+    admitMessage.textContent = 'Admitting patient...';
+    admitMessage.style.display = 'block';
+    admitMessage.className = 'search-message warning';
+    
+    fetch('/admission/admit-patient/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({
+        patient_ref: patientRef,
+        admission_reason: admissionReason,
+        initial_diagnosis: initialDiagnosis
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        admitMessage.textContent = data.message;
+        admitMessage.className = 'search-message success';
+        
+        Modal.success(`Patient admitted successfully!<br><strong>Admission No:</strong> ${data.admission_number}`, 'Admission Successful', 3000);
+        
+        setTimeout(() => {
+          admitModal.classList.remove('show');
+        }, 2000);
+      } else {
+              admitMessage.textContent = data.error;
+        admitMessage.className = 'search-message error';
+        Modal.error(data.error, 'Admission Failed');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      admitMessage.textContent = 'Error admitting patient';
+      admitMessage.className = 'search-message error';
+      Modal.error('An error occurred. Please try again.', 'Connection Error');
+    });
+  });
+
+  // =============================================
+  // PATIENT QUEUE FUNCTIONALITY
+  // =============================================
+  
+  const queueToggleBtn = document.getElementById('queueToggleBtn');
+  const queuePanel = document.getElementById('queuePanel');
+  const queueOverlay = document.getElementById('queueOverlay');
+  const queueCloseBtn = document.getElementById('queueCloseBtn');
+  const queueList = document.getElementById('queueList');
+  const queueCountBadge = document.getElementById('queueCountBadge');
+  const waitingCountEl = document.getElementById('waitingCount');
+  const withDoctorCountEl = document.getElementById('withDoctorCount');
+  const refreshQueueBtn = document.getElementById('refreshQueueBtn');
+  
+  let queueRefreshInterval;
+  
+  // Toggle queue panel
+  queueToggleBtn.addEventListener('click', function() {
+    queuePanel.classList.add('active');
+    queueOverlay.classList.add('active');
+    fetchPatientQueue();
+  });
+  
+  // Close queue panel
+  function closeQueuePanel() {
+    queuePanel.classList.remove('active');
+    queueOverlay.classList.remove('active');
+  }
+  
+  queueCloseBtn.addEventListener('click', closeQueuePanel);
+  queueOverlay.addEventListener('click', closeQueuePanel);
+  
+  // Refresh button
+  refreshQueueBtn.addEventListener('click', fetchPatientQueue);
+  
+  // Fetch patient queue from server
+  function fetchPatientQueue() {
+    fetch('/doctor/api/patient-queue/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          renderQueue(data.queue);
+          updateQueueStats(data.total_waiting, data.total_with_doctor);
+        } else {
+          console.error('Error fetching queue:', data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching queue:', error);
+      });
+  }
+  
+  // Update queue statistics
+  function updateQueueStats(waiting, withDoctor) {
+    waitingCountEl.textContent = waiting;
+    withDoctorCountEl.textContent = withDoctor;
+    queueCountBadge.textContent = waiting;
+    
+    // Add pulse animation if there are waiting patients
+    if (waiting > 0) {
+      queueToggleBtn.classList.add('has-waiting');
+    } else {
+      queueToggleBtn.classList.remove('has-waiting');
+    }
+  }
+  
+  // Render the queue list
+  function renderQueue(patients) {
+    if (patients.length === 0) {
+      queueList.innerHTML = `
+        <div class="queue-empty">
+          <div class="queue-empty-icon">🕐</div>
+          <p>No patients in queue</p>
+          <p style="font-size: 0.8rem;">Patients will appear here when added from OPD</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let html = '';
+    patients.forEach(patient => {
+      const isWithDoctor = patient.status === 'with_doctor';
+      const statusClass = isWithDoctor ? 'with-doctor' : '';
+      const gender = patient.gender || 'N/A';
+      
+      html += `
+        <div class="queue-item ${statusClass}" 
+             data-ref="${patient.ref_no}" 
+             data-patient-id="${patient.id}"
+             onclick="selectPatientFromQueue('${patient.ref_no}', ${patient.id})">
+          <div class="queue-number">${patient.queue_number}</div>
+          <div class="queue-item-content">
+            <div class="queue-patient-name">${patient.name}</div>
+            <div class="queue-patient-details">
+              <span class="queue-patient-ref">#${patient.ref_no}</span>
+              <span>${patient.age || 'N/A'}</span>
+            </div>
+            <div class="queue-time">⏰ Added at ${patient.queued_at}</div>
+          </div>
+        </div>
+      `;
+    });
+    
+    queueList.innerHTML = html;
+  }
+  
+  // Select a patient from queue
+  function selectPatientFromQueue(referenceNo, patientId) {
+    // First, mark as with_doctor on server
+    fetch('/doctor/api/select-patient/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ patient_id: patientId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Close queue panel
+        closeQueuePanel();
+        
+        // Simulate search for the patient (using existing search functionality)
+        document.getElementById('patientSearchInput').value = referenceNo;
+        document.getElementById('searchPatientBtn').click();
+        
+        // Show notification
+        Modal.success('Patient selected from queue', 'Queue', 2000);
+        
+        // Refresh queue
+        setTimeout(fetchPatientQueue, 500);
+      } else {
+        Modal.error(data.error || 'Failed to select patient', 'Error');
+      }
+    })
+    .catch(error => {
+      console.error('Error selecting patient:', error);
+      Modal.error('Error selecting patient from queue', 'Error');
+    });
+  }
+  
+  // Auto-refresh queue every 30 seconds
+  function startQueueAutoRefresh() {
+    queueRefreshInterval = setInterval(function() {
+      // Only fetch if panel is closed (to update badge)
+      if (!queuePanel.classList.contains('active')) {
+        fetch('/doctor/api/patient-queue/')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              updateQueueStats(data.total_waiting, data.total_with_doctor);
+            }
+          })
+          .catch(error => console.error('Error refreshing queue:', error));
+      } else {
+        fetchPatientQueue();
+      }
+    }, 30000); // 30 seconds
+  }
+  
+  // Initial fetch and start auto-refresh
+  fetchPatientQueue();
+  startQueueAutoRefresh();
+  
+  // Mark patient as checked after prescription is saved
+  // This hooks into the existing save functionality
+  const originalPrintSave = document.getElementById('printSaveBtn');
+  if (originalPrintSave) {
+    const originalClickHandler = originalPrintSave.onclick;
+    // Note: The marking as checked is done in the save prescription success handler below
+  }
 </script>
 {% endblock js %}
+

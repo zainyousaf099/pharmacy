@@ -5,37 +5,42 @@ from .models import Patient
 class PatientForm(forms.ModelForm):
     class Meta:
         model = Patient
-        fields = ['name', 'phone', 'temperature', 'age', 'weight', 'height']
+        fields = ['name', 'phone', 'temperature', 'age_years', 'age_months', 'weight', 'height']
         widgets = {
             'name': forms.TextInput(attrs={
                 'placeholder': 'patient name',
                 'class': 'form-control',
-                'style': 'margin-top:10px; padding:8px; width:40%;'
             }),
             'phone': forms.TextInput(attrs={
                 'placeholder': 'phone no',
                 'class': 'form-control',
-                'style': 'margin-top:10px; padding:8px; width:40%;'
             }),
-            'age': forms.NumberInput(attrs={
-                'placeholder': 'patient age',
+            'age_years': forms.NumberInput(attrs={
+                'placeholder': 'years',
                 'class': 'form-control',
-                'style': 'margin-top:10px; padding:8px; width:40%;'
+                'min': '0',
+                'max': '120',
+            }),
+            'age_months': forms.NumberInput(attrs={
+                'placeholder': 'months',
+                'class': 'form-control',
+                'min': '0',
+                'max': '11',
             }),
             'temperature': forms.NumberInput(attrs={
                 'placeholder': 'temperature',
                 'class': 'form-control',
-                'style': 'margin-top:10px; padding:8px; width:40%;'
+                'step': '0.1',
             }),
             'weight': forms.NumberInput(attrs={
-                'placeholder': 'patient weight',
+                'placeholder': 'weight',
                 'class': 'form-control',
-                'style': 'margin-top:10px; padding:8px; width:40%;'
+                'step': '0.1',
             }),
             'height': forms.NumberInput(attrs={
-                'placeholder': 'patient height',
+                'placeholder': 'height',
                 'class': 'form-control',
-                'style': 'margin-top:10px; padding:8px; width:40%;'
+                'step': '0.1',
             }),
         }
 

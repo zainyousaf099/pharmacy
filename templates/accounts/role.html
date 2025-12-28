@@ -161,14 +161,24 @@
   }
 
   .panel-icon {
-    font-size: 5rem;
+    font-size: 4rem;
     margin-bottom: 25px;
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
     transition: transform 0.4s ease;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
   }
 
   .panel:hover .panel-icon {
-    transform: scale(1.15) rotateY(10deg);
+    transform: scale(1.15);
+    background: rgba(255, 255, 255, 0.25);
   }
 
   .panel-title {
@@ -332,7 +342,7 @@
 
 <!-- Header -->
 <div class="header">
-  <h1>🏥 Clinic Management System</h1>
+  <h1><i class="fas fa-hospital-alt"></i> Clinic Management System</h1>
   <p>Select Your Role to Continue</p>
 </div>
 
@@ -341,7 +351,7 @@
   <a href="{% url 'doctor_login' %}"
      class="panel doctor"
      onclick="expandPanel(event, 'doctor', this.href)">
-    <div class="panel-icon">🩺</div>
+    <div class="panel-icon"><i class="fas fa-user-md"></i></div>
     <div class="panel-title">Doctor's Panel</div>
     <div class="panel-description">
       Access patient records, write prescriptions, and manage appointments
@@ -352,7 +362,7 @@
   <a href="{% url 'opd_login' %}"
      class="panel reception"
      onclick="expandPanel(event, 'reception', this.href)">
-    <div class="panel-icon">📋</div>
+    <div class="panel-icon"><i class="fas fa-clipboard-list"></i></div>
     <div class="panel-title">OPD/Reception</div>
     <div class="panel-description">
       Register patients, manage appointments, and handle admissions
@@ -363,7 +373,7 @@
   <a href="{% url 'pharmacy_login' %}"
      class="panel pharmacy"
      onclick="expandPanel(event, 'pharmacy', this.href)">
-    <div class="panel-icon">💊</div>
+    <div class="panel-icon"><i class="fas fa-pills"></i></div>
     <div class="panel-title">Pharmacy</div>
     <div class="panel-description">
       Manage inventory, process prescriptions, and track medicine stock
@@ -389,12 +399,12 @@
 
     // Set text based on role
     const roleTexts = {
-      'doctor': '🩺 Accessing Doctor\'s Portal...',
-      'reception': '📋 Accessing Reception...',
-      'pharmacy': '💊 Accessing Pharmacy...'
+      'doctor': 'Accessing Doctor\'s Portal...',
+      'reception': 'Accessing Reception...',
+      'pharmacy': 'Accessing Pharmacy...'
     };
 
-    overlayText.textContent = roleTexts[panelType];
+    overlayText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + roleTexts[panelType];
 
     // Apply gradient
     if (panelType === "doctor") {

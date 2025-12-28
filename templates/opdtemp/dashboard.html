@@ -13,7 +13,7 @@
 
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #001a4d 0%, #0047b3 50%, #3399ff 100%);
+    background: linear-gradient(135deg, #000a1a 0%, #001a4d 50%, #002966 100%);
     min-height: 100vh;
     padding: 20px;
     color: white;
@@ -42,6 +42,37 @@
     display: flex;
     gap: 15px;
     align-items: center;
+  }
+
+  .nav-controls {
+    display: flex;
+    gap: 8px;
+    margin-right: 10px;
+  }
+
+  .nav-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1.2rem;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-btn:active {
+    transform: translateY(0);
   }
 
   .back-btn {
@@ -180,12 +211,12 @@
 
   /* Card Style */
   .card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
     border-radius: 20px;
-    padding: 30px;
+    padding: 35px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
@@ -195,19 +226,21 @@
   }
 
   .card-title {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     color: white;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 15px;
+    gap: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .card-title span {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   /* Form Styling */
@@ -217,39 +250,62 @@
 
   .form-row label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.3px;
   }
 
   .form-row input[type="text"],
   .form-row input[type="number"] {
     width: 100%;
-    padding: 12px 15px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.15);
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
     color: white;
-    font-size: 1rem;
+    font-size: 1.05rem;
     transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+
+  /* Age inputs side by side */
+  .age-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .age-inputs input {
+    width: 80px !important;
+    padding: 14px 12px !important;
+    text-align: center;
+  }
+
+  .age-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
   }
 
   .form-row input:focus {
     outline: none;
-    border-color: rgba(51, 153, 255, 0.8);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 15px rgba(51, 153, 255, 0.3);
+    border-color: rgba(51, 153, 255, 0.9);
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 0 20px rgba(51, 153, 255, 0.4), inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
 
   .form-row input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.45);
+    font-style: italic;
   }
 
   .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 25px;
   }
 
   /* Button Styling */
@@ -285,18 +341,51 @@
   /* Search Section */
   .search-section {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 25px;
   }
 
   .search-section input {
     flex: 1;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-section input:focus {
+    outline: none;
+    border-color: rgba(51, 153, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(51, 153, 255, 0.5), inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .search-section input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
   }
 
   .search-section button {
     width: auto;
     margin-top: 0;
-    padding: 12px 25px;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #3399ff 0%, #0066cc 100%);
+    border: 2px solid rgba(51, 153, 255, 0.4);
+    font-size: 1.05rem;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(51, 153, 255, 0.3);
+  }
+
+  .search-section button:hover {
+    background: linear-gradient(135deg, #0066cc 0%, #0047b3 100%);
+    box-shadow: 0 6px 20px rgba(51, 153, 255, 0.5);
+    transform: translateY(-2px);
   }
 
   /* Patient Details Box */
@@ -396,9 +485,15 @@
 {% block content %}
 <!-- Header -->
 <div class="header">
-  <h1>📋 Reception Panel / OPD</h1>
+  <h1><i class="fas fa-clipboard-list"></i> Reception Panel / OPD</h1>
   <div class="header-actions">
-    <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
+    <div class="nav-controls">
+      <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+      <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+      <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+    </div>
+    <a href="{% url 'admitted_patients_list' %}" class="back-btn" style="background: #28a745; border-color: #28a745;"><i class="fas fa-hospital"></i> Admitted Patients</a>
+    <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
     <div class="hamburger" id="hamburger">
       <span></span>
       <span></span>
@@ -412,7 +507,7 @@
   <!-- Left Card - Add Patient -->
   <div class="card">
     <div class="card-title">
-      <span>👤</span>
+      <span><i class="fas fa-user-plus"></i></span>
       ADD PATIENT DETAILS
     </div>
 
@@ -431,8 +526,13 @@
         </div>
 
         <div class="form-row">
-          <label for="id_age">Age</label>
-          {{ form.age }}
+          <label>Age</label>
+          <div class="age-inputs">
+            {{ form.age_years }}
+            <span class="age-label">Years</span>
+            {{ form.age_months }}
+            <span class="age-label">Months</span>
+          </div>
         </div>
 
         <div class="form-row">
@@ -452,7 +552,7 @@
       </div>
 
       <button type="submit" class="btn btn-primary" id="printSaveBtn">
-        ✓ ADD / PRINT
+        <i class="fas fa-check"></i> ADD / PRINT
       </button>
     </form>
   </div>
@@ -460,7 +560,7 @@
   <!-- Right Card - Search Patient -->
   <div class="card">
     <div class="card-title">
-      <span>🔍</span>
+      <span><i class="fas fa-search"></i></span>
       SEARCH PATIENT
     </div>
 
@@ -477,14 +577,14 @@
 
     <div style="margin-top: 30px;">
       <div class="card-title" style="font-size: 1.1rem; margin-bottom: 15px; border: none; padding-bottom: 0;">
-        <span>📄</span>
+        <span><i class="fas fa-file-alt"></i></span>
         Patient Details
       </div>
 
       <div class="patient-details">{% if selected_patient %}<strong>Ref:</strong> {{ selected_patient.ref_no }}
 <strong>Name:</strong> {{ selected_patient.name }}
 <strong>Phone:</strong> {{ selected_patient.phone }}
-<strong>Age:</strong> {{ selected_patient.age }} years
+<strong>Age:</strong> {{ selected_patient.age|default:"N/A" }}
 <strong>Temperature:</strong> {{ selected_patient.temperature }}°F
 <strong>Weight:</strong> {{ selected_patient.weight }} kg
 <strong>Height:</strong> {{ selected_patient.height }} cm
@@ -497,11 +597,12 @@ Please search for a patient using the search box above.{% endif %}</div>
 <!-- Side Menu -->
 <div class="side-menu" id="sideMenu">
   <span class="close-btn" id="closeMenu">&times;</span>
-  <h4>📋 Menu</h4>
+  <h4><i class="fas fa-clipboard-list"></i> Menu</h4>
   <ul>
-    <li><a href="/">🏠 Home</a></li>
-    <li><a href="#">⚙️ Settings</a></li>
-    <li><a href="/">🚪 Logout</a></li>
+    <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+    <li><a href="/admin/" target="_blank"><i class="fas fa-cog"></i> Admin Panel</a></li>
+    <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
+    <li><a href="/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
   </ul>
 </div>
 
@@ -511,8 +612,8 @@ Please search for a patient using the search box above.{% endif %}</div>
 <!-- Popup Modal -->
 <div class="popup-overlay" id="popup">
   <div class="popup-box">
-    <div class="tick">✔</div>
-    <div>Patient saved successfully! Please check your printer.</div>
+    <div class="tick"><i class="fas fa-check-circle"></i></div>
+    <div>Patient saved successfully!</div>
   </div>
 </div>
 
@@ -520,6 +621,11 @@ Please search for a patient using the search box above.{% endif %}</div>
 
 {% block js %}
 <script>
+  // Check if we need to open print window for new patient
+  {% if print_patient_id %}
+  window.open("{% url 'print_patient_receipt' print_patient_id %}", "_blank", "width=600,height=700");
+  {% endif %}
+
   // Menu toggle functionality
   const hamburger = document.getElementById("hamburger");
   const sideMenu = document.getElementById("sideMenu");

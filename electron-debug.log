@@ -1,0 +1,59 @@
+[2025-12-26T12:15:30.196Z] === App Starting ===
+[2025-12-26T12:15:30.213Z] App is packaged: false
+[2025-12-26T12:15:30.216Z] App version: 1.0.0
+[2025-12-26T12:15:30.218Z] Electron version: 28.3.3
+[2025-12-26T12:15:30.230Z] Node version: 18.18.2
+[2025-12-26T12:15:30.242Z] Platform: win32
+[2025-12-26T12:15:30.251Z] Arch: x64
+[2025-12-26T12:15:35.817Z] Starting Django server...
+[2025-12-26T12:15:35.818Z] Final paths:
+[2025-12-26T12:15:35.819Z]   Python: C:\Users\gh\Desktop\Clinic app\env\Scripts\python.exe
+[2025-12-26T12:15:35.820Z]   Manage: C:\Users\gh\Desktop\Clinic app\manage.py
+[2025-12-26T12:15:35.821Z]   Django Dir: C:\Users\gh\Desktop\Clinic app
+[2025-12-26T12:15:35.835Z] Server IP: 192.168.99.236
+[2025-12-26T12:15:35.836Z] Running database migrations to ensure schema is up-to-date...
+[2025-12-26T12:15:41.722Z] Migration stdout: Operations to perform:
+  Synchronize unmigrated apps: messages, staticfiles
+  Apply all migrations: accounts, admin, admission, auth, contenttypes, doctor, inventory, opd, sessions
+[2025-12-26T12:15:41.816Z] Migration stdout: Synchronizing apps without migrations:
+[2025-12-26T12:15:41.817Z] Migration stdout: Creating tables...
+    Running deferred SQL...
+[2025-12-26T12:15:41.818Z] Migration stdout: Running migrations:
+  No migrations to apply.
+[2025-12-26T12:15:42.254Z] Migration process exited with code: 0
+[2025-12-26T12:15:42.255Z] Spawning Django server process...
+[2025-12-26T12:15:43.603Z] Django stdout: Performing system checks...
+[2025-12-26T12:15:45.751Z] Django stdout: System check identified no issues (0 silenced).
+[2025-12-26T12:15:45.929Z] Django stdout: December 26, 2025 - 17:15:45
+Django version 4.2, using settings 'core.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+[2025-12-26T12:15:45.929Z] Server started at http://192.168.99.236:8000
+[2025-12-26T12:15:45.931Z] Django stdout: 
+[2025-12-26T12:15:47.936Z] Django server started successfully!
+[2025-12-26T12:15:50.868Z] Django startup timeout reached - proceeding anyway
+[2025-12-26T12:15:50.947Z] Creating main window...
+[2025-12-26T12:15:50.965Z] Loading Django at: http://192.168.99.236:8000/ (attempt 1)
+[2025-12-26T12:15:51.254Z] Django stderr: [26/Dec/2025 17:15:51] "GET / HTTP/1.1" 200 25829
+[2025-12-26T12:15:51.475Z] Window ready to show
+[2025-12-26T12:15:51.495Z] Django interface loaded successfully!
+[2025-12-26T12:16:01.142Z] Django stderr: [26/Dec/2025 17:16:01] "GET /pharmacy-login/ HTTP/1.1" 200 18233
+[2025-12-26T12:16:01.223Z] Django interface loaded successfully!
+[2025-12-26T12:16:07.628Z] Django stderr: [26/Dec/2025 17:16:07] "POST /pharmacy-login/ HTTP/1.1" 302 0
+[2025-12-26T12:16:07.696Z] Django stderr: [26/Dec/2025 17:16:07] "GET /pharmacy/ HTTP/1.1" 200 89555
+[2025-12-26T12:16:07.855Z] Django interface loaded successfully!
+[2025-12-26T12:16:10.797Z] Django stderr: [26/Dec/2025 17:16:10] "GET /pharmacy/api/gdrive/check-daily/ HTTP/1.1" 200 43
+[2025-12-26T12:16:13.183Z] Django stderr: [26/Dec/2025 17:16:13] "GET /inventory/products/ HTTP/1.1" 200 31178
+[2025-12-26T12:16:13.455Z] Django stderr: [26/Dec/2025 17:16:13] "GET /static/css/bootstrap.min.css HTTP/1.1" 200 232948
+[2025-12-26T12:16:13.470Z] Django stderr: [26/Dec/2025 17:16:13] "GET /static/css/fontawesome.min.css HTTP/1.1" 200 101869
+[2025-12-26T12:16:13.538Z] Django stderr: [26/Dec/2025 17:16:13] "GET /static/js/bootstrap.bundle.min.js HTTP/1.1" 200 80663
+[2025-12-26T12:16:13.600Z] Django stderr: [26/Dec/2025 17:16:13] "GET /static/fonts/fa-solid-900.woff2 HTTP/1.1" 200 150124
+[2025-12-26T12:16:13.644Z] Django interface loaded successfully!
+[2025-12-26T12:16:15.895Z] Django stderr: [26/Dec/2025 17:16:15] "GET /inventory/ HTTP/1.1" 200 31328
+[2025-12-26T12:16:15.989Z] Django interface loaded successfully!
+[2025-12-26T12:16:20.592Z] Django stderr: [26/Dec/2025 17:16:20] "GET /inventory/all-reports/ HTTP/1.1" 200 23710
+[2025-12-26T12:16:20.659Z] Django interface loaded successfully!
+[2025-12-26T12:16:28.381Z] Django stderr: [26/Dec/2025 17:16:28] "GET /inventory/expenses/ HTTP/1.1" 200 14363
+[2025-12-26T12:16:28.433Z] Django interface loaded successfully!
+[2025-12-26T12:16:30.114Z] Django stderr: [26/Dec/2025 17:16:30] "GET /inventory/profit-loss/ HTTP/1.1" 200 23945
+[2025-12-26T12:16:30.200Z] Django interface loaded successfully!

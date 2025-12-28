@@ -1,0 +1,85 @@
+═══════════════════════════════════════════════════════════════════
+           🖨️ THERMAL PRINTER SETUP (80mm)
+═══════════════════════════════════════════════════════════════════
+
+PRINTER SETTINGS (IMPORTANT!)
+─────────────────────────────
+
+1. Open Printer Properties:
+   • Control Panel → Devices and Printers
+   • Right-click your thermal printer
+   • Click "Printing Preferences"
+
+2. Set Paper Size:
+   • Paper Size: 80mm (or Custom: 80mm x 297mm)
+   • Orientation: Portrait
+   • Margins: Minimal (2mm or less)
+
+3. Save Settings
+
+
+WINDOWS PRINT SETTINGS
+───────────────────────
+
+When Print Dialog Opens:
+   ✓ Destination: Select your thermal printer
+   ✓ Paper Size: 80mm or Roll Paper
+   ✓ Scale: 100%
+   ✓ Margins: None or Minimum
+   ✓ Background graphics: ON (for header)
+
+
+AUTO-PRINT FEATURE
+──────────────────
+
+The prescription now auto-prints when you click "Save & Print"!
+
+• Page loads → Print dialog opens automatically
+• Select thermal printer
+• Click Print
+• Done!
+
+
+IF PRINT DIALOG DOESN'T AUTO-OPEN
+──────────────────────────────────
+
+Press Ctrl+P manually to open print dialog
+
+
+THERMAL PRINTER TIPS
+────────────────────
+
+✓ Use thermal paper rolls (80mm width)
+✓ Keep printer connected to Doctor's laptop
+✓ Set thermal printer as DEFAULT printer for easy printing
+✓ Test page working = prescription will work!
+
+
+COMMON ISSUES
+─────────────
+
+Problem: Print dialog shows A4 size
+Solution: Change to 80mm in printer properties first
+
+Problem: Text too small
+Solution: In print dialog, change Scale to 110% or 120%
+
+Problem: Cut off at edges
+Solution: Reduce margins in printer properties
+
+Problem: Not printing
+Solution: Make sure thermal printer is selected, not PDF
+
+
+PRINTING STEPS (DAILY USE)
+───────────────────────────
+
+1. Write prescription in Doctor panel
+2. Click "Save & Print" button
+3. Print dialog opens automatically
+4. Select thermal printer (if not default)
+5. Click "Print" button
+6. Prescription prints on thermal paper!
+
+
+═══════════════════════════════════════════════════════════════════

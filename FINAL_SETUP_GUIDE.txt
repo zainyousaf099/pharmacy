@@ -1,0 +1,656 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                    CLINIC MANAGEMENT SYSTEM                                  ║
+║                   3-LAPTOP SETUP GUIDE (URDU/ENGLISH)                        ║
+║                                                                              ║
+║                           FINAL DEPLOYMENT                                   ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              TABLE OF CONTENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+    1. Requirements (Zarurat)
+    2. Pre-Setup Checklist (Tayyari)
+    3. Network Connection (Network Jorna)
+    4. Installation on Each Laptop (Har Laptop Par)
+    5. Starting the System (System Chalna)
+    6. Daily Usage (Rozana Istimaal)
+    7. Troubleshooting (Maslay aur Hal)
+    8. Important Notes (Ahem Batain)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                         1. REQUIREMENTS (ZARURAT)
+═══════════════════════════════════════════════════════════════════════════════
+
+Hardware Requirements (Laptop Ki Zarurat):
+─────────────────────────────────────────
+
+    ✓ 3 Laptops (koi bhi brand)
+    ✓ Windows 7/8/10/11 (64-bit)
+    ✓ Minimum 4 GB RAM (8 GB better hai)
+    ✓ 1 GB free disk space per laptop
+    ✓ WiFi adapter (ya Ethernet port)
+
+Network Requirements (Network Ki Zarurat):
+──────────────────────────────────────────
+
+    ✓ WiFi Router (ya mobile hotspot)
+        OR
+    ✓ Ethernet Switch + 3 Ethernet cables
+
+Software Requirements (Software Ki Zarurat):
+────────────────────────────────────────────
+
+    ✓ Python 3.8 ya newer (har laptop par)
+        Download: https://www.python.org/downloads/
+    
+    ✓ Clinic App folder (USB se)
+
+Important Files to Copy (Ye Files Chahiye):
+───────────────────────────────────────────
+
+    📁 Clinic_App_Deployment folder (USB me)
+    📄 Python installer (backup ke liye)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                      2. PRE-SETUP CHECKLIST (TAYYARI)
+═══════════════════════════════════════════════════════════════════════════════
+
+Pehle Din Se Pehle (Before Day 1):
+──────────────────────────────────
+
+    [ ] 3 laptops ready hain
+    [ ] WiFi router working hai (ya mobile hotspot)
+    [ ] Python download kar liya (sabhi laptops ke liye)
+    [ ] Clinic_App_Deployment folder USB me copy ho gaya
+    [ ] Database me initial data hai (rooms, staff, etc.)
+    [ ] Sabhi laptops charged hain
+
+
+Laptop Labels (Identification):
+───────────────────────────────
+
+Recommend: Laptops par stickers lagao:
+
+    Laptop 1: "OPD/RECEPTION - START FIRST" 
+              (Pehle ye chalana hai)
+    
+    Laptop 2: "DOCTOR - START SECOND"
+              (Dosre number par)
+    
+    Laptop 3: "PHARMACY - START THIRD"
+              (Teesre number par)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                    3. NETWORK CONNECTION (NETWORK JORNA)
+═══════════════════════════════════════════════════════════════════════════════
+
+Option A: WiFi Connection (Asan Tareeqa)
+────────────────────────────────────────
+
+Step 1: WiFi Router Setup
+    • WiFi router ko power on karo
+    • Router ka WiFi network on ho jana chahiye
+    • Network name (SSID) aur password note karo
+
+Step 2: Connect All Laptops to SAME WiFi
+    • Laptop 1 (OPD): WiFi Settings → SAME network connect
+    • Laptop 2 (Doctor): WiFi Settings → SAME network connect
+    • Laptop 3 (Pharmacy): WiFi Settings → SAME network connect
+    
+    ⚠️ IMPORTANT: Teeno laptops ko SAME WiFi network se connect karna hai!
+
+Step 3: Verify Connection
+    • Har laptop par internet icon check karo
+    • Connected dikhna chahiye
+    • Internet ki zarurat nahi, sirf network connection chahiye
+
+
+Option B: Ethernet Cable Connection (Cable Wala)
+─────────────────────────────────────────────────
+
+Step 1: Hardware Setup
+    • Ethernet switch ko power on karo
+    • 3 Ethernet cables lao
+    
+Step 2: Connect Laptops
+    • Cable 1: Laptop 1 (OPD) → Switch
+    • Cable 2: Laptop 2 (Doctor) → Switch
+    • Cable 3: Laptop 3 (Pharmacy) → Switch
+
+Step 3: Verify Connection
+    • Har laptop par network icon check karo
+    • "Network" ya "Ethernet connected" dikhna chahiye
+
+
+Test Network Connection (Check Karo):
+─────────────────────────────────────
+
+Laptop 1 par ye command run karo:
+    
+    Open PowerShell:
+    ipconfig
+    
+    IPv4 Address note karo (example: 192.168.1.100)
+
+Laptop 2 par test karo:
+    
+    ping 192.168.1.100
+    
+    Agar "Reply from..." dikhe → Network working! ✓
+
+
+═══════════════════════════════════════════════════════════════════════════════
+              4. INSTALLATION ON EACH LAPTOP (HAR LAPTOP PAR)
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Install Python (Agar Already Nahi Hai)
+───────────────────────────────────────────────
+
+Laptop 1 (OPD):
+    
+    1. Check Python:
+       • Open PowerShell
+       • Type: python --version
+       • Agar version dikhe (e.g., Python 3.10.5) → Skip to Step 2
+       • Agar error → Install Python
+    
+    2. Install Python:
+       • Run Python installer
+       • ✅ CHECK "Add Python to PATH" ← ZARURI!
+       • Click "Install Now"
+       • Wait 3-5 minutes
+       • Restart laptop (recommended)
+    
+    3. Verify Installation:
+       • Open PowerShell
+       • Type: python --version
+       • Version dikhna chahiye ✓
+
+Laptop 2 (Doctor): Same steps as Laptop 1
+Laptop 3 (Pharmacy): Same steps as Laptop 1
+
+
+STEP 2: Copy Project Files
+───────────────────────────
+
+Har Laptop Par:
+    
+    1. USB drive laptop me lagao
+    
+    2. Copy folder:
+       • USB se "Clinic_App_Deployment" folder
+       • Desktop par paste karo
+       • Wait 2-3 minutes (250 MB copy hoga)
+    
+    3. Verify:
+       • Desktop par "Clinic_App_Deployment" folder dikhna chahiye
+       • Open karo, andar files check karo
+
+
+STEP 3: Run Installation Script
+────────────────────────────────
+
+Har Laptop Par (Ek Ek Karke):
+    
+    1. Go to Desktop\Clinic_App_Deployment\
+    
+    2. Double-click: INSTALL.bat
+    
+    3. Ye hoga:
+       • [OK] Python found! ← Ye dikhna chahiye
+       • Creating virtual environment...
+       • Installing dependencies...
+       • (Wait 2-5 minutes)
+       • INSTALLATION COMPLETE! ← Success!
+    
+    4. Press any key to close
+
+    ⚠️ Agar error aaye:
+       • Check Python properly installed hai
+       • Check "Add to PATH" option enabled tha
+       • Restart laptop aur dobara try karo
+
+
+STEP 4: Initial Database Setup (ONLY on Laptop 1 - OPD)
+────────────────────────────────────────────────────────
+
+Laptop 1 (OPD) Par Sirf:
+    
+    1. Open PowerShell
+    
+    2. Commands:
+       
+       cd Desktop\Clinic_App_Deployment
+       .\env\Scripts\activate
+       python manage.py createsuperuser
+    
+    3. Enter Details:
+       
+       Username: admin
+       Email: (press Enter to skip)
+       Password: admin123 (ya koi strong password)
+       Password (again): admin123
+       
+       Superuser created successfully! ✓
+    
+    4. Close PowerShell
+
+    📝 NOTE: Admin username/password yaad rakhna!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                   5. STARTING THE SYSTEM (SYSTEM CHALANA)
+═══════════════════════════════════════════════════════════════════════════════
+
+FIRST TIME STARTUP (Pehli Baar):
+─────────────────────────────────
+
+Step 1: Start SERVER Laptop (Laptop 1 - OPD)
+    
+    1. Laptop 1 (OPD) ko on karo
+    
+    2. Go to: Desktop\Clinic_App_Deployment\
+    
+    3. Double-click: RUN_DESKTOP_APP.bat
+       (Ya DesktopApp\Clinic Management.exe)
+    
+    4. Splash Screen Dikhega:
+       ┌─────────────────────────────────┐
+       │ 🏥 Clinic Management System     │
+       │                                 │
+       │         ⚪ Loading...           │
+       │                                 │
+       │ Searching for server on network...│
+       └─────────────────────────────────┘
+    
+    5. Wait 5 seconds, then:
+       ┌─────────────────────────────────┐
+       │ Setting up as main server...    │
+       │ Server started successfully!    │
+       └─────────────────────────────────┘
+    
+    6. Role Selection Screen Opens:
+       ┌─────────────────────────────────────────────────────┐
+       │        CLINIC MANAGEMENT SYSTEM                     │
+       │                                                     │
+       │   [DOCTOR]    [OPD/RECEPTION]    [PHARMACY]        │
+       └─────────────────────────────────────────────────────┘
+    
+    ✅ Laptop 1 is now SERVER!
+    ✅ Database is on this laptop
+    ✅ Keep this running during work hours
+
+
+Step 2: Start CLIENT Laptops (Wait 15 Seconds)
+    
+    ⚠️ IMPORTANT: Laptop 1 start hone ke BAAD hi ye karo!
+    
+    Laptop 2 (Doctor):
+    
+        1. Wait 15 seconds after Laptop 1 opens
+        
+        2. Double-click: RUN_DESKTOP_APP.bat
+        
+        3. Splash Screen:
+           ┌─────────────────────────────────┐
+           │ Searching for server...         │
+           │ Found server at 192.168.1.100!  │
+           │ Connecting to clinic system...  │
+           └─────────────────────────────────┘
+        
+        4. Role Selection Screen Opens
+        
+        ✅ Laptop 2 is CLIENT - connected to Laptop 1
+    
+    Laptop 3 (Pharmacy):
+    
+        1. Same as Laptop 2
+        
+        2. Automatically finds server
+        
+        3. Connects to Laptop 1's database
+        
+        ✅ Laptop 3 is CLIENT - connected to Laptop 1
+
+
+Step 3: Login and Start Working
+    
+    Each User:
+        
+        1. Click role (DOCTOR / OPD / PHARMACY)
+        
+        2. Enter credentials:
+           Username: (staff username)
+           Password: (staff password)
+        
+        3. Click Login
+        
+        4. Dashboard opens
+        
+        5. Start working! 🎉
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                     6. DAILY USAGE (ROZANA ISTIMAAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+Morning Routine (Subah Ka Kaam):
+─────────────────────────────────
+
+    1. Turn ON all 3 laptops
+    
+    2. Start Laptop 1 (OPD) FIRST:
+       • Double-click RUN_DESKTOP_APP.bat
+       • Wait for "Setting up as main server..."
+       • Wait for role selection screen
+       • ✅ Server ready!
+    
+    3. Wait 15 seconds
+    
+    4. Start Laptop 2 (Doctor):
+       • Double-click RUN_DESKTOP_APP.bat
+       • Wait for "Found server..."
+       • ✅ Connected!
+    
+    5. Start Laptop 3 (Pharmacy):
+       • Same as Laptop 2
+       • ✅ Connected!
+    
+    6. Each person:
+       • Select their role
+       • Login
+       • Start working
+
+
+During Work (Kaam Ke Doran):
+─────────────────────────────
+
+    OPD Person:
+        • Register new patients
+        • Search existing patients
+        • Admit patients to rooms
+        • All data saves to SERVER (Laptop 1)
+    
+    Doctor:
+        • Open app (automatically connects)
+        • Search patients
+        • Write prescriptions
+        • View admitted patients
+        • All data INSTANTLY visible to OPD & Pharmacy
+    
+    Pharmacy:
+        • Open app (automatically connects)
+        • See prescriptions immediately
+        • Dispense medicines
+        • Update inventory
+        • All data synced with SERVER
+
+
+Evening Routine (Shaam Ka Kaam):
+─────────────────────────────────
+
+    1. Close app on all laptops:
+       • Just close the window
+       • Or press Alt+F4
+    
+    2. Turn off laptops (any order):
+       • No special shutdown needed
+       • Database saved on Laptop 1
+    
+    3. Next day:
+       • Repeat morning routine
+       • All data will be there!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                 7. TROUBLESHOOTING (MASLAY AUR HAL)
+═══════════════════════════════════════════════════════════════════════════════
+
+Problem 1: "Python not found" Error
+────────────────────────────────────
+
+Reason: Python installed nahi hai ya PATH me nahi hai
+
+Solution:
+    1. Install Python from python.org
+    2. ✅ CHECK "Add Python to PATH" during installation
+    3. Restart laptop
+    4. Try again
+
+
+Problem 2: "Searching for server..." Never Finishes
+────────────────────────────────────────────────────
+
+Reason: Server laptop nahi chali ya network problem
+
+Solution:
+    1. Check server laptop (Laptop 1) running hai?
+    2. Check all laptops SAME WiFi se connected hain?
+    3. Wait full 5 seconds - laptop khud server ban jayegi
+    4. Close app and restart
+
+
+Problem 3: Different Patients Showing on Different Laptops
+───────────────────────────────────────────────────────────
+
+Reason: Each laptop has own database (server nahi mila)
+
+Solution:
+    1. Close ALL apps on ALL laptops
+    2. Check network connection (WiFi ya cable)
+    3. Start Laptop 1 (OPD) FIRST
+    4. WAIT 20 seconds
+    5. Then start other laptops
+    6. Verify splash shows "Found server..."
+
+
+Problem 4: Slow Performance
+───────────────────────────
+
+Reason: Weak WiFi signal ya network congestion
+
+Solution:
+    1. Move laptops closer to WiFi router
+    2. Or use Ethernet cables instead
+    3. Close unnecessary programs
+    4. Restart router
+    5. Check other devices not using WiFi
+
+
+Problem 5: "Cannot Connect" Error
+──────────────────────────────────
+
+Reason: Firewall blocking port 8000
+
+Solution:
+    1. On SERVER laptop (Laptop 1):
+       • Open Windows Firewall
+       • Allow port 8000
+       • Or temporarily disable firewall for testing
+    
+    2. Check antivirus not blocking
+    
+    3. Restart server laptop
+
+
+Problem 6: App Crashes or Freezes
+──────────────────────────────────
+
+Solution:
+    1. Close app (Alt+F4)
+    2. Check laptop not overheating
+    3. Check enough RAM available
+    4. Restart laptop if needed
+    5. Run INSTALL.bat again
+
+
+Problem 7: Database Empty After Restart
+────────────────────────────────────────
+
+Reason: Different laptop became server
+
+Solution:
+    1. ALWAYS start same laptop as server (Laptop 1)
+    2. If you want to change server:
+       • Copy db.sqlite3 from old server to new server
+       • Or start old server first always
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                   8. IMPORTANT NOTES (AHEM BATAIN)
+═══════════════════════════════════════════════════════════════════════════════
+
+Server Laptop (Laptop 1 - OPD):
+───────────────────────────────
+
+    ✓ ALWAYS start this laptop FIRST
+    ✓ This laptop has the DATABASE
+    ✓ Keep this laptop running during work hours
+    ✓ Don't close this laptop while others working
+    ✓ Keep it plugged in (don't let battery die)
+    ✓ Backup db.sqlite3 file regularly!
+
+
+Client Laptops (Laptop 2 & 3):
+──────────────────────────────
+
+    ✓ Start AFTER server laptop running
+    ✓ Wait 15 seconds between starts
+    ✓ Can be closed anytime (won't affect others)
+    ✓ Can restart anytime
+    ✓ Will auto-reconnect to server
+
+
+Network Requirements:
+─────────────────────
+
+    ✓ All 3 laptops must be on SAME network
+    ✓ Internet NOT required
+    ✓ Just local network connection needed
+    ✓ WiFi signal should be strong
+    ✓ Router must stay powered on
+
+
+Data Safety:
+────────────
+
+    ✓ Database on SERVER laptop (Laptop 1)
+    ✓ Backup db.sqlite3 daily to USB
+    ✓ Keep backup copy safe
+    ✓ Don't delete Clinic_App_Deployment folder
+
+
+Admin Panel Access:
+───────────────────
+
+    ✓ Click hamburger menu (☰) in any panel
+    ✓ Click "🔧 Admin Panel"
+    ✓ Login: admin / admin123 (or your password)
+    ✓ Manage users, view all data, reports
+
+
+User Management:
+────────────────
+
+    ✓ Add staff users from Admin Panel
+    ✓ Each staff has own username/password
+    ✓ Don't share passwords
+    ✓ Use Admin Panel to reset passwords
+
+
+Printing:
+─────────
+
+    ✓ Connect thermal printer to Doctor's laptop
+    ✓ 80mm thermal printer recommended
+    ✓ Print prescriptions from Doctor panel
+
+
+Maintenance:
+────────────
+
+    Weekly:
+        • Backup database (copy db.sqlite3)
+        • Check disk space on server laptop
+        • Restart router
+    
+    Monthly:
+        • Update Windows on all laptops
+        • Check Python version
+        • Clean temp files
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                          QUICK REFERENCE CARD
+═══════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                                                                          │
+│  LAPTOP ROLES:                                                           │
+│  ─────────────                                                           │
+│  Laptop 1 (OPD):        SERVER - Start FIRST, has database             │
+│  Laptop 2 (Doctor):     CLIENT - Auto-connects to server               │
+│  Laptop 3 (Pharmacy):   CLIENT - Auto-connects to server               │
+│                                                                          │
+│  STARTUP ORDER:                                                          │
+│  ───────────────                                                         │
+│  1. Laptop 1 (OPD)      → Wait for "Setting up as server..."           │
+│  2. Wait 15 seconds                                                      │
+│  3. Laptop 2 (Doctor)   → Wait for "Found server..."                   │
+│  4. Laptop 3 (Pharmacy) → Wait for "Found server..."                   │
+│                                                                          │
+│  IMPORTANT COMMANDS:                                                     │
+│  ────────────────────                                                    │
+│  • Start App:           Double-click RUN_DESKTOP_APP.bat                │
+│  • Install:             Double-click INSTALL.bat (first time)           │
+│  • Admin Panel:         Click ☰ → 🔧 Admin Panel                       │
+│  • Backup Database:     Copy db.sqlite3 from server laptop             │
+│                                                                          │
+│  NETWORK CHECK:                                                          │
+│  ───────────────                                                         │
+│  • All laptops SAME WiFi?        ✓                                      │
+│  • Server laptop running?        ✓                                      │
+│  • Firewall allows port 8000?   ✓                                      │
+│                                                                          │
+│  EMERGENCY RESTART:                                                      │
+│  ───────────────────                                                     │
+│  1. Close all apps on all laptops                                       │
+│  2. Restart server laptop (Laptop 1) FIRST                              │
+│  3. Wait 30 seconds                                                      │
+│  4. Start other laptops                                                  │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              CONTACT & SUPPORT
+═══════════════════════════════════════════════════════════════════════════════
+
+For Technical Support:
+    • Keep this guide safe
+    • Refer to TROUBLESHOOTING section
+    • Check TROUBLESHOOTING.txt in project folder
+
+Admin Panel Login (Default):
+    Username: admin
+    Password: admin123 (or what you set)
+
+Backup Location:
+    Database: Desktop\Clinic_App_Deployment\db.sqlite3
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                         🏥 CLINIC MANAGEMENT SYSTEM
+                              VERSION 1.0 - 2025
+                          
+                           ALL RIGHTS RESERVED
+
+═══════════════════════════════════════════════════════════════════════════════

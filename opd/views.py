@@ -1,6 +1,8 @@
 # reception/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.utils import timezone
+from django.http import JsonResponse
 from accounts.views import role_required
 from .forms import PatientForm
 from accounts.models import StaffID
@@ -14,6 +16,7 @@ from io import BytesIO
 def opdpanel(request):
     form = PatientForm()
     selected_patient = None
+    print_patient_id = None
 
     if request.method == "POST":
         # 🔎 If search button pressed
@@ -42,30 +45,56 @@ def opdpanel(request):
                 staff_id = request.session.get("staff_id")
                 staff = StaffID.objects.filter(staff_login_id=staff_id).first()
                 patient.created_by = staff
+                
+                # Add patient to queue
+                today = timezone.now().date()
+                # Get next queue number for today
+                last_queue = Patient.objects.filter(
+                    queued_at__date=today
+                ).order_by('-queue_number').first()
+                
+                next_queue_number = (last_queue.queue_number or 0) + 1 if last_queue else 1
+                
+                patient.queue_status = 'waiting'
+                patient.queue_number = next_queue_number
+                patient.queued_at = timezone.now()
+                
                 patient.save()
 
-                # Generate QR Code
-                qr = qrcode.QRCode(version=1, box_size=4, border=2)
-                qr.add_data(patient.ref_no)
-                qr.make(fit=True)
-                img = qr.make_image(fill_color="black", back_color="white")
-
-                buffer = BytesIO()
-                img.save(buffer, format="PNG")
-                qr_image = base64.b64encode(buffer.getvalue()).decode()
-
-                context = {
-                    "clinic_name": "Demo Clinic",
-                    "patient": patient,
-                    "qr_image": qr_image,
-                }
-                return render(request, "opdtemp/print_receipt.html", context)
+                # Set print patient ID to trigger new window print
+                print_patient_id = patient.id
+                form = PatientForm()  # Reset form for new entry
 
     context = {
         "form": form,
         "selected_patient": selected_patient,
+        "print_patient_id": print_patient_id,
     }
     return render(request, "opdtemp/dashboard.html", context)
+
+
+@role_required(["reception"])
+def print_patient_receipt(request, patient_id):
+    """Separate view for printing patient receipt in new window"""
+    patient = get_object_or_404(Patient, id=patient_id)
+    
+    # Generate QR Code
+    qr = qrcode.QRCode(version=1, box_size=4, border=2)
+    qr.add_data(patient.ref_no)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    qr_image = base64.b64encode(buffer.getvalue()).decode()
+
+    context = {
+        "clinic_name": "ZOONA CHILD CARE CLINIC",
+        "patient": patient,
+        "qr_image": qr_image,
+        "queue_number": patient.queue_number,
+    }
+    return render(request, "opdtemp/print_receipt.html", context)
 
 
 

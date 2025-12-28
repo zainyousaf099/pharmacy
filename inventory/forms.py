@@ -7,9 +7,9 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            "name", "category", "distributor", "products_in_box", "items_per_product", "subitems_per_item",
-            "weight_or_quantity", "purchase_price", "purchase_margin_percent",
-            "rack_no", "expiry_date", "batch_no" 
+            "name", "category", "medicine_form", "distributor", "products_in_box", "items_per_product", "subitems_per_item",
+            "weight_or_quantity", "purchase_price", "distributor_discount_percent", "distributor_discount_pkr",
+            "purchase_margin_percent", "rack_no", "expiry_date", "batch_no" 
         ]
         widgets = {
             "name": forms.TextInput(attrs={
@@ -17,6 +17,7 @@ class ProductForm(forms.ModelForm):
                 "placeholder": "e.g., Panadol, Disprin, etc."
             }),
             "category": forms.Select(attrs={"class": "form-select"}),
+            "medicine_form": forms.Select(attrs={"class": "form-select", "id": "medicine_form"}),
             "distributor": forms.TextInput(attrs={
                 "class": "form-control",
                 "placeholder": "Enter distributor/supplier name"
@@ -29,12 +30,14 @@ class ProductForm(forms.ModelForm):
             "items_per_product": forms.NumberInput(attrs={
                 "class": "form-control",
                 "placeholder": "How many strips/sheets per pack?",
-                "min": "1"
+                "min": "1",
+                "id": "items_per_product"
             }),
             "subitems_per_item": forms.NumberInput(attrs={
                 "class": "form-control",
                 "placeholder": "How many tablets/units per strip?",
-                "min": "1"
+                "min": "1",
+                "id": "subitems_per_item"
             }),
             "weight_or_quantity": forms.TextInput(attrs={
                 "class": "form-control",
@@ -42,8 +45,21 @@ class ProductForm(forms.ModelForm):
             }),
             "purchase_price": forms.NumberInput(attrs={
                 "class": "form-control",
-                "placeholder": "Total purchase price",
-                "step": "0.01"
+                "placeholder": "Total purchase price (before discount)",
+                "step": "0.01",
+                "id": "id_purchase_price"
+            }),
+            "distributor_discount_percent": forms.NumberInput(attrs={
+                "class": "form-control",
+                "placeholder": "Discount %",
+                "step": "0.01",
+                "id": "id_distributor_discount_percent"
+            }),
+            "distributor_discount_pkr": forms.NumberInput(attrs={
+                "class": "form-control",
+                "placeholder": "Discount in PKR",
+                "step": "0.01",
+                "id": "id_distributor_discount_pkr"
             }),
             "purchase_margin_percent": forms.NumberInput(attrs={
                 "class": "form-control",
@@ -66,12 +82,15 @@ class ProductForm(forms.ModelForm):
         labels = {
             "name": "Medicine Name",
             "category": "Category",
+            "medicine_form": "Medicine Form/Type",
             "distributor": "Distributor/Supplier",
             "products_in_box": "Number of Packs/Boxes",
             "items_per_product": "Items per Pack (Strips/Sheets)",
             "subitems_per_item": "Units per Item (Tablets/Capsules)",
             "weight_or_quantity": "Dosage/Strength",
-            "purchase_price": "Total Purchase Price",
+            "purchase_price": "Gross Purchase Price",
+            "distributor_discount_percent": "Distributor Discount (%)",
+            "distributor_discount_pkr": "Distributor Discount (PKR)",
             "purchase_margin_percent": "Profit Margin (%)",
             "rack_no": "Rack No.",
             "expiry_date": "Expiry Date",

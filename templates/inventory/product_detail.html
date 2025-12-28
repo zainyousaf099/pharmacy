@@ -24,6 +24,9 @@
             {% endif %}
         </div>
         <div class="col-md-4 text-end">
+            <a class="btn btn-outline-secondary me-2" href="{% url 'inventory:medicine_report' product.pk %}">
+                <i class="fas fa-chart-bar me-2"></i>View Report
+            </a>
             <a class="btn btn-outline-primary me-2" href="{% url 'inventory:product_update' product.pk %}">
                 <i class="fas fa-edit me-2"></i>Edit Product
             </a>

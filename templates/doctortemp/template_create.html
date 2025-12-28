@@ -43,6 +43,42 @@
       font-weight: 700;
     }
 
+    .header-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .nav-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 1.2rem;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-btn:active {
+      transform: translateY(0);
+    }
+
     .card {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(10px);
@@ -264,8 +300,15 @@
 {% block content %}
 <div class="panel">
     <div class="panel-header">
-        <h2>➕ Create Prescription Template</h2>
-        <a href="{% url 'template_list' %}" class="btn">⬅ Back</a>
+        <h2><i class="fas fa-plus"></i> Create Prescription Template</h2>
+        <div class="header-actions">
+            <div class="nav-controls">
+                <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+                <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+                <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+            </div>
+            <a href="{% url 'template_list' %}" class="btn"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
     </div>
 
     <div class="card">
@@ -280,8 +323,42 @@
                 <textarea id="templateDescription" placeholder="Brief description of when to use this template..."></textarea>
             </div>
 
+            <div class="medicines-section" style="border-top: none; margin-top: 20px; padding-top: 20px;">
+                <h3 class="section-title"><i class="fas fa-clipboard-list"></i> Prescription Sections</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Presenting Complaints</label>
+                    <textarea id="presentingComplaints" placeholder="Common symptoms for this condition..." style="min-height: 80px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Development</label>
+                    <textarea id="development" placeholder="Development notes..." style="min-height: 60px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Vaccination</label>
+                    <textarea id="vaccination" placeholder="Vaccination information..." style="min-height: 60px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Medical Examination Finding</label>
+                    <textarea id="medicalExamination" placeholder="Common examination findings..." style="min-height: 80px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Investigation Advised</label>
+                    <textarea id="investigationAdvised" placeholder="Tests or investigations to recommend..." style="min-height: 60px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Provisional Diagnosis</label>
+                    <textarea id="provisionalDiagnosis" placeholder="Diagnosis..." style="min-height: 60px;"></textarea>
+                </div>
+            </div>
+
             <div class="medicines-section">
-                <h3 class="section-title">💊 Medicines</h3>
+                <h3 class="section-title"><i class="fas fa-pills"></i> Medicines</h3>
                 
                 <table class="medicine-table" id="medicineTable">
                     <thead>
@@ -329,11 +406,11 @@
                     </tbody>
                 </table>
 
-                <button type="button" class="btn" id="addMedicineBtn">➕ Add Medicine</button>
+                <button type="button" class="btn" id="addMedicineBtn"><i class="fas fa-plus"></i> Add Medicine</button>
             </div>
 
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">💾 Save Template</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Template</button>
                 <a href="{% url 'template_list' %}" class="btn">Cancel</a>
             </div>
         </form>
@@ -462,6 +539,12 @@
         
         const name = document.getElementById('templateName').value.trim();
         const description = document.getElementById('templateDescription').value.trim();
+        const presentingComplaints = document.getElementById('presentingComplaints').value.trim();
+        const development = document.getElementById('development').value.trim();
+        const vaccination = document.getElementById('vaccination').value.trim();
+        const medicalExamination = document.getElementById('medicalExamination').value.trim();
+        const investigationAdvised = document.getElementById('investigationAdvised').value.trim();
+        const provisionalDiagnosis = document.getElementById('provisionalDiagnosis').value.trim();
         
         if (!name) {
             Modal.warning('Please enter a name for the template!', 'Name Required');
@@ -508,6 +591,12 @@
             body: JSON.stringify({
                 name: name,
                 description: description,
+                presenting_complaints: presentingComplaints,
+                development: development,
+                vaccination: vaccination,
+                medical_examination: medicalExamination,
+                investigation_advised: investigationAdvised,
+                provisional_diagnosis: provisionalDiagnosis,
                 medicines: medicines
             })
         })

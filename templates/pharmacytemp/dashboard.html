@@ -13,7 +13,7 @@
 
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #004d00 0%, #00a000 50%, #44ff44 100%);
+    background: linear-gradient(180deg, #0d2818 0%, #1a472a 50%, #0d2818 100%);
     min-height: 100vh;
     padding: 20px;
     color: white;
@@ -25,12 +25,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 30px;
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 15px;
     margin-bottom: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(40, 167, 69, 0.3);
   }
 
   .header h1 {
@@ -45,20 +46,54 @@
     align-items: center;
   }
 
+  .nav-controls {
+    display: flex;
+    gap: 8px;
+    margin-right: 10px;
+  }
+
+  .nav-btn {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(40, 167, 69, 0.4);
+    font-size: 1.2rem;
+  }
+
+  .nav-btn:hover {
+    background: rgba(40, 167, 69, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    color: white;
+  }
+
+  .nav-btn:active {
+    transform: translateY(0);
+  }
+
   .back-btn {
-    background: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     color: white;
     padding: 10px 20px;
     border-radius: 10px;
     text-decoration: none;
     font-size: 0.95rem;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: none;
+    font-weight: 600;
   }
 
   .back-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
   }
 
   /* Hamburger Menu */
@@ -92,11 +127,12 @@
       right: -318px; /* hidden */
       width: 250px;
       height: 100%;
-      background: rgba(24, 24, 24, 0.95);
-      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+      background: linear-gradient(180deg, #1a472a 0%, #0d2818 100%);
+      box-shadow: -4px 0 20px rgba(0,0,0,0.8);
       transition: right 0.4s ease;
       padding: 20px;
       z-index: 1001;
+      border-left: 2px solid rgba(40, 167, 69, 0.5);
     }
 
     .side-menu.active {
@@ -128,7 +164,7 @@
     }
 
     .side-menu ul li a:hover {
-      color: #00ff66;
+      color: #28a745;
     }
 
     .close-btn {
@@ -232,19 +268,20 @@
     }
 
     .popup-box {
-      background: rgba(100, 100, 100, 0.247);  
+      background: linear-gradient(180deg, #1a472a 0%, #0d2818 100%);  
       padding: 30px 40px;
       border-radius: 12px;
       text-align: center;
       color: white;
       font-size: 1.2rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.7);
       animation: popupShow 0.4s ease-out;
+      border: 2px solid rgba(40, 167, 69, 0.5);
     }
 
     .popup-box .tick {
       font-size: 2.5rem;
-      color: #00ff66;
+      color: #28a745;
       margin-bottom: 10px;
     }
 
@@ -264,19 +301,20 @@
 
   /* Card Style */
   .card {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(180deg, rgba(26, 71, 42, 0.9) 0%, rgba(13, 40, 24, 0.95) 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(40, 167, 69, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 40px rgba(40, 167, 69, 0.2);
+    border-color: rgba(40, 167, 69, 0.5);
   }
 
   .card-title {
@@ -287,8 +325,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid rgba(40, 167, 69, 0.4);
     padding-bottom: 15px;
+  }
+
+  .card-title i {
+    color: #28a745;
   }
 
   .card-title span {
@@ -306,8 +348,8 @@
     flex: 1;
     padding: 12px 15px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(40, 167, 69, 0.4);
+    background: rgba(0, 0, 0, 0.3);
     color: white;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -315,9 +357,9 @@
 
   .search-section input:focus {
     outline: none;
-    border-color: rgba(68, 255, 68, 0.8);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 15px rgba(68, 255, 68, 0.3);
+    border-color: #28a745;
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
   }
 
   .search-section input::placeholder {
@@ -338,21 +380,22 @@
   }
 
   .prescription-table thead th {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(40, 167, 69, 0.2);
     padding: 12px;
     text-align: left;
     font-weight: 600;
     border-radius: 8px;
-    color: rgba(255, 255, 255, 0.9);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
   }
 
   .prescription-table tbody tr {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
   }
 
   .prescription-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(40, 167, 69, 0.15);
     transform: scale(1.01);
   }
 
@@ -364,9 +407,9 @@
   .prescription-table input {
     width: 100%;
     padding: 10px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(40, 167, 69, 0.3);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
     color: white;
     font-size: 0.95rem;
     transition: all 0.3s ease;
@@ -374,9 +417,9 @@
 
   .prescription-table input:focus {
     outline: none;
-    border-color: rgba(68, 255, 68, 0.6);
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 10px rgba(68, 255, 68, 0.3);
+    border-color: #28a745;
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
   }
 
   .prescription-table input::placeholder {
@@ -427,8 +470,8 @@
     width: 100%;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    background: rgba(0, 0, 0, 0.3);
     color: white;
     font-size: 0.95rem;
     transition: all 0.3s ease;
@@ -436,9 +479,9 @@
 
   .prescription-table input:focus {
     outline: none;
-    border-color: rgba(68, 255, 68, 0.8);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 10px rgba(68, 255, 68, 0.3);
+    border-color: #28a745;
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
   }
 
   .prescription-table input::placeholder {
@@ -451,11 +494,11 @@
 
   /* Button Styling */
   .btn {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(40, 167, 69, 0.2);
     color: white;
     padding: 12px 30px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(40, 167, 69, 0.4);
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -464,18 +507,20 @@
   }
 
   .btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(40, 167, 69, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #44ff44 0%, #00a000 100%);
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     border: none;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
   }
 
   .btn-primary:hover {
-    background: linear-gradient(135deg, #00a000 0%, #004d00 100%);
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
   }
 
   /* Info Boxes */
@@ -485,22 +530,22 @@
   }
 
   .info-box {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 15px;
     padding: 20px;
     min-height: 200px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(40, 167, 69, 0.3);
   }
 
   .info-box-title {
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 15px;
-    color: white;
+    color: #28a745;
     display: flex;
     align-items: center;
     gap: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(40, 167, 69, 0.3);
     padding-bottom: 10px;
   }
 
@@ -513,7 +558,7 @@
   }
 
   .info-box-content strong {
-    color: #44ff44;
+    color: #28a745;
   }
 
   /* Responsive Design */
@@ -540,17 +585,589 @@
       width: 60px;
     }
   }
+
+  /* Medicine Autocomplete Styles */
+  .medicine-search-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .autocomplete-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #1a472a 0%, #0d2818 100%);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: none;
+  }
+
+  .autocomplete-results.show {
+    display: block;
+  }
+
+  .autocomplete-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 0.9rem;
+  }
+
+  .autocomplete-item:hover {
+    background: rgba(40, 167, 69, 0.3);
+  }
+
+  .autocomplete-item:last-child {
+    border-bottom: none;
+  }
+
+  .autocomplete-item.empty {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    cursor: default;
+  }
+
+  .autocomplete-item.empty:hover {
+    background: transparent;
+  }
+
+  .autocomplete-item .med-name {
+    font-weight: 600;
+    color: #28a745;
+  }
+
+  .autocomplete-item .med-info {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 3px;
+  }
+
+  /* Timing Select Dropdown */
+  .timing-select {
+    width: 100%;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(40, 167, 69, 0.4);
+    border-radius: 6px;
+    color: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .timing-select:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+  }
+
+  .timing-select option {
+    background: #0d2818;
+    color: white;
+    padding: 10px;
+  }
+
+  /* Thermal Printer Receipt Styles (80mm) */
+  .thermal-receipt {
+    display: none;
+  }
+
+  @media print {
+    /* Set page size for thermal printer - 80mm width */
+    @page {
+      size: 80mm auto;
+      margin: 0;
+    }
+    
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 80mm !important;
+      background: #fff !important;
+    }
+    
+    body * {
+      display: none !important;
+    }
+    
+    .thermal-receipt {
+      display: block !important;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 76mm;  /* 80mm - 4mm padding */
+      max-width: 76mm;
+      padding: 2mm;
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12pt;
+      line-height: 1.4;
+      color: #000 !important;
+      background: #fff !important;
+      overflow: hidden;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    
+    .thermal-receipt,
+    .thermal-receipt *,
+    .thermal-receipt div,
+    .thermal-receipt span,
+    .thermal-receipt p {
+      color: #000 !important;
+      font-weight: 900 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    
+    .thermal-receipt * {
+      display: block !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+      background: transparent !important;
+      border-radius: 0 !important;
+      color: #000 !important;
+      font-weight: 900 !important;
+    }
+    
+    .thermal-receipt .info-line,
+    .thermal-receipt .item-details,
+    .thermal-receipt .total-line {
+      display: flex !important;
+    }
+    
+    .thermal-receipt .header {
+      text-align: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 2mm;
+      margin-bottom: 2mm;
+    }
+    
+    .thermal-receipt .header div {
+      color: #000 !important;
+      font-weight: 900 !important;
+      text-shadow: 0 0 0 #000;
+      -webkit-font-smoothing: none;
+    }
+    
+    .thermal-receipt .clinic-name {
+      font-size: 12pt !important;
+      font-weight: 900 !important;
+      margin-bottom: 1mm;
+      color: #000 !important;
+      letter-spacing: 0.3mm;
+      text-shadow: 0 0 0 #000;
+    }
+    
+    .thermal-receipt .receipt-title {
+      font-size: 11pt !important;
+      font-weight: 900 !important;
+      margin-top: 1mm;
+      color: #000 !important;
+      text-decoration: underline;
+      text-shadow: 0 0 0 #000;
+    }
+    
+    .thermal-receipt .dept-name {
+      font-size: 10pt !important;
+      font-weight: 900 !important;
+      color: #000 !important;
+      text-shadow: 0 0 0 #000;
+    }
+    
+    .thermal-receipt .info-line {
+      justify-content: space-between;
+      margin: 0.5mm 0;
+      font-size: 10pt;
+      font-weight: 900 !important;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .section-title {
+      font-weight: 900 !important;
+      border-bottom: 2px solid #000;
+      padding: 1mm 0;
+      margin: 1mm 0;
+      font-size: 11pt;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .item-row {
+      margin: 0.5mm 0;
+      font-size: 9pt;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      font-weight: bold !important;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .item-name {
+      font-weight: bold !important;
+      font-size: 10pt;
+      max-width: 70mm;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .item-details {
+      justify-content: space-between;
+      padding-left: 1mm;
+      font-size: 9pt;
+      font-weight: bold !important;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .totals {
+      border-top: 2px solid #000;
+      margin-top: 2mm;
+      padding-top: 1mm;
+    }
+    
+    .thermal-receipt .total-line {
+      justify-content: space-between;
+      margin: 0.5mm 0;
+      font-size: 10pt;
+      font-weight: bold !important;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .discount-line {
+      color: #000 !important;
+      font-size: 9pt;
+      font-weight: bold !important;
+    }
+    
+    .thermal-receipt .grand-total {
+      font-size: 12pt;
+      font-weight: 900 !important;
+      border-top: 2px solid #000;
+      padding-top: 1mm;
+      margin-top: 1mm;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .footer {
+      text-align: center;
+      border-top: 2px solid #000;
+      margin-top: 2mm;
+      padding-top: 1mm;
+      font-size: 9pt;
+      font-weight: bold !important;
+      color: #000 !important;
+    }
+    
+    .thermal-receipt .thank-you {
+      font-weight: 900 !important;
+      font-size: 11pt;
+      margin: 1mm 0;
+      color: #000 !important;
+    }
+  }
+  
+  /* ========== PHARMACY QUEUE PANEL STYLES ========== */
+  .pharmacy-queue-toggle {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #28a745 0%, #1a472a 100%);
+    color: white;
+    padding: 15px 10px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    cursor: pointer;
+    border-radius: 0 12px 12px 0;
+    z-index: 999;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .pharmacy-queue-toggle:hover {
+    padding-left: 15px;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .pharmacy-queue-panel {
+    position: fixed;
+    left: -320px;
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1a472a 0%, #0d2818 100%);
+    z-index: 1002;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pharmacy-queue-panel.active {
+    left: 0;
+  }
+
+  .pharmacy-queue-header {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 2px solid rgba(40, 167, 69, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pharmacy-queue-header h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pharmacy-queue-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+  }
+
+  .pharmacy-queue-close:hover {
+    background: rgba(220, 53, 69, 0.5);
+  }
+
+  .pharmacy-queue-stats {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .pharmacy-queue-stat {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+  }
+
+  .pharmacy-queue-stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #28a745;
+  }
+
+  .pharmacy-queue-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+  }
+
+  .pharmacy-queue-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .pharmacy-queue-item {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .pharmacy-queue-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(5px);
+  }
+
+  .pharmacy-queue-item.dispensing {
+    border-color: #ffc107;
+    background: rgba(255, 193, 7, 0.15);
+  }
+
+  .pharmacy-queue-item.selected {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.2);
+  }
+
+  .pharmacy-queue-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-right: 12px;
+  }
+
+  .pharmacy-queue-item.dispensing .pharmacy-queue-number {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  }
+
+  .pharmacy-queue-item-content {
+    flex: 1;
+  }
+
+  .pharmacy-queue-patient-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 4px;
+  }
+
+  .pharmacy-queue-patient-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .pharmacy-queue-patient-ref {
+    color: #28a745;
+    font-weight: 500;
+  }
+
+  .pharmacy-queue-time {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 6px;
+  }
+
+  .pharmacy-queue-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+
+  .pharmacy-queue-badge.dispensing {
+    background: #ffc107;
+    color: #000;
+  }
+
+  .pharmacy-queue-badge.rx-count {
+    background: rgba(40, 167, 69, 0.3);
+    color: #28a745;
+    font-size: 0.75rem;
+  }
+
+  .pharmacy-queue-refresh {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .pharmacy-queue-refresh button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .pharmacy-queue-refresh button:hover {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+  }
+
+  .pharmacy-queue-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .pharmacy-queue-empty i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: rgba(40, 167, 69, 0.3);
+  }
   </style>
 {% endblock style %}
 
 
     
 {% block content %}
+
+<!-- Pharmacy Queue Toggle Button -->
+<div class="pharmacy-queue-toggle" onclick="togglePharmacyQueue()" title="Prescription Queue">
+  <i class="fas fa-pills"></i> QUEUE <span id="pharmacyQueueCount" class="badge bg-success ms-1" style="font-size: 0.9rem; padding: 3px 8px;">0</span>
+</div>
+
+<!-- Pharmacy Queue Panel -->
+<div class="pharmacy-queue-panel" id="pharmacyQueuePanel">
+  <div class="pharmacy-queue-header">
+    <h2><i class="fas fa-pills"></i> Prescription Queue</h2>
+    <button class="pharmacy-queue-close" onclick="togglePharmacyQueue()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  
+  <div class="pharmacy-queue-stats">
+    <div class="pharmacy-queue-stat">
+      <div class="pharmacy-queue-stat-number" id="waitingCount">0</div>
+      <div class="pharmacy-queue-stat-label">Waiting</div>
+    </div>
+    <div class="pharmacy-queue-stat">
+      <div class="pharmacy-queue-stat-number" id="dispensingCount" style="color: #ffc107;">0</div>
+      <div class="pharmacy-queue-stat-label">Dispensing</div>
+    </div>
+  </div>
+  
+  <div class="pharmacy-queue-list" id="pharmacyQueueList">
+    <!-- Queue items will be loaded here -->
+    <div class="pharmacy-queue-empty">
+      <i class="fas fa-inbox"></i>
+      <p>No prescriptions in queue</p>
+    </div>
+  </div>
+  
+  <div class="pharmacy-queue-refresh">
+    <button onclick="loadPharmacyQueue()">
+      <i class="fas fa-sync-alt"></i> Refresh Queue
+    </button>
+  </div>
+</div>
+
 <!-- Header -->
 <div class="header">
-  <h1>💊 Pharmacy Panel</h1>
+  <h1><i class="fas fa-pills"></i> Pharmacy Panel</h1>
   <div class="header-actions">
-    <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
+    <div class="nav-controls">
+      <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+      <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+      <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+    </div>
+    <a href="{% url 'admitted_patients_pharmacy' %}" class="back-btn" style="background: #007bff; border-color: #007bff;"><i class="fas fa-hospital"></i> Admitted Patients</a>
+    <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
     <div class="hamburger" id="hamburger">
       <span></span>
       <span></span>
@@ -564,8 +1181,16 @@
   <!-- Left Card - Prescription Entry -->
   <div class="card">
     <div class="card-title">
-      <span>📋</span>
+      <span><i class="fas fa-clipboard-list"></i></span>
       PRESCRIPTION PROCESSING
+      <button class="btn" onclick="toggleDirectSale()" id="directSaleToggle" style="margin-left: auto; padding: 8px 15px; font-size: 0.85rem;">
+        <i class="fas fa-shopping-cart"></i> Direct Sale
+      </button>
+    </div>
+
+    <!-- Mode Indicator -->
+    <div id="modeIndicator" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; background: rgba(76, 175, 80, 0.3); display: none;">
+      <strong><i class="fas fa-box"></i> Direct Sale Mode</strong> - Add medicines manually
     </div>
 
     <!-- Search Prescription -->
@@ -575,7 +1200,7 @@
         placeholder="Enter patient reference number or name..."
         id="refNoInput"
       >
-      <button class="btn" onclick="searchPrescription()">🔍 Search</button>
+      <button class="btn" onclick="searchPrescription()"><i class="fas fa-search"></i> Search</button>
     </div>
 
     <!-- Search Status Message -->
@@ -583,7 +1208,7 @@
 
     <!-- Prescription Table -->
     <div class="card-title" style="font-size: 1.1rem; margin-bottom: 15px; margin-top: 20px;">
-      <span>💊</span>
+      <span><i class="fas fa-pills"></i></span>
       Medicine Details
     </div>
 
@@ -593,7 +1218,9 @@
           <th>Medicine Name</th>
           <th style="width: 80px;">Days</th>
           <th style="width: 150px;">Timing</th>
+          <th style="width: 100px;">Qty</th>
           <th style="width: 120px;">Price (PKR)</th>
+          <th style="width: 60px;">Action</th>
         </tr>
       </thead>
       <tbody id="prescriptionRows">
@@ -601,8 +1228,35 @@
       </tbody>
     </table>
 
+    <!-- Add Medicine Button (for Direct Sale) -->
+    <div id="addMedicineSection" style="margin-bottom: 20px; display: none;">
+      <button class="btn" onclick="addMedicineRow()" style="width: 100%;">
+        <i class="fas fa-plus"></i> Add Medicine
+      </button>
+    </div>
+
+    <div style="background: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.1);">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: white; font-size: 0.9rem;">Discount Amount (PKR)</label>
+          <input type="number" id="discountAmount" placeholder="0.00" min="0" step="0.01" oninput="updateDiscountFromAmount()" 
+                 style="width: 100%; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; background: rgba(255, 255, 255, 0.15); color: white; font-size: 1rem;">
+        </div>
+        <div>
+          <label style="display: block; font-weight: 600; margin-bottom: 8px; color: white; font-size: 0.9rem;">Discount Percentage (%)</label>
+          <input type="number" id="discountPercentage" placeholder="0.00" min="0" max="100" step="0.01" oninput="updateDiscountFromPercentage()"
+                 style="width: 100%; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px; background: rgba(255, 255, 255, 0.15); color: white; font-size: 1rem;">
+        </div>
+      </div>
+    </div>
+
     <button class="btn btn-primary" id="printSaveBtn" onclick="processOrder()">
-      ✓ PRINT / SAVE
+      <i class="fas fa-check"></i> PRINT / SAVE
+    </button>
+    
+    <!-- Print Receipt Button (shows after processing) -->
+    <button class="btn" id="printReceiptBtn" onclick="printReceipt()" style="display: none; margin-top: 10px; background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);">
+      <i class="fas fa-print"></i> PRINT RECEIPT AGAIN
     </button>
   </div>
 
@@ -611,7 +1265,7 @@
     <!-- Receipt/Bill Box -->
     <div class="info-box">
       <div class="info-box-title">
-        <span>🧾</span>
+        <span><i class="fas fa-receipt"></i></span>
         RECEIPT / BILL
       </div>
       <div class="info-box-content" id="billContent">Total: PKR 0.00
@@ -622,7 +1276,7 @@ Click PRINT/SAVE to generate bill after entering medicine details.</div>
     <!-- Patient Details Box -->
     <div class="info-box">
       <div class="info-box-title">
-        <span>👤</span>
+        <span><i class="fas fa-user"></i></span>
         Patient Details
       </div>
       <div class="info-box-content" id="patientContent">No patient selected.
@@ -635,14 +1289,392 @@ Search by reference number to view patient details.</div>
 <!-- Side Menu -->
 <div class="side-menu" id="sideMenu">
   <span class="close-btn" id="closeMenu">&times;</span>
-  <h4>💊 Menu</h4>
+  <h4><i class="fas fa-pills"></i> Menu</h4>
   <ul>
-    <li><a href="/">🏠 Home</a></li>
-    <li><a href="{% url 'inventory:product_list' %}">📦 Inventory</a></li>
-    <li><a href="#">⚙️ Settings</a></li>
-    <li><a href="/">🚪 Logout</a></li>
+    <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+    <li><a href="{% url 'inventory:product_list' %}"><i class="fas fa-boxes"></i> Inventory</a></li>
+    <li><a href="/admin/" target="_blank"><i class="fas fa-cog"></i> Admin Panel</a></li>
+    <li><a href="#" onclick="openSettings(); return false;"><i class="fas fa-sliders-h"></i> Settings</a></li>
+    <li><a href="/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
   </ul>
 </div>
+
+<!-- Settings Modal -->
+<div class="settings-modal-overlay" id="settingsModal">
+  <div class="settings-modal">
+    <div class="settings-header">
+      <h3><i class="fas fa-cog"></i> Settings</h3>
+      <span class="settings-close" onclick="closeSettings()">&times;</span>
+    </div>
+    
+    <div class="settings-content">
+      <!-- Database Info Section -->
+      <div class="settings-section">
+        <h4><i class="fas fa-database"></i> Database Information</h4>
+        <div class="db-info" id="dbInfo">
+          <div class="db-info-row">
+            <span class="db-label">Location:</span>
+            <span class="db-value" id="dbPath">Loading...</span>
+          </div>
+          <div class="db-info-row">
+            <span class="db-label">Size:</span>
+            <span class="db-value" id="dbSize">Loading...</span>
+          </div>
+          <div class="db-info-row">
+            <span class="db-label">Last Modified:</span>
+            <span class="db-value" id="dbModified">Loading...</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Local Backup Section -->
+      <div class="settings-section">
+        <h4><i class="fas fa-download"></i> Local Backup</h4>
+        <p class="settings-desc">Download a complete backup of your database. Keep it safe!</p>
+        <button class="settings-btn backup-btn" onclick="downloadBackup()">
+          <span><i class="fas fa-download"></i></span> Download Database Backup
+        </button>
+      </div>
+      
+      <!-- Cloud Backup Section -->
+      <div class="settings-section">
+        <h4><i class="fas fa-cloud"></i> Google Drive Cloud Backup</h4>
+        <p class="settings-desc">Automatically backup to your Google Drive for extra safety.</p>
+        
+        <div id="gdriveStatus" style="padding: 10px; border-radius: 8px; margin: 10px 0; background: rgba(0,0,0,0.2);">
+          <span id="gdriveStatusText">Checking connection...</span>
+        </div>
+        
+        <div id="gdriveNotConnected" style="display: none;">
+          <p style="font-size: 0.85rem; color: #ffc107; margin: 10px 0;">
+            <i class="fas fa-exclamation-triangle"></i> First time setup required. You need Google OAuth credentials.
+          </p>
+          <button class="settings-btn" onclick="showGDriveSetup()" style="background: #4285f4; margin-bottom: 10px;">
+            <span><i class="fas fa-key"></i></span> Setup Google Drive
+          </button>
+        </div>
+        
+        <div id="gdriveConnected" style="display: none;">
+          <button class="settings-btn" onclick="backupToGDrive()" style="background: #0f9d58;">
+            <span><i class="fas fa-cloud-upload-alt"></i></span> Backup to Google Drive Now
+          </button>
+          <button class="settings-btn" onclick="disconnectGDrive()" style="background: #db4437; margin-top: 10px;">
+            <span><i class="fas fa-unlink"></i></span> Disconnect Google Drive
+          </button>
+        </div>
+      </div>
+      
+      <!-- Restore Section -->
+      <div class="settings-section">
+        <h4><i class="fas fa-upload"></i> Restore Database</h4>
+        <p class="settings-desc">Upload a previously saved backup file to restore data.</p>
+        <p class="settings-info" style="color: #4CAF50; font-size: 0.85rem; margin: 5px 0;"><i class="fas fa-check"></i> Compatible with all app versions! Database will be automatically updated.</p>
+        <p class="settings-warning"><i class="fas fa-exclamation-triangle"></i> Warning: This will replace all current data!</p>
+        <input type="file" id="dbFileInput" accept=".sqlite3" style="display: none;" onchange="uploadBackup()">
+        <button class="settings-btn restore-btn" onclick="document.getElementById('dbFileInput').click()">
+          <span><i class="fas fa-upload"></i></span> Upload & Restore Backup
+        </button>
+      </div>
+      
+      <!-- Close App Section -->
+      <div class="settings-section" style="border-top: 2px solid rgba(255,255,255,0.2); padding-top: 20px; margin-top: 20px;">
+        <h4><i class="fas fa-power-off"></i> Close Application</h4>
+        <p class="settings-desc">Close the application. You'll be prompted to backup first.</p>
+        <button class="settings-btn" onclick="closeAppWithBackup()" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+          <span><i class="fas fa-times"></i></span> Close & Backup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Google Drive Setup Modal -->
+<div class="gdrive-setup-modal" id="gdriveSetupModal">
+  <div class="gdrive-setup-content">
+    <span class="close-gdrive-setup" onclick="closeGDriveSetup()">&times;</span>
+    <h3><i class="fas fa-cloud"></i> Google Drive Setup</h3>
+    
+    <div id="gdriveSetupStep1">
+      <p style="margin-bottom: 15px;">To enable Google Drive backup, you need to create OAuth credentials:</p>
+      <ol style="text-align: left; padding-left: 20px; font-size: 0.9rem; line-height: 1.8;">
+        <li>Go to <a href="https://console.cloud.google.com" target="_blank" style="color: #4285f4;">Google Cloud Console</a></li>
+        <li>Create a new project (or select existing)</li>
+        <li>Enable "Google Drive API"</li>
+        <li>Go to "Credentials" → "Create Credentials" → "OAuth client ID"</li>
+        <li>Choose "Desktop application"</li>
+        <li>Copy the Client ID and Client Secret below</li>
+      </ol>
+      
+      <div style="margin-top: 15px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Client ID:</label>
+        <input type="text" id="gdriveClientId" placeholder="xxxx.apps.googleusercontent.com" 
+               style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 10px;">
+        
+        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Client Secret:</label>
+        <input type="text" id="gdriveClientSecret" placeholder="GOCSPX-xxxx" 
+               style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;">
+      </div>
+      
+      <button onclick="saveGDriveCredentials()" style="margin-top: 15px; padding: 12px 25px; background: #4285f4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">
+        Save & Continue →
+      </button>
+    </div>
+    
+    <div id="gdriveSetupStep2" style="display: none;">
+      <p style="margin-bottom: 15px;">Click the button below to authorize access to your Google Drive:</p>
+      
+      <button onclick="startGDriveAuth()" style="padding: 12px 25px; background: #4285f4; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-bottom: 15px;">
+        <i class="fas fa-lock"></i> Authorize with Google
+      </button>
+      
+      <div id="authCodeSection" style="display: none; margin-top: 15px;">
+        <p>After authorizing, paste the code here:</p>
+        <input type="text" id="gdriveAuthCode" placeholder="Paste authorization code here" 
+               style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin: 10px 0;">
+        <button onclick="completeGDriveAuth()" style="padding: 12px 25px; background: #0f9d58; color: white; border: none; border-radius: 8px; cursor: pointer;">
+          <i class="fas fa-check"></i> Complete Setup
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Google Drive Setup Modal */
+.gdrive-setup-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+}
+
+.gdrive-setup-modal.active {
+  display: flex;
+}
+
+.gdrive-setup-content {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  color: #333;
+}
+
+.close-gdrive-setup {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-gdrive-setup:hover {
+  color: #333;
+}
+
+/* Settings Modal Styles */
+.settings-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.settings-modal-overlay.active {
+  display: flex;
+}
+
+.settings-modal {
+  background: linear-gradient(135deg, #1a472a 0%, #2d5016 100%);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.settings-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.settings-close {
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s;
+  line-height: 1;
+}
+
+.settings-close:hover {
+  color: #ff6b6b;
+  transform: scale(1.1);
+}
+
+.settings-content {
+  padding: 15px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.settings-section {
+  margin-bottom: 15px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: #8BC34A;
+}
+
+.settings-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 10px 0;
+}
+
+.settings-warning {
+  font-size: 0.8rem;
+  color: #ff9800;
+  margin: 0 0 10px 0;
+  padding: 8px;
+  background: rgba(255, 152, 0, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #ff9800;
+}
+
+.db-info {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.db-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.db-info-row:last-child {
+  border-bottom: none;
+}
+
+.db-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+}
+
+.db-value {
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  word-break: break-all;
+  text-align: right;
+  max-width: 60%;
+}
+
+.settings-btn {
+  width: 100%;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.backup-btn {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  color: white;
+}
+
+.backup-btn:hover {
+  background: linear-gradient(135deg, #66BB6A, #388E3C);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.restore-btn {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+  color: white;
+}
+
+.restore-btn:hover {
+  background: linear-gradient(135deg, #FFB74D, #FF9800);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+}
+
+.settings-btn span {
+  font-size: 1rem;
+}
+
+/* Custom Scrollbar for Settings */
+.settings-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+</style>
 
 <!-- Overlay -->
 <div class="overlay" id="overlay"></div>
@@ -655,6 +1687,56 @@ Search by reference number to view patient details.</div>
   </div>
 </div>
 
+<!-- Thermal Receipt (Hidden, only shows when printing) -->
+<div class="thermal-receipt" id="thermalReceipt">
+  <div class="header">
+    <div class="clinic-name" style="color: #000 !important; font-weight: 900 !important;">ZOONA CHILD CARE CLINIC</div>
+    <div class="dept-name" style="color: #000 !important; font-weight: 900 !important;">Pharmacy Department</div>
+    <div class="receipt-title" style="color: #000 !important; font-weight: 900 !important;">RECEIPT</div>
+  </div>
+  
+  <div class="info-line" style="color: #000 !important; font-weight: 900 !important;">
+    <span style="color: #000 !important; font-weight: 900 !important;">Date:</span>
+    <span id="receiptDate" style="color: #000 !important; font-weight: 900 !important;"></span>
+  </div>
+  <div class="info-line" style="color: #000 !important; font-weight: 900 !important;">
+    <span style="color: #000 !important; font-weight: 900 !important;">Time:</span>
+    <span id="receiptTime" style="color: #000 !important; font-weight: 900 !important;"></span>
+  </div>
+  <div class="info-line" style="color: #000 !important; font-weight: 900 !important;">
+    <span style="color: #000 !important; font-weight: 900 !important;">Patient:</span>
+    <span id="receiptPatient" style="color: #000 !important; font-weight: 900 !important;"></span>
+  </div>
+  <div class="info-line" style="color: #000 !important; font-weight: 900 !important;">
+    <span style="color: #000 !important; font-weight: 900 !important;">Ref No:</span>
+    <span id="receiptRefNo" style="color: #000 !important; font-weight: 900 !important;"></span>
+  </div>
+  
+  <div class="section-title" style="color: #000 !important; font-weight: 900 !important;">ITEMS</div>
+  <div id="receiptItems"></div>
+  
+  <div class="totals">
+    <div class="total-line" style="color: #000 !important; font-weight: 900 !important;">
+      <span style="color: #000 !important; font-weight: 900 !important;">Subtotal:</span>
+      <span id="receiptSubtotal" style="color: #000 !important; font-weight: 900 !important;"></span>
+    </div>
+    <div class="total-line discount-line" id="receiptDiscountLine" style="display: none; color: #000 !important; font-weight: 900 !important;">
+      <span id="receiptDiscountLabel" style="color: #000 !important; font-weight: 900 !important;"></span>
+      <span id="receiptDiscount" style="color: #000 !important; font-weight: 900 !important;"></span>
+    </div>
+    <div class="total-line grand-total" style="color: #000 !important; font-weight: 900 !important;">
+      <span style="color: #000 !important; font-weight: 900 !important;">TOTAL:</span>
+      <span id="receiptGrandTotal" style="color: #000 !important; font-weight: 900 !important;"></span>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="thank-you" style="color: #000 !important; font-weight: 900 !important;">Thank You!</div>
+    <div style="color: #000 !important; font-weight: 900 !important;">For any queries, please contact</div>
+    <div style="color: #000 !important; font-weight: 900 !important;">pharmacy department</div>
+  </div>
+</div>
+
 {% endblock content %}
 
 
@@ -663,6 +1745,235 @@ Search by reference number to view patient details.</div>
     // Global variables
     let currentPatient = null;
     let currentPrescriptions = [];
+    let discountAmount = 0;
+    let discountPercentage = 0;
+    let directSaleMode = false;
+    let searchTimeout = null;
+
+    // Toggle Direct Sale Mode
+    function toggleDirectSale() {
+        directSaleMode = !directSaleMode;
+        const modeIndicator = document.getElementById('modeIndicator');
+        const addMedicineSection = document.getElementById('addMedicineSection');
+        const toggleBtn = document.getElementById('directSaleToggle');
+        
+        if (directSaleMode) {
+            modeIndicator.style.display = 'block';
+            addMedicineSection.style.display = 'block';
+            toggleBtn.innerHTML = '<i class="fas fa-clipboard-list"></i> Prescription Mode';
+            toggleBtn.style.background = 'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)';
+            
+            // Clear current data and allow adding medicines
+            document.getElementById('prescriptionRows').innerHTML = '';
+            document.getElementById('searchStatus').style.display = 'none';
+            
+            Modal.info('Direct Sale Mode - Add medicines manually.', 'Direct Sale', 2000);
+        } else {
+            modeIndicator.style.display = 'none';
+            addMedicineSection.style.display = 'none';
+            toggleBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Direct Sale';
+            toggleBtn.style.background = '';
+            
+            // Clear data
+            resetForm();
+            Modal.info('Prescription Mode - Search patient to load prescriptions.', 'Prescription Mode', 2000);
+        }
+    }
+    // Add new medicine row (for direct sale)
+    function addMedicineRow() {
+        const tbody = document.getElementById('prescriptionRows');
+        const rowIndex = tbody.children.length;
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <div class="medicine-search-wrapper">
+                    <input type="text" 
+                           class="medicine-input" 
+                           placeholder="Search medicine..."
+                           style="background: rgba(255, 255, 255, 0.15); cursor: text;"
+                           data-medicine-id=""
+                           data-medicine-form="tablet"
+                           autocomplete="off"
+                           onkeyup="searchMedicine(this)">
+                    <div class="autocomplete-results"></div>
+                </div>
+            </td>
+            <td>
+                <input type="number" 
+                       value="1" 
+                       class="days-input small-input" 
+                       min="1"
+                       max="365"
+                       onchange="updateQuantityAndPrice(this)"
+                       style="text-align: center;">
+            </td>
+            <td>
+                <select class="timing-select" onchange="updateQuantityAndPrice(this)">
+                    <option value="morning">Morning</option>
+                    <option value="evening">Evening</option>
+                    <option value="night">Night</option>
+                    <option value="morning,evening" selected>Morning, Evening</option>
+                    <option value="morning,evening,night">Morning, Evening, Night</option>
+                </select>
+            </td>
+            <td>
+                <span class="qty-label" style="display: block; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; font-size: 0.85rem; text-align: center;">
+                    0
+                </span>
+                <input type="hidden" class="quantity-input" value="0">
+            </td>
+            <td>
+                <input type="number" 
+                       value="0.00" 
+                       class="price-input small-input" 
+                       step="0.01"
+                       min="0"
+                       onchange="calculateBill()"
+                       style="text-align: center;">
+            </td>
+            <td style="text-align: center;">
+                <button type="button" 
+                        onclick="removeRow(this)" 
+                        style="background: #ff4444; color: white; border: none; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 14px;"
+                        title="Remove this medicine">
+                    ✕
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    // Search medicine for autocomplete
+    function searchMedicine(input) {
+        const query = input.value.trim();
+        const wrapper = input.closest('.medicine-search-wrapper');
+        const resultsDiv = wrapper.querySelector('.autocomplete-results');
+        
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+        
+        if (query.length < 1) {
+            resultsDiv.classList.remove('show');
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            fetch(`/pharmacy/api/search-medicines/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.medicines.length > 0) {
+                        let html = '';
+                        data.medicines.forEach(medicine => {
+                            const stockInfo = medicine.medicine_form === 'syrup' || medicine.medicine_form === 'drops' 
+                                ? `${medicine.stock} bottles` 
+                                : `${medicine.stock} tablets`;
+                            html += `
+                                <div class="autocomplete-item" 
+                                     data-id="${medicine.id}" 
+                                     data-name="${medicine.name}"
+                                     data-form="${medicine.medicine_form || 'tablet'}"
+                                     data-price="${medicine.sale_price || 0}"
+                                     data-subitem-price="${medicine.sale_price_per_subitem || 0}"
+                                     onclick="selectMedicine(this)">
+                                    <div class="med-name">${medicine.name}</div>
+                                    <div class="med-info">${medicine.medicine_form || 'tablet'} | Stock: ${stockInfo} | Rs. ${medicine.sale_price_per_subitem || medicine.sale_price || 0}/unit</div>
+                                </div>
+                            `;
+                        });
+                        resultsDiv.innerHTML = html;
+                        resultsDiv.classList.add('show');
+                    } else {
+                        resultsDiv.innerHTML = '<div class="autocomplete-item empty">No medicines found</div>';
+                        resultsDiv.classList.add('show');
+                    }
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    resultsDiv.classList.remove('show');
+                });
+        }, 300);
+    }
+
+    // Select medicine from autocomplete
+    function selectMedicine(item) {
+        const wrapper = item.closest('.medicine-search-wrapper');
+        const input = wrapper.querySelector('.medicine-input');
+        const resultsDiv = wrapper.querySelector('.autocomplete-results');
+        const row = item.closest('tr');
+        
+        input.value = item.dataset.name;
+        input.dataset.medicineId = item.dataset.id;
+        input.dataset.medicineForm = item.dataset.form;
+        
+        resultsDiv.classList.remove('show');
+        
+        // Update quantity and price based on medicine
+        updateQuantityAndPrice(input);
+    }
+
+    // Update quantity and price when days or timing changes
+    function updateQuantityAndPrice(element) {
+        const row = element.closest('tr');
+        const medicineInput = row.querySelector('.medicine-input');
+        const daysInput = row.querySelector('.days-input');
+        const timingSelect = row.querySelector('.timing-select');
+        const qtyLabel = row.querySelector('.qty-label');
+        const qtyInput = row.querySelector('.quantity-input');
+        const priceInput = row.querySelector('.price-input');
+        
+        if (!medicineInput.dataset.medicineId) return;
+        
+        const days = parseInt(daysInput.value) || 1;
+        const timing = timingSelect ? timingSelect.value : 'morning,evening';
+        const medicineForm = medicineInput.dataset.medicineForm || 'tablet';
+        
+        // Calculate doses per day
+        let dosesPerDay = timing.split(',').length;
+        
+        // Get prices from search API (we stored them in dataset)
+        // For now, fetch fresh data
+        fetch(`/pharmacy/api/search-medicines/?q=${encodeURIComponent(medicineInput.value)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.medicines.length > 0) {
+                    const medicine = data.medicines.find(m => m.id == medicineInput.dataset.medicineId) || data.medicines[0];
+                    
+                    const LIQUID_FORMS = ['syrup', 'drops', 'injection', 'inhaler', 'ointment'];
+                    
+                    if (LIQUID_FORMS.includes(medicineForm)) {
+                        // Bottles calculation
+                        const bottles = Math.max(1, Math.ceil(days / 7));
+                        qtyLabel.textContent = `${bottles} bottle(s)`;
+                        qtyInput.value = bottles;
+                        
+                        const pricePerBottle = parseFloat(medicine.sale_price) || 0;
+                        priceInput.value = (bottles * pricePerBottle).toFixed(2);
+                    } else {
+                        // Tablets calculation
+                        const totalTablets = dosesPerDay * days;
+                        qtyLabel.textContent = `${totalTablets} tablet(s)`;
+                        qtyInput.value = totalTablets;
+                        
+                        const pricePerTablet = parseFloat(medicine.sale_price_per_subitem) || 0;
+                        priceInput.value = (totalTablets * pricePerTablet).toFixed(2);
+                    }
+                    
+                    calculateBill();
+                }
+            })
+            .catch(error => console.error('Price update error:', error));
+    }
+
+    // Close autocomplete when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.medicine-search-wrapper')) {
+            document.querySelectorAll('.autocomplete-results').forEach(div => {
+                div.classList.remove('show');
+            });
+        }
+    });
 
     // ✅ Menu toggle
     const hamburger = document.getElementById("hamburger");
@@ -709,7 +2020,7 @@ Search by reference number to view patient details.</div>
                     currentPrescriptions = data.prescriptions;
                     
                     // Show success message
-                    searchStatus.textContent = `✓ Found ${data.total_medicines} prescription(s) for ${data.patient.name}`;
+                    searchStatus.innerHTML = `<i class="fas fa-check-circle"></i> Found ${data.total_medicines} prescription(s) for ${data.patient.name}`;
                     searchStatus.style.display = 'block';
                     searchStatus.style.background = 'rgba(76, 175, 80, 0.3)';
                     searchStatus.style.color = 'white';
@@ -725,19 +2036,30 @@ Search by reference number to view patient details.</div>
                     
                     Modal.success(`Found ${data.total_medicines} prescribed medicine(s) for <strong>${data.patient.name}</strong>`, 'Prescriptions Loaded', 3000);
                 } else {
-                    searchStatus.textContent = '✗ ' + data.error;
+                    searchStatus.innerHTML = '<i class="fas fa-times-circle"></i> ' + data.error;
                     searchStatus.style.display = 'block';
                     searchStatus.style.background = 'rgba(244, 67, 54, 0.3)';
                     searchStatus.style.color = 'white';
                     
-                    // Clear table
-                    document.getElementById('prescriptionRows').innerHTML = '';
+                    // Clear table only if not in direct sale mode
+                    if (!directSaleMode) {
+                        document.getElementById('prescriptionRows').innerHTML = '';
+                    }
                     
                     // If patient found but no prescriptions
                     if (data.patient) {
+                        currentPatient = data.patient;
                         document.getElementById('patientContent').textContent = data.patient.details || 
-                            `Reference No: ${data.patient.ref_no}\nName: ${data.patient.name}\nPhone: ${data.patient.phone}\nAge: ${data.patient.age} years`;
-                        Modal.warning('This patient has no prescriptions yet. Please ask them to visit the doctor first.', 'No Prescriptions');
+                            `Reference No: ${data.patient.ref_no}\nName: ${data.patient.name}\nPhone: ${data.patient.phone}\nAge: ${data.patient.age}`;
+                        
+                        if (directSaleMode) {
+                            // In direct sale mode, allow adding medicines without prescription
+                            searchStatus.innerHTML = `<i class="fas fa-check-circle"></i> Patient found: ${data.patient.name} (No prescription - Direct Sale Mode)`;
+                            searchStatus.style.background = 'rgba(255, 152, 0, 0.3)';
+                            Modal.info(`Patient <strong>${data.patient.name}</strong> found but has no prescriptions.<br><br>In Direct Sale Mode, you can add medicines manually.`, 'Patient Found', 3000);
+                        } else {
+                            Modal.warning('This patient has no prescriptions yet. Please ask them to visit the doctor first, or switch to Direct Sale Mode.', 'No Prescriptions');
+                        }
                     } else {
                         document.getElementById('patientContent').textContent = 'No patient selected.\n\nSearch by reference number to view patient details.';
                         Modal.error(data.error, 'Patient Not Found');
@@ -752,7 +2074,7 @@ Search by reference number to view patient details.</div>
                 console.error('Search error:', error);
                 Modal.error('Failed to search patient. Please check your connection and try again.', 'Search Failed');
                 
-                searchStatus.textContent = '✗ Connection error';
+                searchStatus.innerHTML = '<i class="fas fa-times-circle"></i> Connection error';
                 searchStatus.style.display = 'block';
                 searchStatus.style.background = 'rgba(244, 67, 54, 0.3)';
                 searchStatus.style.color = 'white';
@@ -771,21 +2093,31 @@ Search by reference number to view patient details.</div>
                     <input type="text" 
                            value="${rx.medicine_name}" 
                            class="medicine-input" 
-                           readonly
-                           style="background: rgba(255, 255, 255, 0.1); cursor: not-allowed;"
-                           data-medicine-id="${rx.medicine_id}">
+                           placeholder="Enter medicine name"
+                           style="background: rgba(255, 255, 255, 0.15); cursor: text;"
+                           data-medicine-id="${rx.medicine_id}"
+                           data-original-name="${rx.medicine_name}"
+                           data-medicine-form="${rx.medicine_form || 'tablet'}">
                 </td>
                 <td>
                     <input type="number" 
                            value="${rx.days}" 
                            class="days-input small-input" 
-                           readonly
-                           style="background: rgba(255, 255, 255, 0.1); cursor: not-allowed; text-align: center;">
+                           min="1"
+                           max="365"
+                           onchange="calculateBill()"
+                           style="text-align: center;">
                 </td>
                 <td>
                     <span style="display: block; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; font-size: 0.85rem;">
                         ${rx.timing}
                     </span>
+                </td>
+                <td>
+                    <span class="qty-label" style="display: block; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; font-size: 0.85rem; text-align: center;">
+                        ${rx.quantity_label || rx.quantity}
+                    </span>
+                    <input type="hidden" class="quantity-input" value="${rx.quantity}">
                 </td>
                 <td>
                     <input type="number" 
@@ -796,36 +2128,77 @@ Search by reference number to view patient details.</div>
                            onchange="calculateBill()"
                            style="text-align: center;">
                 </td>
+                <td style="text-align: center;">
+                    <button type="button" 
+                            onclick="removeRow(this)" 
+                            style="background: #ff4444; color: white; border: none; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 14px;"
+                            title="Remove this medicine">
+                        ✕
+                    </button>
+                </td>
             `;
             tbody.appendChild(row);
         });
+    }
+    
+    // Remove a medicine row from the table
+    function removeRow(button) {
+        const row = button.closest('tr');
+        const medicineName = row.querySelector('.medicine-input').value;
+        
+        if (confirm(`کیا آپ "${medicineName}" کو bill سے ہٹانا چاہتے ہیں?`)) {
+            row.remove();
+            calculateBill();
+            
+            // Update prescriptions count
+            const remainingRows = document.querySelectorAll('#prescriptionRows tr').length;
+            const searchStatus = document.getElementById('searchStatus');
+            if (remainingRows === 0) {
+                searchStatus.textContent = 'All medicines removed from bill';
+                searchStatus.style.background = 'rgba(255, 152, 0, 0.3)';
+            } else {
+                searchStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${remainingRows} medicine(s) in bill for ${currentPatient?.name || 'patient'}`;
+            }
+        }
     }
 
     // Calculate total bill
     function calculateBill() {
         const priceInputs = document.querySelectorAll('.price-input');
-        let total = 0;
+        let subtotal = 0;
         let itemsCount = 0;
         let billDetails = '';
         
         priceInputs.forEach((input, index) => {
             const price = parseFloat(input.value) || 0;
             if (price > 0) {
-                const medicineInput = input.closest('tr').querySelector('.medicine-input');
-                const daysInput = input.closest('tr').querySelector('.days-input');
+                const row = input.closest('tr');
+                const medicineInput = row.querySelector('.medicine-input');
+                const daysInput = row.querySelector('.days-input');
+                const qtyLabel = row.querySelector('.qty-label');
                 const medicineName = medicineInput.value;
                 const days = daysInput.value;
+                const qty = qtyLabel ? qtyLabel.textContent.trim() : `${days} days`;
                 
-                total += price;
+                subtotal += price;
                 itemsCount++;
-                billDetails += `${itemsCount}. ${medicineName} (${days} days) - PKR ${price.toFixed(2)}\n`;
+                billDetails += `${itemsCount}. ${medicineName} (${qty}) - PKR ${price.toFixed(2)}\n`;
             }
         });
         
-        const billContent = `${billDetails}
+        // Calculate final total with discount
+        const finalTotal = subtotal - discountAmount;
+        
+        let billContent = `${billDetails}
 ${'─'.repeat(40)}
 Total Items: ${itemsCount}
-Total Amount: PKR ${total.toFixed(2)}
+Subtotal: PKR ${subtotal.toFixed(2)}`;
+        
+        if (discountAmount > 0) {
+            billContent += `\nDiscount: PKR ${discountAmount.toFixed(2)} (${discountPercentage.toFixed(2)}%)`;
+        }
+        
+        billContent += `\nTotal Amount: PKR ${finalTotal.toFixed(2)}
 
 Patient: ${currentPatient ? currentPatient.name : 'N/A'}
 Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
@@ -833,11 +2206,129 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
         document.getElementById('billContent').textContent = billContent;
     }
 
+    // Update discount from amount
+    function updateDiscountFromAmount() {
+        const amount = parseFloat(document.getElementById('discountAmount').value) || 0;
+        
+        // Calculate subtotal
+        const priceInputs = document.querySelectorAll('.price-input');
+        let subtotal = 0;
+        priceInputs.forEach(input => {
+            subtotal += parseFloat(input.value) || 0;
+        });
+        
+        // Limit discount to subtotal
+        discountAmount = Math.min(amount, subtotal);
+        if (amount > subtotal) {
+            document.getElementById('discountAmount').value = subtotal.toFixed(2);
+        }
+        
+        // Calculate percentage
+        discountPercentage = subtotal > 0 ? (discountAmount / subtotal) * 100 : 0;
+        
+        // Update percentage input
+        document.getElementById('discountPercentage').value = discountPercentage.toFixed(2);
+        
+        // Recalculate bill
+        calculateBill();
+    }
+
+    // Update discount from percentage
+    function updateDiscountFromPercentage() {
+        const percentage = parseFloat(document.getElementById('discountPercentage').value) || 0;
+        
+        // Calculate subtotal
+        const priceInputs = document.querySelectorAll('.price-input');
+        let subtotal = 0;
+        priceInputs.forEach(input => {
+            subtotal += parseFloat(input.value) || 0;
+        });
+        
+        // Limit percentage to 100
+        discountPercentage = Math.min(percentage, 100);
+        if (percentage > 100) {
+            document.getElementById('discountPercentage').value = '100';
+        }
+        
+        // Calculate amount
+        discountAmount = (subtotal * discountPercentage) / 100;
+        
+        // Update amount input
+        document.getElementById('discountAmount').value = discountAmount.toFixed(2);
+        
+        // Recalculate bill
+        calculateBill();
+    }
+
+    // Populate thermal receipt with data
+    function populateThermalReceipt(medicines, subtotal, finalTotal) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-GB');
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+        
+        // Set date, time, patient info
+        document.getElementById('receiptDate').textContent = dateStr;
+        document.getElementById('receiptTime').textContent = timeStr;
+        
+        // Truncate patient name if too long (max 20 chars)
+        const patientName = currentPatient ? currentPatient.name : 'N/A';
+        document.getElementById('receiptPatient').textContent = patientName.length > 20 ? patientName.substring(0, 18) + '..' : patientName;
+        document.getElementById('receiptRefNo').textContent = currentPatient ? currentPatient.ref_no : 'N/A';
+        
+        // Build items list
+        let itemsHTML = '';
+        medicines.forEach((item, index) => {
+            // Truncate medicine name if too long (max 22 chars for 80mm paper)
+            let medName = item.medicine_name;
+            if (medName.length > 22) {
+                medName = medName.substring(0, 20) + '..';
+            }
+            // Get quantity label from the table
+            const qtyLabel = item.qty_label || `${item.days} day(s)`;
+            itemsHTML += `
+                <div class="item-row" style="color: #000 !important; font-weight: 900 !important;">
+                    <div class="item-name" style="color: #000 !important; font-weight: 900 !important;">${index + 1}. ${medName}</div>
+                    <div class="item-details" style="color: #000 !important; font-weight: 900 !important;">
+                        <span style="color: #000 !important; font-weight: 900 !important;">${qtyLabel}</span>
+                        <span style="color: #000 !important; font-weight: 900 !important;">Rs. ${item.price.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('receiptItems').innerHTML = itemsHTML;
+        
+        // Set totals
+        document.getElementById('receiptSubtotal').textContent = `Rs. ${subtotal.toFixed(2)}`;
+        
+        // Show/hide discount
+        if (discountAmount > 0) {
+            document.getElementById('receiptDiscountLine').style.display = 'flex';
+            document.getElementById('receiptDiscountLabel').textContent = `Discount (${discountPercentage.toFixed(2)}%):`;
+            document.getElementById('receiptDiscount').textContent = `- Rs. ${discountAmount.toFixed(2)}`;
+        } else {
+            document.getElementById('receiptDiscountLine').style.display = 'none';
+        }
+        
+        document.getElementById('receiptGrandTotal').textContent = `Rs. ${finalTotal.toFixed(2)}`;
+    }
+
     // Process order
     function processOrder() {
-        if (!currentPatient) {
+        // In direct sale mode, patient is optional for walk-in customers
+        if (!currentPatient && !directSaleMode) {
             Modal.error('Please search and select a patient first!', 'No Patient Selected');
             return;
+        }
+        
+        // For direct sale without patient, create a walk-in patient reference
+        if (!currentPatient && directSaleMode) {
+            const now = new Date();
+            currentPatient = {
+                ref_no: 'WALK-IN-' + now.getTime(),
+                name: 'Walk-in Customer',
+                phone: 'N/A',
+                age: 'N/A'
+            };
         }
         
         const medicines = [];
@@ -847,19 +2338,22 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
             const medicineInput = row.querySelector('.medicine-input');
             const daysInput = row.querySelector('.days-input');
             const priceInput = row.querySelector('.price-input');
+            const qtyLabel = row.querySelector('.qty-label');
             
             if (medicineInput && priceInput) {
                 const medicineName = medicineInput.value.trim();
                 const medicineId = medicineInput.getAttribute('data-medicine-id');
                 const days = parseInt(daysInput.value) || 0;
                 const price = parseFloat(priceInput.value) || 0;
+                const qtyText = qtyLabel ? qtyLabel.textContent.trim() : `${days} day(s)`;
                 
                 if (medicineName && price > 0) {
                     medicines.push({
                         medicine_id: medicineId,
                         medicine_name: medicineName,
                         days: days,
-                        price: price
+                        price: price,
+                        qty_label: qtyText
                     });
                 }
             }
@@ -870,7 +2364,11 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
             return;
         }
         
-        const totalAmount = medicines.reduce((sum, item) => sum + item.price, 0);
+        const subtotal = medicines.reduce((sum, item) => sum + item.price, 0);
+        const finalTotal = subtotal - discountAmount;
+        
+        // Populate thermal receipt
+        populateThermalReceipt(medicines, subtotal, finalTotal);
         
         // Show loading
         Modal.loading('Processing order and generating bill...', 'Please Wait');
@@ -885,7 +2383,10 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
             body: JSON.stringify({
                 patient_ref_no: currentPatient.ref_no,
                 medicines: medicines,
-                total_amount: totalAmount
+                total_amount: finalTotal,
+                discount_amount: discountAmount,
+                discount_percentage: discountPercentage,
+                is_direct_sale: directSaleMode
             })
         })
         .then(response => response.json())
@@ -898,20 +2399,23 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
                     <strong>Patient:</strong> ${data.patient_name}<br>
                     <strong>Items:</strong> ${data.items_count}<br>
                     <strong>Total:</strong> PKR ${data.total_amount.toFixed(2)}<br><br>
-                    <small>Bill is ready to print.</small>`,
+                    <small>Printing receipt...</small>`,
                     'Order Complete',
                     4000
                 );
                 
-                // Print window (optional)
+                // Show print receipt button
+                document.getElementById('printReceiptBtn').style.display = 'block';
+                
+                // Auto print receipt
                 setTimeout(() => {
-                    window.print();
+                    printReceipt();
                 }, 1000);
                 
-                // Clear after some time
+                // Clear after some time (but keep print button)
                 setTimeout(() => {
                     resetForm();
-                }, 5000);
+                }, 8000);
             } else {
                 Modal.error('Failed to process order: ' + (data.error || 'Unknown error'), 'Processing Failed');
             }
@@ -922,6 +2426,168 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
             Modal.error('Connection error. Please try again.', 'Network Error');
         });
     }
+    
+    // Print thermal receipt
+    function printReceipt() {
+        // Create a print window with just the receipt
+        const receiptContent = document.getElementById('thermalReceipt').outerHTML;
+        const printWindow = window.open('', '_blank', 'width=400,height=600');
+        
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Pharmacy Receipt</title>
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+                    body {
+                        font-family: 'Courier New', monospace;
+                        background: white;
+                        padding: 10px;
+                    }
+                    .thermal-receipt {
+                        width: 72mm;
+                        padding: 5mm;
+                        background: white;
+                        font-size: 12px;
+                        display: block !important;
+                    }
+                    .header {
+                        text-align: center;
+                        border-bottom: 1px dashed #000;
+                        padding-bottom: 8px;
+                        margin-bottom: 8px;
+                    }
+                    .clinic-name {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                    .receipt-title {
+                        font-size: 14px;
+                        margin-top: 5px;
+                        font-weight: bold;
+                    }
+                    .info-line {
+                        display: flex;
+                        justify-content: space-between;
+                        margin: 3px 0;
+                        font-size: 11px;
+                    }
+                    .section-title {
+                        font-weight: bold;
+                        margin: 8px 0 5px 0;
+                        border-bottom: 1px dashed #000;
+                        padding-bottom: 3px;
+                    }
+                    .item-row {
+                        margin: 5px 0;
+                        padding-bottom: 5px;
+                        border-bottom: 1px dotted #ccc;
+                    }
+                    .item-name {
+                        font-weight: bold;
+                        font-size: 11px;
+                    }
+                    .item-details {
+                        display: flex;
+                        justify-content: space-between;
+                        font-size: 10px;
+                        color: #333;
+                        margin-top: 2px;
+                    }
+                    .totals {
+                        margin-top: 10px;
+                        border-top: 1px dashed #000;
+                        padding-top: 8px;
+                    }
+                    .total-line {
+                        display: flex;
+                        justify-content: space-between;
+                        margin: 3px 0;
+                        font-size: 12px;
+                    }
+                    .grand-total {
+                        font-weight: bold;
+                        font-size: 14px;
+                        border-top: 1px solid #000;
+                        padding-top: 5px;
+                        margin-top: 5px;
+                    }
+                    .discount-line {
+                        color: #c00;
+                    }
+                    .footer {
+                        margin-top: 15px;
+                        text-align: center;
+                        border-top: 1px dashed #000;
+                        padding-top: 10px;
+                        font-size: 11px;
+                    }
+                    .thank-you {
+                        font-weight: bold;
+                        font-size: 14px;
+                        margin-bottom: 5px;
+                    }
+                    .print-buttons {
+                        margin: 20px 0;
+                        text-align: center;
+                    }
+                    .print-btn {
+                        background: #4CAF50;
+                        color: white;
+                        padding: 12px 30px;
+                        border: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        margin: 5px;
+                    }
+                    .print-btn:hover {
+                        background: #388E3C;
+                    }
+                    .close-btn {
+                        background: #f44336;
+                        color: white;
+                        padding: 12px 30px;
+                        border: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        margin: 5px;
+                    }
+                    .close-btn:hover {
+                        background: #c62828;
+                    }
+                    @media print {
+                        .print-buttons {
+                            display: none !important;
+                        }
+                        body {
+                            padding: 0;
+                        }
+                        @page {
+                            size: 80mm auto;
+                            margin: 0;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="print-buttons">
+                    <button class="print-btn" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
+                    <button class="close-btn" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
+                </div>
+                ${receiptContent}
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+    }
 
     // Reset form
     function resetForm() {
@@ -930,6 +2596,7 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
         document.getElementById('patientContent').textContent = 'No patient selected.\n\nSearch by reference number to view patient details.';
         document.getElementById('billContent').textContent = 'Total: PKR 0.00\n\nClick PRINT/SAVE to generate bill after entering medicine details.';
         document.getElementById('searchStatus').style.display = 'none';
+        document.getElementById('printReceiptBtn').style.display = 'none';
         currentPatient = null;
         currentPrescriptions = [];
     }
@@ -939,6 +2606,541 @@ Ref No: ${currentPatient ? currentPatient.ref_no : 'N/A'}`;
         if (e.key === 'Enter') {
             searchPrescription();
         }
+    });
+
+    // ============ SETTINGS FUNCTIONS ============
+    
+    function openSettings() {
+        // Close side menu first
+        sideMenu.classList.remove("active");
+        overlay.classList.remove("active");
+        
+        // Open settings modal
+        document.getElementById('settingsModal').classList.add('active');
+        
+        // Load database info
+        loadDatabaseInfo();
+    }
+    
+    function closeSettings() {
+        document.getElementById('settingsModal').classList.remove('active');
+    }
+    
+    // Close settings when clicking outside
+    document.getElementById('settingsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSettings();
+        }
+    });
+    
+    function loadDatabaseInfo() {
+        fetch('/pharmacy/api/database-info/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('dbPath').textContent = data.path;
+                    document.getElementById('dbSize').textContent = data.size;
+                    document.getElementById('dbModified').textContent = data.last_modified;
+                } else {
+                    document.getElementById('dbPath').textContent = 'Error loading';
+                    document.getElementById('dbSize').textContent = '-';
+                    document.getElementById('dbModified').textContent = '-';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading DB info:', error);
+                document.getElementById('dbPath').textContent = 'Error';
+            });
+    }
+    
+    function downloadBackup() {
+        Modal.loading('Preparing database backup...', 'Please Wait');
+        
+        // Create hidden link and trigger download
+        const link = document.createElement('a');
+        link.href = '/pharmacy/api/download-database/';
+        link.download = 'clinic_backup.sqlite3';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setTimeout(() => {
+            Modal.close();
+            Modal.success('Database backup download started!<br><br>Save this file in a safe location.', 'Backup Ready', 3000);
+        }, 1000);
+    }
+    
+    function uploadBackup() {
+        const fileInput = document.getElementById('dbFileInput');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            return;
+        }
+        
+        // Confirm before uploading
+        if (!confirm('WARNING: This will replace ALL current data with the backup!\n\nAre you absolutely sure you want to continue?')) {
+            fileInput.value = '';
+            return;
+        }
+        
+        Modal.loading('Uploading and restoring database...', 'Please Wait');
+        
+        const formData = new FormData();
+        formData.append('database', file);
+        
+        fetch('/pharmacy/api/upload-database/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            Modal.close();
+            fileInput.value = '';
+            
+            if (data.success) {
+                Modal.success(
+                    data.message + '<br><br><strong>The page will reload in 5 seconds...</strong>',
+                    'Database Restored',
+                    5000
+                );
+                
+                // Reload page after 5 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
+            } else {
+                Modal.error('Failed to restore database: ' + data.error, 'Restore Failed');
+            }
+        })
+        .catch(error => {
+            Modal.close();
+            fileInput.value = '';
+            console.error('Upload error:', error);
+            Modal.error('Connection error. Please try again.', 'Upload Failed');
+        });
+    }
+    
+    // ==================== GOOGLE DRIVE BACKUP ====================
+    
+    // Check Google Drive status when settings open
+    function checkGDriveStatus() {
+        fetch('/pharmacy/api/gdrive/status/')
+            .then(response => response.json())
+            .then(data => {
+                const statusText = document.getElementById('gdriveStatusText');
+                const notConnected = document.getElementById('gdriveNotConnected');
+                const connected = document.getElementById('gdriveConnected');
+                const statusDiv = document.getElementById('gdriveStatus');
+                
+                if (data.authenticated) {
+                    statusText.innerHTML = '<i class="fas fa-check-circle"></i> Connected to Google Drive';
+                    statusDiv.style.background = 'rgba(76, 175, 80, 0.3)';
+                    notConnected.style.display = 'none';
+                    connected.style.display = 'block';
+                } else {
+                    statusText.innerHTML = '<i class="fas fa-times-circle"></i> Not connected';
+                    statusDiv.style.background = 'rgba(244, 67, 54, 0.3)';
+                    notConnected.style.display = 'block';
+                    connected.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('GDrive status error:', error);
+                document.getElementById('gdriveStatusText').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Could not check status';
+            });
+    }
+    
+    // Show Google Drive setup modal
+    function showGDriveSetup() {
+        document.getElementById('gdriveSetupModal').classList.add('active');
+        document.getElementById('gdriveSetupStep1').style.display = 'block';
+        document.getElementById('gdriveSetupStep2').style.display = 'none';
+    }
+    
+    function closeGDriveSetup() {
+        document.getElementById('gdriveSetupModal').classList.remove('active');
+    }
+    
+    // Save Google Drive credentials
+    function saveGDriveCredentials() {
+        const clientId = document.getElementById('gdriveClientId').value.trim();
+        const clientSecret = document.getElementById('gdriveClientSecret').value.trim();
+        
+        if (!clientId || !clientSecret) {
+            alert('Please enter both Client ID and Client Secret');
+            return;
+        }
+        
+        fetch('/pharmacy/api/gdrive/setup/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                client_id: clientId,
+                client_secret: clientSecret
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('gdriveSetupStep1').style.display = 'none';
+                document.getElementById('gdriveSetupStep2').style.display = 'block';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Connection error: ' + error);
+        });
+    }
+    
+    // Start Google Drive authentication
+    function startGDriveAuth() {
+        fetch('/pharmacy/api/gdrive/auth-url/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.auth_url) {
+                    // Open auth URL in new window
+                    window.open(data.auth_url, '_blank', 'width=600,height=700');
+                    document.getElementById('authCodeSection').style.display = 'block';
+                } else if (data.needs_setup) {
+                    alert('Please complete step 1 first');
+                    document.getElementById('gdriveSetupStep1').style.display = 'block';
+                    document.getElementById('gdriveSetupStep2').style.display = 'none';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Connection error: ' + error);
+            });
+    }
+    
+    // Complete Google Drive authentication
+    function completeGDriveAuth() {
+        const code = document.getElementById('gdriveAuthCode').value.trim();
+        
+        if (!code) {
+            alert('Please paste the authorization code');
+            return;
+        }
+        
+        fetch('/pharmacy/api/gdrive/auth-complete/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeGDriveSetup();
+                checkGDriveStatus();
+                Modal.success('Google Drive connected successfully!<br><br>You can now backup to cloud.', 'Connected!', 3000);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Connection error: ' + error);
+        });
+    }
+    
+    // Backup to Google Drive
+    function backupToGDrive() {
+        Modal.loading('Uploading backup to Google Drive...', 'Cloud Backup');
+        
+        fetch('/pharmacy/api/gdrive/backup/', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            Modal.close();
+            
+            if (data.success) {
+                Modal.success(
+                    `<strong>${data.message}</strong><br><br>` +
+                    `File: ${data.file_name}<br>` +
+                    `<a href="${data.web_link}" target="_blank" style="color: #4285f4;">View in Google Drive</a>`,
+                    '☁️ Cloud Backup Complete',
+                    5000
+                );
+            } else if (data.needs_auth) {
+                Modal.error('Please connect to Google Drive first.<br><br>Local backup was saved.', 'Not Connected');
+            } else {
+                Modal.error('Backup failed: ' + data.error + '<br><br>Local backup: ' + (data.local_backup || 'saved'), 'Backup Error');
+            }
+        })
+        .catch(error => {
+            Modal.close();
+            Modal.error('Connection error: ' + error, 'Backup Failed');
+        });
+    }
+    
+    // Disconnect Google Drive
+    function disconnectGDrive() {
+        if (!confirm('Are you sure you want to disconnect Google Drive?')) {
+            return;
+        }
+        
+        fetch('/pharmacy/api/gdrive/disconnect/', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                checkGDriveStatus();
+                Modal.success('Google Drive disconnected.', 'Disconnected', 2000);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    }
+    
+    // Close app with backup prompt
+    function closeAppWithBackup() {
+        // Check if connected to Google Drive
+        fetch('/pharmacy/api/gdrive/status/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.authenticated) {
+                    // Ask to backup to cloud
+                    if (confirm('آج کا کام ختم ہو گیا؟\n\nکیا آپ Google Drive پر backup لینا چاہتے ہیں؟\n(Yes = Cloud Backup, No = Local Only)')) {
+                        // Backup to cloud then close
+                        Modal.loading('Creating cloud backup before closing...', 'Backup & Close');
+                        
+                        fetch('/pharmacy/api/gdrive/backup/', { method: 'POST' })
+                            .then(response => response.json())
+                            .then(backupData => {
+                                Modal.close();
+                                
+                                if (backupData.success) {
+                                    Modal.success(
+                                        '☁️ Cloud backup saved successfully!<br><br>' +
+                                        'Application will close in 3 seconds...',
+                                        'Backup Complete',
+                                        3000
+                                    );
+                                    setTimeout(() => {
+                                        closeApplication();
+                                    }, 3000);
+                                } else {
+                                    alert('Cloud backup failed, but local backup saved.\n\nClosing app...');
+                                    closeApplication();
+                                }
+                            })
+                            .catch(() => {
+                                Modal.close();
+                                alert('Backup error. Closing app...');
+                                closeApplication();
+                            });
+                    } else {
+                        // Just close without cloud backup
+                        createLocalBackupAndClose();
+                    }
+                } else {
+                    // Not connected to cloud, just local backup
+                    createLocalBackupAndClose();
+                }
+            })
+            .catch(() => {
+                createLocalBackupAndClose();
+            });
+    }
+    
+    function createLocalBackupAndClose() {
+        Modal.loading('Creating local backup...', 'Closing');
+        
+        // Trigger local backup download
+        const link = document.createElement('a');
+        link.href = '/pharmacy/api/download-database/';
+        link.download = 'clinic_backup_' + new Date().toISOString().split('T')[0] + '.sqlite3';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setTimeout(() => {
+            Modal.close();
+            closeApplication();
+        }, 1500);
+    }
+    
+    function closeApplication() {
+        // Try to close Electron app
+        if (window.electronAPI && window.electronAPI.closeApp) {
+            window.electronAPI.closeApp();
+        } else {
+            // Fallback - just show message
+            Modal.success('You can now close this window.<br><br>Thank you for using Clinic Management System!', 'Goodbye!', 5000);
+        }
+    }
+    
+    // Check daily backup status when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if backup needed today
+        fetch('/pharmacy/api/gdrive/check-daily/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.needs_backup) {
+                    // Show subtle reminder after 5 seconds
+                    setTimeout(() => {
+                        const reminder = document.createElement('div');
+                        reminder.innerHTML = `
+                            <div style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #4285f4 0%, #0f9d58 100%); 
+                                        color: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+                                        z-index: 9999; cursor: pointer; max-width: 300px;" onclick="this.remove(); openSettings();">
+                                <strong>💡 Daily Backup Reminder</strong><br>
+                                <small>آج کا backup ابھی تک نہیں لیا۔ Settings میں جا کر backup لیں۔</small>
+                            </div>
+                        `;
+                        document.body.appendChild(reminder);
+                        
+                        // Auto-hide after 10 seconds
+                        setTimeout(() => {
+                            if (reminder.parentElement) reminder.remove();
+                        }, 10000);
+                    }, 5000);
+                }
+            })
+            .catch(() => {});
+    });
+    
+    // Override openSettings to also check GDrive status
+    const originalOpenSettings = openSettings;
+    openSettings = function() {
+        originalOpenSettings();
+        checkGDriveStatus();
+    };
+    
+    // ========== PHARMACY QUEUE SYSTEM ==========
+    let pharmacyQueuePanelOpen = false;
+    
+    function togglePharmacyQueue() {
+        const panel = document.getElementById('pharmacyQueuePanel');
+        pharmacyQueuePanelOpen = !pharmacyQueuePanelOpen;
+        
+        if (pharmacyQueuePanelOpen) {
+            panel.classList.add('active');
+            loadPharmacyQueue();
+        } else {
+            panel.classList.remove('active');
+        }
+    }
+    
+    function loadPharmacyQueue() {
+        fetch('/pharmacy/api/queue/')
+            .then(response => response.json())
+            .then(data => {
+                updatePharmacyQueueUI(data.queue || []);
+            })
+            .catch(error => {
+                console.error('Error loading pharmacy queue:', error);
+            });
+    }
+    
+    function updatePharmacyQueueUI(queueItems) {
+        const listContainer = document.getElementById('pharmacyQueueList');
+        const waitingCount = queueItems.filter(p => p.status === 'waiting').length;
+        const dispensingCount = queueItems.filter(p => p.status === 'dispensing').length;
+        
+        // Update stats
+        document.getElementById('waitingCount').textContent = waitingCount;
+        document.getElementById('dispensingCount').textContent = dispensingCount;
+        document.getElementById('pharmacyQueueCount').textContent = queueItems.length;
+        
+        if (queueItems.length === 0) {
+            listContainer.innerHTML = `
+                <div class="pharmacy-queue-empty">
+                    <i class="fas fa-inbox"></i>
+                    <p>No prescriptions in queue</p>
+                    <small style="color: rgba(255,255,255,0.4);">Patients will appear here after doctor prints prescription</small>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        queueItems.forEach(patient => {
+            const statusClass = patient.status === 'dispensing' ? 'dispensing' : '';
+            const badge = patient.status === 'dispensing' ? '<span class="pharmacy-queue-badge dispensing">Dispensing</span>' : '';
+            const timeAgo = formatTimeAgo(patient.queued_at);
+            
+            html += `
+                <div class="pharmacy-queue-item ${statusClass}" onclick="selectPharmacyPatient(${patient.id}, '${patient.reference_number}')" data-patient-id="${patient.id}">
+                    <div style="display: flex; align-items: center;">
+                        <span class="pharmacy-queue-number">${patient.queue_number}</span>
+                        <div class="pharmacy-queue-item-content">
+                            <div class="pharmacy-queue-patient-name">${patient.name}</div>
+                            <div class="pharmacy-queue-patient-details">
+                                <span class="pharmacy-queue-patient-ref">${patient.reference_number}</span>
+                                <span>${patient.age || 'N/A'}</span>
+                            </div>
+                            <div class="pharmacy-queue-time">
+                                <i class="far fa-clock"></i> ${timeAgo}
+                            </div>
+                        </div>
+                        ${badge}
+                    </div>
+                </div>
+            `;
+        });
+        
+        listContainer.innerHTML = html;
+    }
+    
+    function selectPharmacyPatient(patientId, referenceNumber) {
+        // Mark as dispensing
+        fetch(`/pharmacy/api/queue/select/${patientId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close queue panel
+                togglePharmacyQueue();
+                
+                // Fill the search input with reference number
+                const searchInput = document.getElementById('refNoInput');
+                if (searchInput) {
+                    searchInput.value = referenceNumber;
+                    // Trigger the search automatically
+                    searchPrescription();
+                }
+                
+                // Refresh queue to update UI
+                setTimeout(loadPharmacyQueue, 500);
+            }
+        })
+        .catch(error => {
+            console.error('Error selecting patient:', error);
+        });
+    }
+    
+    function formatTimeAgo(timestamp) {
+        if (!timestamp) return '';
+        const now = new Date();
+        const then = new Date(timestamp);
+        const diffMs = now - then;
+        const diffMins = Math.floor(diffMs / 60000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} min ago`;
+        
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} hr ago`;
+        
+        return then.toLocaleDateString();
+    }
+    
+    // Load pharmacy queue on page load and refresh every 30 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPharmacyQueue();
+        setInterval(loadPharmacyQueue, 30000);
     });
 </script>
 {% endblock js %}

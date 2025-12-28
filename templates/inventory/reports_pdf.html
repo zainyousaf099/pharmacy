@@ -178,7 +178,7 @@
                 <th>Title</th>
                 <th>Category</th>
                 <th>Amount</th>
-                <th>Description</th>
+                <th>Notes</th>
             </tr>
         </thead>
         <tbody>
@@ -188,7 +188,7 @@
                 <td>{{ expense.title }}</td>
                 <td>{{ expense.category }}</td>
                 <td>Rs. {{ expense.amount|floatformat:2 }}</td>
-                <td>{{ expense.description|default:"N/A" }}</td>
+                <td>{{ expense.notes|default:"N/A" }}</td>
             </tr>
             {% endfor %}
         </tbody>
