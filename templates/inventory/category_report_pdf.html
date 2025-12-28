@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Category Report</title>
+    <style>
+        @page { size: A4; margin: 1.5cm; }
+        body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #17a2b8; padding-bottom: 15px; }
+        .header h1 { color: #17a2b8; margin: 0; font-size: 22px; }
+        .header p { margin: 5px 0; color: #666; }
+        .summary { margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        .summary table { width: 100%; }
+        .summary td { text-align: center; padding: 10px; }
+        .summary .value { font-size: 16px; font-weight: bold; color: #17a2b8; }
+        .summary .label { font-size: 9px; color: #666; }
+        .category-section { margin-top: 20px; page-break-inside: avoid; }
+        .category-header { background: #17a2b8; color: white; padding: 10px 15px; margin-bottom: 0; }
+        .category-header h3 { margin: 0; font-size: 14px; }
+        .category-header .badge { background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 3px; font-size: 10px; margin-left: 10px; }
+        table.data { width: 100%; border-collapse: collapse; }
+        table.data th { background: #e0f7fa; padding: 6px 8px; font-size: 9px; text-align: left; }
+        table.data td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 9px; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .low-stock { color: #dc3545; font-weight: bold; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 8px; }
+        .badge-success { background: #28a745; color: white; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .badge-danger { background: #dc3545; color: white; }
+        .footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📁 CATEGORY REPORT</h1>
+        <p>Generated: {{ report_date|date:"d M Y, h:i A" }}</p>
+    </div>
+
+    <div class="summary">
+        <table>
+            <tr>
+                <td>
+                    <div class="value">{{ total_categories }}</div>
+                    <div class="label">TOTAL CATEGORIES</div>
+                </td>
+                <td>
+                    <div class="value">{{ total_products }}</div>
+                    <div class="label">TOTAL PRODUCTS</div>
+                </td>
+                <td>
+                    <div class="value">Rs. {{ total_value|floatformat:0 }}</div>
+                    <div class="label">STOCK VALUE</div>
+                </td>
+                <td>
+                    <div class="value">Rs. {{ total_revenue|floatformat:0 }}</div>
+                    <div class="label">POTENTIAL REVENUE</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {% for cat_data in category_data %}
+    <div class="category-section">
+        <div class="category-header">
+            <h3>
+                {{ cat_data.category.name|default:"Uncategorized" }}
+                <span class="badge">{{ cat_data.products|length }} Products</span>
+                <span class="badge">Rs. {{ cat_data.total_value|floatformat:0 }}</span>
+            </h3>
+        </div>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine Name</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-right">Purchase Price</th>
+                    <th class="text-right">Sale Price</th>
+                    <th class="text-right">Stock Value</th>
+                    <th class="text-center">Margin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in cat_data.products %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ product.name }}</strong></td>
+                    <td class="text-center {% if product.total_boxes < 5 %}low-stock{% endif %}">{{ product.total_boxes|floatformat:0 }}</td>
+                    <td class="text-right">Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                    <td class="text-right">Rs. {{ product.sale_price|floatformat:2 }}</td>
+                    <td class="text-right"><strong>Rs. {{ product.stock_value|floatformat:0 }}</strong></td>
+                    <td class="text-center">
+                        {% if product.margin > 20 %}
+                        <span class="badge badge-success">{{ product.margin|floatformat:1 }}%</span>
+                        {% elif product.margin > 10 %}
+                        <span class="badge badge-warning">{{ product.margin|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="badge badge-danger">{{ product.margin|floatformat:1 }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+        Clinic Management System - Category Report | Page 1
+    </div>
+</body>
+</html>

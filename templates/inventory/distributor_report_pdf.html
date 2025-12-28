@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Distributor Report</title>
+    <style>
+        @page { size: A4; margin: 1.5cm; }
+        body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #0066cc; padding-bottom: 15px; }
+        .header h1 { color: #0066cc; margin: 0; font-size: 22px; }
+        .header p { margin: 5px 0; color: #666; }
+        .summary { margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        .summary table { width: 100%; }
+        .summary td { text-align: center; padding: 10px; }
+        .summary .value { font-size: 16px; font-weight: bold; color: #0066cc; }
+        .summary .label { font-size: 9px; color: #666; }
+        .distributor-section { margin-top: 20px; page-break-inside: avoid; }
+        .distributor-header { background: #0066cc; color: white; padding: 10px 15px; margin-bottom: 0; }
+        .distributor-header h3 { margin: 0; font-size: 14px; }
+        .distributor-header .badge { background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 3px; font-size: 10px; margin-left: 10px; }
+        table.data { width: 100%; border-collapse: collapse; }
+        table.data th { background: #e8f4fd; padding: 6px 8px; font-size: 9px; text-align: left; }
+        table.data td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 9px; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .low-stock { color: #dc3545; font-weight: bold; }
+        .footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚚 DISTRIBUTOR REPORT</h1>
+        <p>Generated: {{ report_date|date:"d M Y, h:i A" }}</p>
+    </div>
+
+    <div class="summary">
+        <table>
+            <tr>
+                <td>
+                    <div class="value">{{ total_distributors }}</div>
+                    <div class="label">TOTAL DISTRIBUTORS</div>
+                </td>
+                <td>
+                    <div class="value">{{ total_products }}</div>
+                    <div class="label">TOTAL PRODUCTS</div>
+                </td>
+                <td>
+                    <div class="value">Rs. {{ total_value|floatformat:0 }}</div>
+                    <div class="label">STOCK VALUE</div>
+                </td>
+                <td>
+                    <div class="value">Rs. {{ total_purchases|floatformat:0 }}</div>
+                    <div class="label">TOTAL PURCHASES</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {% for dist_data in distributor_data %}
+    <div class="distributor-section">
+        <div class="distributor-header">
+            <h3>
+                {{ dist_data.distributor.name|default:"No Distributor Assigned" }}
+                <span class="badge">{{ dist_data.products|length }} Products</span>
+                <span class="badge">Rs. {{ dist_data.total_value|floatformat:0 }}</span>
+            </h3>
+        </div>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine Name</th>
+                    <th>Category</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-right">Purchase Price</th>
+                    <th class="text-right">Sale Price</th>
+                    <th class="text-right">Stock Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in dist_data.products %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ product.name }}</strong></td>
+                    <td>{{ product.category|default:"-" }}</td>
+                    <td class="text-center {% if product.total_boxes < 5 %}low-stock{% endif %}">{{ product.total_boxes|floatformat:0 }}</td>
+                    <td class="text-right">Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                    <td class="text-right">Rs. {{ product.sale_price|floatformat:2 }}</td>
+                    <td class="text-right"><strong>Rs. {{ product.stock_value|floatformat:0 }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+        Clinic Management System - Distributor Report | Page 1
+    </div>
+</body>
+</html>

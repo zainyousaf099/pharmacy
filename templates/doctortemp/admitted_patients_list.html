@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Admitted Patients - Doctor{% endblock title %}
+
+{% block style %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to top left, #202020 0%, #202020 30%, #5a0000 65%, #a00 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .nav-controls {
+    display: flex;
+    gap: 8px;
+    margin-right: 15px;
+  }
+
+  .nav-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1.2rem;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-btn:active {
+    transform: translateY(0);
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .alert {
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid rgba(255, 193, 7, 0.4);
+  }
+
+  .patients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .patient-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .patient-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 32px rgba(160, 0, 0, 0.5);
+    border-color: rgba(255, 100, 100, 0.5);
+  }
+
+  .patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .patient-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .admission-number {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .status-admitted {
+    background: rgba(40, 167, 69, 0.3);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+  }
+
+  .status-no-room {
+    background: rgba(255, 193, 7, 0.3);
+    border: 1px solid rgba(255, 193, 7, 0.5);
+  }
+
+  .patient-info {
+    margin-bottom: 15px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.9rem;
+  }
+
+  .info-label {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .info-value {
+    font-weight: 600;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+  }
+
+  .btn-primary {
+    background: #dc3545;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+  }
+
+  .btn-view {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+  }
+
+  .btn-view:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .diagnosis-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    border-left: 3px solid rgba(220, 53, 69, 0.6);
+  }
+
+  .diagnosis-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container">
+  <div class="header">
+    <h1><i class="fas fa-hospital"></i> Admitted Patients</h1>
+    <div class="header-actions">
+      <div class="nav-controls">
+        <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+        <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+        <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+      </div>
+      <a href="{% url 'doctor_panel' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+  </div>
+
+  {% if admitted_patients %}
+  <div class="patients-grid">
+    {% for admission in admitted_patients %}
+    <div class="patient-card">
+      <div class="patient-header">
+        <div>
+          <div class="patient-name">{{ admission.opd_patient.name }}</div>
+          <div class="admission-number">{{ admission.admission_number }}</div>
+        </div>
+        <span class="status-badge {% if admission.room %}status-admitted{% else %}status-no-room{% endif %}">
+          {% if admission.room %}Admitted{% else %}Need Room{% endif %}
+        </span>
+      </div>
+
+      <div class="patient-info">
+        <div class="info-row">
+          <span class="info-label">Ref No:</span>
+          <span class="info-value">{{ admission.opd_patient.ref_no }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Age:</span>
+          <span class="info-value">{{ admission.opd_patient.age|default:"N/A" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Phone:</span>
+          <span class="info-value">{{ admission.opd_patient.phone|default:"N/A" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Room:</span>
+          <span class="info-value">
+            {% if admission.room %}
+              {{ admission.room.room_number }} ({{ admission.room.get_room_type_display }})
+            {% else %}
+              Not Assigned Yet
+            {% endif %}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Bed:</span>
+          <span class="info-value">{{ admission.bed.bed_number|default:"N/A" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Admitted:</span>
+          <span class="info-value">{{ admission.admission_date|date:"d M Y, H:i" }}</span>
+        </div>
+      </div>
+
+      {% if admission.initial_diagnosis or admission.admission_reason %}
+      <div class="diagnosis-box">
+        {% if admission.initial_diagnosis %}
+        <div class="diagnosis-label">Diagnosis:</div>
+        <div>{{ admission.initial_diagnosis }}</div>
+        {% endif %}
+        {% if admission.admission_reason %}
+        <div class="diagnosis-label" style="margin-top: 8px;">Reason:</div>
+        <div>{{ admission.admission_reason }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <h3>No Admitted Patients</h3>
+    <p>There are no patients currently admitted in the hospital.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

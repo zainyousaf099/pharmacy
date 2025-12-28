@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Stock Report</title>
+    <style>
+        @page { size: A4 landscape; margin: 1cm; }
+        body { font-family: Arial, sans-serif; font-size: 10px; line-height: 1.4; color: #333; }
+        .header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #0066cc; padding-bottom: 10px; }
+        .header h1 { color: #0066cc; margin: 0; font-size: 20px; }
+        .header p { margin: 3px 0; color: #666; }
+        .summary { display: flex; margin-bottom: 15px; }
+        .summary-box { background: #f8f9fa; padding: 8px 12px; margin-right: 10px; border-left: 3px solid #0066cc; }
+        .summary-box .label { font-size: 9px; color: #666; }
+        .summary-box .value { font-size: 14px; font-weight: bold; color: #0066cc; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #0066cc; color: white; padding: 6px; font-size: 9px; text-align: left; }
+        td { padding: 5px 6px; border-bottom: 1px solid #ddd; font-size: 9px; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .low-stock { color: #dc3545; font-weight: bold; }
+        .footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>COMPLETE STOCK REPORT</h1>
+        <p>Generated: {{ report_date|date:"d M Y, h:i A" }}</p>
+    </div>
+
+    <table>
+        <tr>
+            <td style="width:25%; padding:8px; background:#e8f4fd; border:none;">
+                <strong>Total Products:</strong> {{ total_products }}
+            </td>
+            <td style="width:25%; padding:8px; background:#e8f4fd; border:none;">
+                <strong>Purchase Value:</strong> Rs. {{ total_purchase_value|floatformat:0 }}
+            </td>
+            <td style="width:25%; padding:8px; background:#e8f4fd; border:none;">
+                <strong>Sale Value:</strong> Rs. {{ total_sale_value|floatformat:0 }}
+            </td>
+            <td style="width:25%; padding:8px; background:#e8f4fd; border:none;">
+                <strong>Potential Profit:</strong> Rs. {{ potential_profit|floatformat:0 }}
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width:4%">#</th>
+                <th style="width:25%">Medicine Name</th>
+                <th style="width:12%">Category</th>
+                <th style="width:10%" class="text-center">Stock (Packs)</th>
+                <th style="width:10%" class="text-center">Stock (Strips)</th>
+                <th style="width:12%" class="text-right">Purchase Price</th>
+                <th style="width:12%" class="text-right">Sale Price</th>
+                <th style="width:15%" class="text-right">Stock Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><strong>{{ product.name }}</strong></td>
+                <td>{{ product.category|default:"-" }}</td>
+                <td class="text-center {% if product.total_boxes < 5 %}low-stock{% endif %}">
+                    {{ product.total_boxes|floatformat:0 }}
+                </td>
+                <td class="text-center">{{ product.total_items|floatformat:0 }}</td>
+                <td class="text-right">Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                <td class="text-right">Rs. {{ product.sale_price|floatformat:2 }}</td>
+                <td class="text-right"><strong>Rs. {{ product.stock_value|floatformat:0 }}</strong></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No products found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Clinic Management System - Stock Report | Page 1
+    </div>
+</body>
+</html>

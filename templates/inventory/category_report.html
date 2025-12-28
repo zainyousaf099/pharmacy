@@ -1,0 +1,140 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Category Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5"><i class="fas fa-tags text-info me-2"></i>Category Report</h1>
+            <p class="text-muted">Inventory breakdown by product category</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:category_report_pdf' %}{% if selected_category %}?category={{ selected_category }}{% endif %}" class="btn btn-danger btn-lg">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Select Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Categories</h6>
+                    <h2 class="mb-0">{{ total_categories }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Products</h6>
+                    <h2 class="mb-0">{{ total_products }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Stock Value</h6>
+                    <h2 class="mb-0">Rs. {{ total_value|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body">
+                    <h6 class="opacity-75">Potential Revenue</h6>
+                    <h2 class="mb-0">Rs. {{ total_revenue|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Cards -->
+    {% for cat_data in category_data %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+            <h5 class="mb-0 text-white">
+                <i class="fas fa-folder me-2"></i>{{ cat_data.category.name|default:"Uncategorized" }}
+            </h5>
+            <div>
+                <span class="badge bg-light text-dark">{{ cat_data.products|length }} Products</span>
+                <span class="badge bg-light text-dark">Rs. {{ cat_data.total_value|floatformat:0 }}</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Stock (Packs)</th>
+                            <th>Stock (Strips)</th>
+                            <th>Purchase Price</th>
+                            <th>Sale Price</th>
+                            <th>Stock Value</th>
+                            <th>Profit Margin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in cat_data.products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ product.name }}</td>
+                            <td>
+                                <span class="{% if product.total_boxes < 5 %}text-danger fw-bold{% endif %}">
+                                    {{ product.total_boxes|floatformat:0 }}
+                                </span>
+                            </td>
+                            <td>{{ product.total_items|floatformat:0 }}</td>
+                            <td>Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                            <td class="text-success">Rs. {{ product.sale_price|floatformat:2 }}</td>
+                            <td class="fw-bold">Rs. {{ product.stock_value|floatformat:0 }}</td>
+                            <td>
+                                <span class="badge {% if product.margin > 20 %}bg-success{% elif product.margin > 10 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ product.margin|floatformat:1 }}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-5">
+        <i class="fas fa-inbox text-muted fa-4x mb-3"></i>
+        <h4 class="text-muted">No category data found</h4>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Medicine Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'inventory:all_reports' %}">Reports</a></li>
+                    <li class="breadcrumb-item active">{{ product.name }}</li>
+                </ol>
+            </nav>
+            <h1 class="display-5">
+                <i class="fas fa-pills me-2"></i>{{ product.name }}
+            </h1>
+            <p class="text-muted">Complete medicine report with stock, sales, and purchase history</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:medicine_report_pdf' product.pk %}" class="btn btn-danger btn-lg">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Period Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a href="?period=week" class="btn btn-outline-primary {% if period == 'week' %}active{% endif %}">This Week</a>
+                <a href="?period=month" class="btn btn-outline-primary {% if period == 'month' %}active{% endif %}">This Month</a>
+                <a href="?period=year" class="btn btn-outline-primary {% if period == 'year' %}active{% endif %}">This Year</a>
+                <a href="?period=all" class="btn btn-outline-primary {% if period == 'all' %}active{% endif %}">All Time</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medicine Info Card -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Medicine Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="text-muted small">Category</label>
+                            <div class="fw-bold">{{ product.category|default:"N/A" }}</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="text-muted small">Distributor</label>
+                            <div class="fw-bold">{{ product.distributor|default:"N/A" }}</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="text-muted small">Medicine Form</label>
+                            <div class="fw-bold">{{ product.get_medicine_form_display }}</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="text-muted small">Dosage</label>
+                            <div class="fw-bold">{{ product.weight_or_quantity|default:"N/A" }}</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="text-muted small">Expiry Date</label>
+                            <div class="fw-bold {% if product.expiry_date and product.expiry_date < today %}text-danger{% endif %}">
+                                {{ product.expiry_date|date:"M d, Y"|default:"N/A" }}
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="text-muted small">Batch No</label>
+                            <div class="fw-bold">{{ product.batch_no|default:"N/A" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>Current Stock</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="display-6 {% if product.total_boxes < 5 %}text-danger{% else %}text-success{% endif %}">
+                                {{ product.total_boxes|floatformat:0 }}
+                            </div>
+                            <small class="text-muted">Packs</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="display-6 text-primary">
+                                {{ product.total_items|floatformat:0 }}
+                            </div>
+                            <small class="text-muted">Strips</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="display-6 text-info">
+                                {{ product.total_subitems|floatformat:0 }}
+                            </div>
+                            <small class="text-muted">Units</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="text-muted small">Purchase Price/Pack</label>
+                            <div class="fw-bold">Rs. {{ product.purchase_price|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-6">
+                            <label class="text-muted small">Sale Price/Pack</label>
+                            <div class="fw-bold text-success">Rs. {{ product.sale_price|floatformat:2 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Sales</h6>
+                    <h3 class="mb-0">Rs. {{ total_sales_amount|floatformat:2 }}</h3>
+                    <small>{{ total_sales_qty|floatformat:0 }} units sold</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Purchases</h6>
+                    <h3 class="mb-0">Rs. {{ total_purchases_amount|floatformat:2 }}</h3>
+                    <small>{{ total_purchases_qty|floatformat:0 }} packs purchased</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm {% if profit >= 0 %}bg-info{% else %}bg-danger{% endif %} text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Profit/Loss</h6>
+                    <h3 class="mb-0">Rs. {{ profit|floatformat:2 }}</h3>
+                    <small>From this medicine</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body">
+                    <h6 class="opacity-75">Profit Margin</h6>
+                    <h3 class="mb-0">{{ profit_margin|floatformat:1 }}%</h3>
+                    <small>Per sale</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Transaction History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Price/Pack</th>
+                                    <th>Total</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for txn in transactions %}
+                                <tr>
+                                    <td>{{ txn.created_at|date:"M d, Y H:i" }}</td>
+                                    <td>
+                                        {% if txn.transaction_type == 'SALE' %}
+                                            <span class="badge bg-success">Sale</span>
+                                        {% else %}
+                                            <span class="badge bg-primary">Purchase</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ txn.quantity_boxes|floatformat:0 }} packs</td>
+                                    <td>
+                                        {% if txn.transaction_type == 'SALE' %}
+                                            Rs. {{ txn.unit_sale_price|floatformat:2 }}
+                                        {% else %}
+                                            Rs. {{ txn.unit_purchase_price|floatformat:2 }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="fw-bold">
+                                        {% if txn.transaction_type == 'SALE' %}
+                                            <span class="text-success">Rs. {{ txn.total_sale_amount|floatformat:2 }}</span>
+                                        {% else %}
+                                            <span class="text-primary">Rs. {{ txn.total_purchase_amount|floatformat:2 }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ txn.notes|default:"-"|truncatewords:5 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No transactions found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

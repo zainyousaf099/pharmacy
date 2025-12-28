@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Low Stock Report</title>
+    <style>
+        @page { size: A4; margin: 1.5cm; }
+        body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #dc3545; padding-bottom: 15px; }
+        .header h1 { color: #dc3545; margin: 0; font-size: 22px; }
+        .header p { margin: 5px 0; color: #666; }
+        .alert-box { background: #f8d7da; border: 1px solid #f5c6cb; padding: 12px; margin-bottom: 15px; border-radius: 4px; text-align: center; }
+        .alert-box strong { color: #721c24; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #dc3545; color: white; padding: 8px; font-size: 10px; text-align: left; }
+        td { padding: 7px 8px; border-bottom: 1px solid #ddd; font-size: 10px; }
+        tr:nth-child(even) { background: #fff5f5; }
+        .critical { background: #f8d7da; }
+        .out-of-stock { background: #343a40; color: white; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 9px; font-weight: bold; }
+        .badge-danger { background: #dc3545; color: white; }
+        .badge-dark { background: #343a40; color: white; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; color: #666; border-top: 1px solid #ddd; padding-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>LOW STOCK ALERT REPORT</h1>
+        <p>Generated: {{ report_date|date:"d M Y, h:i A" }}</p>
+        <p>Threshold: Below {{ threshold }} packs</p>
+    </div>
+
+    <div class="alert-box">
+        <strong>{{ products|length }} PRODUCT(S) NEED IMMEDIATE RESTOCKING!</strong>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width:5%">#</th>
+                <th style="width:30%">Medicine Name</th>
+                <th style="width:15%">Category</th>
+                <th style="width:12%" class="text-center">Current Stock</th>
+                <th style="width:10%" class="text-center">Status</th>
+                <th style="width:13%" class="text-right">Purchase Price</th>
+                <th style="width:15%">Distributor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr {% if product.total_boxes == 0 %}class="out-of-stock"{% elif product.total_boxes < 3 %}class="critical"{% endif %}>
+                <td>{{ forloop.counter }}</td>
+                <td><strong>{{ product.name }}</strong></td>
+                <td>{{ product.category|default:"-" }}</td>
+                <td class="text-center">{{ product.total_boxes|floatformat:0 }} packs</td>
+                <td class="text-center">
+                    {% if product.total_boxes == 0 %}
+                    <span class="badge badge-dark">OUT</span>
+                    {% elif product.total_boxes < 3 %}
+                    <span class="badge badge-danger">CRITICAL</span>
+                    {% else %}
+                    <span class="badge badge-warning">LOW</span>
+                    {% endif %}
+                </td>
+                <td class="text-right">Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                <td>{{ product.distributor.name|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center" style="padding: 30px;">All products are well stocked!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Clinic Management System - Low Stock Report | Printed: {{ report_date|date:"d/m/Y h:i A" }}
+    </div>
+</body>
+</html>

@@ -1,0 +1,761 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dispense Medicine - Pharmacy{% endblock title %}
+
+{% block style %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a472a 0%, #2d5016 50%, #4a7c2d 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .patient-info {
+    background: rgba(0, 123, 255, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 123, 255, 0.4);
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+
+  .info-label {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .info-value {
+    font-weight: 700;
+  }
+
+  .medicine-entry {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 0.95rem;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  option {
+    background: #1a472a;
+    color: white;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background: #218838;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-add {
+    background: #007bff;
+    color: white;
+    padding: 10px 20px;
+  }
+
+  .btn-add:hover {
+    background: #0056b3;
+  }
+
+  .message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .message.success {
+    background: rgba(40, 167, 69, 0.3);
+    border: 1px solid rgba(40, 167, 69, 0.5);
+  }
+
+  .message.error {
+    background: rgba(220, 53, 69, 0.3);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+  }
+
+  #medicineList {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .total-section {
+    background: rgba(40, 167, 69, 0.2);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: right;
+  }
+
+  .total-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #28a745;
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container">
+  <div class="header">
+    <h1><i class="fas fa-pills"></i> Dispense Medicine to Admitted Patient</h1>
+    <a href="{% url 'admitted_patients_pharmacy' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+  </div>
+
+  <div id="messageBox"></div>
+
+  <div class="card">
+    <div class="card-title">Search Patient</div>
+    <div class="form-group">
+      <label class="form-label">Enter Admission Number or Patient Name</label>
+      <input type="text" id="searchInput" placeholder="e.g., ADM000001 or Zain Yousaf">
+    </div>
+    <button class="btn btn-success" onclick="searchPatient()"><i class="fas fa-search"></i> Search Patient</button>
+  </div>
+
+  <div id="patientInfoCard" style="display: none;">
+    <div class="card">
+      <div class="card-title">Patient Information</div>
+      <div class="patient-info" id="patientInfo"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Doctor's Prescription</div>
+      <div id="prescriptionList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Add Medicine Manually (Without Prescription)</div>
+      <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px; font-size: 0.9rem;">
+        Add medicines directly without doctor's prescription
+      </p>
+      
+      <div class="form-group">
+        <label class="form-label">Search Medicine</label>
+        <input type="text" id="medicineSearch" placeholder="Search medicine by name..." oninput="searchMedicines()">
+        <div id="medicineResults" style="display: none; background: rgba(0,0,0,0.3); border-radius: 8px; margin-top: 5px; max-height: 200px; overflow-y: auto;"></div>
+      </div>
+
+      <div id="manualMedicineList" style="margin-top: 20px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="total-section">
+        <div style="margin-bottom: 10px; color: rgba(255,255,255,0.8);">
+          Prescription Total: <span style="font-size: 1.2rem;" id="prescriptionTotal">Rs. 0</span>
+        </div>
+        <div style="margin-bottom: 10px; color: rgba(255,255,255,0.8);">
+          Manual Medicines: <span style="font-size: 1.2rem;" id="manualTotal">Rs. 0</span>
+        </div>
+        <div style="border-top: 2px solid rgba(255,255,255,0.3); padding-top: 15px; margin-top: 15px;">
+          Grand Total: <span class="total-amount" id="totalAmount">Rs. 0</span>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="location.href='{% url 'admitted_patients_pharmacy' %}'">Cancel</button>
+        <button class="btn btn-success" onclick="dispenseMedicines()"><i class="fas fa-pills"></i> Dispense All Medicines & Add to Bill</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentAdmissionId = null;
+let prescriptionMedicines = [];
+let manualMedicines = [];
+let medicineSearchTimeout = null;
+
+// Get CSRF token from cookie
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+async function searchPatient() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (!query) {
+    showMessage('Please enter admission number or patient name', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch(`/admission/api/search-admitted/?q=${encodeURIComponent(query)}`);
+    const data = await response.json();
+
+    if (data.success) {
+      currentAdmissionId = data.patient.admission_id;
+      displayPatientInfo(data.patient);
+      await loadPrescription(data.patient.ref_no);
+      document.getElementById('patientInfoCard').style.display = 'block';
+    } else {
+      showMessage(data.error, 'error');
+      document.getElementById('patientInfoCard').style.display = 'none';
+    }
+  } catch (error) {
+    showMessage('Error searching patient', 'error');
+  }
+}
+
+function displayPatientInfo(patient) {
+  const html = `
+    <div class="info-row">
+      <span class="info-label">Name:</span>
+      <span class="info-value">${patient.name}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Admission No:</span>
+      <span class="info-value">${patient.admission_number}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Ref No:</span>
+      <span class="info-value">${patient.ref_no}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Room:</span>
+      <span class="info-value">${patient.room}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Bed:</span>
+      <span class="info-value">${patient.bed}</span>
+    </div>
+  `;
+  document.getElementById('patientInfo').innerHTML = html;
+}
+
+async function loadPrescription(refNo) {
+  try {
+    console.log('Loading prescription for ref_no:', refNo);
+    const response = await fetch(`/doctor/api/patient-prescriptions/?ref_no=${encodeURIComponent(refNo)}`);
+    const data = await response.json();
+    console.log('Prescription API response:', data);
+
+    if (data.success && data.prescriptions && data.prescriptions.length > 0) {
+      prescriptionMedicines = data.prescriptions;
+      displayPrescription(data.prescriptions);
+      calculateTotal();
+    } else {
+      document.getElementById('prescriptionList').innerHTML = `
+        <div style="padding: 20px; text-align: center; color: rgba(255,255,255,0.7);">
+          <p>❌ No prescription found for this patient</p>
+          <p style="font-size: 0.9rem;">You can add medicines manually below</p>
+        </div>
+      `;
+      calculateTotal();
+    }
+  } catch (error) {
+    console.error('Error loading prescription:', error);
+    showMessage('Error loading prescription', 'error');
+  }
+}
+
+function displayPrescription(prescriptions) {
+  let html = '<div style="display: grid; gap: 15px;">';
+  
+  prescriptions.forEach((presc, index) => {
+    const timing = [];
+    if (presc.morning) timing.push('Morning');
+    if (presc.evening) timing.push('Evening');
+    if (presc.night) timing.push('Night');
+    
+    // Calculate actual quantity: doses per day × number of days
+    const dosesPerDay = timing.length;
+    const actualQuantity = dosesPerDay * presc.days;
+    const totalPrice = presc.sale_price * actualQuantity;
+    
+    html += `
+      <div class="medicine-entry">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+          <div style="flex: 1;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: white;">${presc.medicine_name}</h3>
+            <p style="margin: 5px 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+              📅 ${presc.days} days | ⏰ ${timing.join(', ')}
+            </p>
+            ${presc.notes ? `<p style="margin: 5px 0; color: rgba(255,255,255,0.6); font-size: 0.85rem;">📝 ${presc.notes}</p>` : ''}
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+              Rs. ${presc.sale_price} × ${actualQuantity} tablets
+            </p>
+            <p style="margin: 5px 0; font-size: 1.2rem; font-weight: 700; color: #28a745;">
+              Rs. ${totalPrice.toFixed(2)}
+            </p>
+            <p style="margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.6);">
+              Stock: ${presc.stock}
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  document.getElementById('prescriptionList').innerHTML = html;
+}
+
+// Medicine Search for Manual Addition
+async function searchMedicines() {
+  clearTimeout(medicineSearchTimeout);
+  const query = document.getElementById('medicineSearch').value.trim();
+  
+  if (query.length < 2) {
+    document.getElementById('medicineResults').style.display = 'none';
+    return;
+  }
+  
+  medicineSearchTimeout = setTimeout(async () => {
+    try {
+      const response = await fetch(`/doctor/api/search-medicines/?q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      
+      if (data.results && data.results.length > 0) {
+        displayMedicineResults(data.results);
+      } else {
+        document.getElementById('medicineResults').innerHTML = `
+          <div style="padding: 10px; color: rgba(255,255,255,0.6);">No medicines found</div>
+        `;
+        document.getElementById('medicineResults').style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error searching medicines:', error);
+    }
+  }, 300);
+}
+
+function displayMedicineResults(results) {
+  let html = '';
+  results.forEach(med => {
+    html += `
+      <div onclick="addManualMedicine('${med.id}', '${med.name.replace(/'/g, "\\'")}', ${med.stock})" 
+           style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: background 0.2s;"
+           onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+           onmouseout="this.style.background='transparent'">
+        <div style="font-weight: 600;">${med.name}</div>
+        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
+          ${med.category || 'N/A'} | Stock: ${med.stock}
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('medicineResults').innerHTML = html;
+  document.getElementById('medicineResults').style.display = 'block';
+}
+
+function addManualMedicine(medicineId, medicineName, stock) {
+  // Hide search results
+  document.getElementById('medicineResults').style.display = 'none';
+  document.getElementById('medicineSearch').value = '';
+  
+  // Check if medicine already added
+  const exists = manualMedicines.find(m => m.medicine_id === medicineId);
+  if (exists) {
+    showMessage('Medicine already added', 'error');
+    return;
+  }
+  
+  // Fetch medicine details to get price
+  fetch(`/inventory/api/product/${medicineId}/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const medicine = {
+          medicine_id: medicineId,
+          medicine_name: medicineName,
+          quantity: 1,
+          price_per_unit: parseFloat(data.product.sale_price_per_subitem || data.product.purchase_price_per_subitem || 0),
+          stock: stock
+        };
+        
+        manualMedicines.push(medicine);
+        displayManualMedicines();
+        calculateTotal(); // Update totals immediately
+        showMessage('Medicine added successfully', 'success');
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching medicine details:', error);
+      showMessage('Error adding medicine', 'error');
+    });
+}
+
+function displayManualMedicines() {
+  if (manualMedicines.length === 0) {
+    document.getElementById('manualMedicineList').innerHTML = `
+      <div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.9rem;">
+        No manual medicines added yet
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '<div style="display: grid; gap: 15px;">';
+  
+  manualMedicines.forEach((med, index) => {
+    const total = med.quantity * med.price_per_unit;
+    html += `
+      <div class="medicine-entry">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+          <div style="flex: 1;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: white;">${med.medicine_name}</h3>
+            <p style="margin: 5px 0; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Stock: ${med.stock}</p>
+          </div>
+          <div style="text-align: right;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+              <label style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">Qty:</label>
+              <input type="number" value="${med.quantity}" min="1" max="${med.stock}"
+                     oninput="updateManualQuantity(${index}, this.value)"
+                     style="width: 80px; padding: 5px 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.3); color: white; text-align: center;">
+            </div>
+            <p style="margin: 0; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+              Rs. ${med.price_per_unit.toFixed(2)} × ${med.quantity}
+            </p>
+            <p style="margin: 5px 0; font-size: 1.2rem; font-weight: 700; color: #28a745;">
+              Rs. ${total.toFixed(2)}
+            </p>
+          </div>
+          <button onclick="removeManualMedicine(${index})" 
+                  style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-left: 10px; transition: background 0.2s;"
+                  onmouseover="this.style.background='#c82333'"
+                  onmouseout="this.style.background='#dc3545'">
+            🗑️
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  document.getElementById('manualMedicineList').innerHTML = html;
+}
+
+function updateManualQuantity(index, newQuantity) {
+  const qty = parseInt(newQuantity);
+  if (qty > 0 && qty <= manualMedicines[index].stock) {
+    manualMedicines[index].quantity = qty;
+    displayManualMedicines(); // Re-display with new quantities
+    calculateTotal(); // Update totals immediately
+  } else {
+    showMessage(`Quantity must be between 1 and ${manualMedicines[index].stock}`, 'error');
+    displayManualMedicines();
+  }
+}
+
+function removeManualMedicine(index) {
+  manualMedicines.splice(index, 1);
+  displayManualMedicines();
+  calculateTotal(); // Update totals immediately after removal
+}
+
+function calculateTotal() {
+  // Calculate prescription total
+  let prescriptionTotal = 0;
+  prescriptionMedicines.forEach(presc => {
+    const dosesPerDay = (presc.morning ? 1 : 0) + (presc.evening ? 1 : 0) + (presc.night ? 1 : 0);
+    const actualQuantity = dosesPerDay * presc.days;
+    prescriptionTotal += presc.sale_price * actualQuantity;
+  });
+  
+  // Calculate manual medicines total
+  let manualTotal = 0;
+  manualMedicines.forEach(med => {
+    manualTotal += med.quantity * med.price_per_unit;
+  });
+  
+  // Update display
+  document.getElementById('prescriptionTotal').textContent = `Rs. ${prescriptionTotal.toFixed(2)}`;
+  document.getElementById('manualTotal').textContent = `Rs. ${manualTotal.toFixed(2)}`;
+  document.getElementById('totalAmount').textContent = `Rs. ${(prescriptionTotal + manualTotal).toFixed(2)}`;
+}
+
+async function dispenseMedicines() {
+  console.log('Dispense button clicked');
+  console.log('Current admission ID:', currentAdmissionId);
+  console.log('Prescription medicines:', prescriptionMedicines);
+  console.log('Manual medicines:', manualMedicines);
+  
+  if (!currentAdmissionId) {
+    showMessage('Please search for a patient first', 'error');
+    return;
+  }
+
+  // Combine prescription medicines and manual medicines
+  const allMedicines = [];
+  
+  // Add prescription medicines
+  prescriptionMedicines.forEach(presc => {
+    const dosesPerDay = (presc.morning ? 1 : 0) + (presc.evening ? 1 : 0) + (presc.night ? 1 : 0);
+    const actualQuantity = dosesPerDay * presc.days;
+    allMedicines.push({
+      medicine_id: presc.medicine_id,
+      quantity: actualQuantity
+    });
+  });
+  
+  // Add manual medicines
+  manualMedicines.forEach(med => {
+    allMedicines.push({
+      medicine_id: med.medicine_id,
+      quantity: med.quantity
+    });
+  });
+  
+  console.log('All medicines to dispense:', allMedicines);
+  
+  if (allMedicines.length === 0) {
+    showMessage('No medicines to dispense. Add prescription or manual medicines first.', 'error');
+    return;
+  }
+
+  try {
+    console.log('Sending dispense request...');
+    const response = await fetch('/pharmacy/dispense-admitted/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({
+        admission_id: currentAdmissionId,
+        medicines: allMedicines
+      })
+    });
+
+    console.log('Response received:', response);
+    const data = await response.json();
+    console.log('Response data:', data);
+
+    if (data.success) {
+      // Show success popup with details
+      const totalAmount = data.total_amount || 0;
+      const itemsCount = data.dispensed_items ? data.dispensed_items.length : prescriptionMedicines.length;
+      
+      showSuccessPopup(
+        `✅ Medicines Dispensed Successfully!`,
+        `${itemsCount} medicine(s) have been dispensed and added to ${data.patient_name || 'patient'}'s bill.<br><br>` +
+        `<strong>Total Amount: Rs. ${totalAmount.toFixed(2)}</strong><br>` +
+        `Admission: ${data.admission_number || ''}`
+      );
+      
+      setTimeout(() => {
+        location.href = '{% url 'admitted_patients_pharmacy' %}';
+      }, 3000);
+    } else {
+      showMessage(data.error, 'error');
+    }
+  } catch (error) {
+    console.error('Error dispensing medicines:', error);
+    showMessage('Error dispensing medicines: ' + error.message, 'error');
+  }
+}
+
+function showMessage(message, type) {
+  const messageBox = document.getElementById('messageBox');
+  messageBox.innerHTML = `<div class="message ${type}">${message}</div>`;
+  setTimeout(() => {
+    messageBox.innerHTML = '';
+  }, 5000);
+}
+
+function showSuccessPopup(title, message) {
+  // Create popup overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+  `;
+  
+  // Create popup box
+  const popup = document.createElement('div');
+  popup.style.cssText = `
+    background: linear-gradient(135deg, #1a472a 0%, #2d5016 100%);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(40, 167, 69, 0.5);
+    animation: slideUp 0.4s ease;
+    text-align: center;
+  `;
+  
+  popup.innerHTML = `
+    <div style="font-size: 4rem; margin-bottom: 20px;"><i class="fas fa-pills"></i></div>
+    <h2 style="color: #28a745; font-size: 1.8rem; margin-bottom: 15px;">${title}</h2>
+    <p style="color: white; font-size: 1.1rem; line-height: 1.6;">${message}</p>
+    <div style="margin-top: 30px;">
+      <div style="width: 60px; height: 60px; border: 4px solid #28a745; border-top-color: transparent; border-radius: 50%; margin: 0 auto; animation: spin 1s linear infinite;"></div>
+    </div>
+  `;
+  
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+  
+  // Add animations
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Auto close after redirect
+  setTimeout(() => {
+    overlay.style.animation = 'fadeOut 0.3s ease';
+    setTimeout(() => overlay.remove(), 300);
+  }, 2500);
+}
+</script>
+{% endblock content %}

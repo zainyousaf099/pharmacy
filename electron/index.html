@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loader"></div>
+            <h2>Starting Clinic Management System...</h2>
+            <p>Please wait while we start the server</p>
+            <div class="status-text" id="status-text">Initializing...</div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="main-dashboard" class="main-dashboard hidden">
+            <div class="header">
+                <div class="logo">
+                    <h1>🏥 Clinic Management System</h1>
+                    <p class="subtitle">Local Network Server</p>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot active"></span>
+                    <span>Server Running</span>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Server Info Card -->
+                <div class="card info-card">
+                    <h2>📡 Server Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Server IP Address:</label>
+                            <div class="ip-display">
+                                <input type="text" id="server-ip" readonly value="Loading...">
+                                <button class="copy-btn" onclick="copyIP()">📋 Copy</button>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <label>Port:</label>
+                            <input type="text" id="server-port" readonly value="8000">
+                        </div>
+                        <div class="info-item full-width">
+                            <label>Full URL:</label>
+                            <div class="url-display">
+                                <input type="text" id="server-url" readonly value="Loading...">
+                                <button class="copy-btn" onclick="copyURL()">📋 Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Access Card -->
+                <div class="card access-card">
+                    <h2>🚀 Quick Access</h2>
+                    <p class="instruction">Open these links in your browser to access different panels:</p>
+                    <div class="button-grid">
+                        <button class="access-btn doctor" onclick="openPanel('doctor-login')">
+                            <span class="icon">🩺</span>
+                            <span class="text">Doctor Panel</span>
+                        </button>
+                        <button class="access-btn opd" onclick="openPanel('opd-login')">
+                            <span class="icon">📋</span>
+                            <span class="text">OPD Reception</span>
+                        </button>
+                        <button class="access-btn pharmacy" onclick="openPanel('pharmacy-login')">
+                            <span class="icon">💊</span>
+                            <span class="text">Pharmacy Panel</span>
+                        </button>
+                        <button class="access-btn inventory" onclick="openPanel('inventory')">
+                            <span class="icon">📦</span>
+                            <span class="text">Inventory</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Instructions Card -->
+                <div class="card instructions-card">
+                    <h2>📖 How to Connect Other Laptops</h2>
+                    <ol class="instructions-list">
+                        <li>
+                            <strong>Share the IP Address:</strong>
+                            <p>Copy the server IP above and share it with other laptops</p>
+                        </li>
+                        <li>
+                            <strong>Connect to Network:</strong>
+                            <p>Make sure all laptops are connected to the same network (Ethernet/Wi-Fi)</p>
+                        </li>
+                        <li>
+                            <strong>Open Browser:</strong>
+                            <p>On other laptops, open any browser (Chrome, Firefox, Edge)</p>
+                        </li>
+                        <li>
+                            <strong>Enter URL:</strong>
+                            <p>Type the Full URL shown above in the address bar</p>
+                        </li>
+                        <li>
+                            <strong>Login:</strong>
+                            <p>Choose your panel and login with your credentials</p>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Server Controls -->
+                <div class="card controls-card">
+                    <h2>⚙️ Server Controls</h2>
+                    <div class="controls">
+                        <button class="control-btn refresh" onclick="restartServer()">
+                            <span class="icon">↻</span>
+                            <span>Restart Server</span>
+                        </button>
+                        <button class="control-btn open" onclick="openMainPage()">
+                            <span class="icon">🌐</span>
+                            <span>Open in Browser</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Server Log -->
+                <div class="card log-card">
+                    <h2>📝 Server Log</h2>
+                    <div class="log-container" id="log-container">
+                        <div class="log-entry">Server starting...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

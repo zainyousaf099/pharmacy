@@ -1,0 +1,106 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Stock Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5"><i class="fas fa-boxes me-2"></i>Stock Report</h1>
+            <p class="text-muted">Complete inventory with current stock levels</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:stock_report_pdf' %}" class="btn btn-danger btn-lg">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Products</h6>
+                    <h2 class="mb-0">{{ total_products }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Stock Purchase Value</h6>
+                    <h2 class="mb-0">Rs. {{ total_purchase_value|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Stock Sale Value</h6>
+                    <h2 class="mb-0">Rs. {{ total_sale_value|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body">
+                    <h6 class="opacity-75">Potential Profit</h6>
+                    <h2 class="mb-0">Rs. {{ potential_profit|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Stock (Packs)</th>
+                            <th>Stock (Strips)</th>
+                            <th>Purchase Price</th>
+                            <th>Sale Price</th>
+                            <th>Stock Value</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ product.name }}</td>
+                            <td>{{ product.category|default:"-" }}</td>
+                            <td>
+                                <span class="{% if product.total_boxes < 5 %}text-danger fw-bold{% endif %}">
+                                    {{ product.total_boxes|floatformat:0 }}
+                                </span>
+                            </td>
+                            <td>{{ product.total_items|floatformat:0 }}</td>
+                            <td>Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                            <td class="text-success">Rs. {{ product.sale_price|floatformat:2 }}</td>
+                            <td class="fw-bold">Rs. {{ product.total_boxes|floatformat:0|default:0 }}</td>
+                            <td>
+                                <a href="{% url 'inventory:medicine_report' product.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-chart-bar"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4">No products found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

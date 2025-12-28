@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Medicine Report - {{ product.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            background: #3498db;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .info-grid {
+            display: table;
+            width: 100%;
+        }
+        .info-row {
+            display: table-row;
+        }
+        .info-label {
+            display: table-cell;
+            width: 30%;
+            padding: 5px 10px;
+            background: #f5f5f5;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+        }
+        .info-value {
+            display: table-cell;
+            padding: 5px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .stats-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .stat-box {
+            display: table-cell;
+            width: 25%;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+        }
+        .stat-box.green { background: #d4edda; }
+        .stat-box.blue { background: #cce5ff; }
+        .stat-box.yellow { background: #fff3cd; }
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        .sale { color: #28a745; }
+        .purchase { color: #007bff; }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Medicine Report</h1>
+        <p>{{ product.name }}</p>
+        <p>Generated: {{ generated_at|date:"M d, Y H:i" }}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Medicine Information</div>
+        <div class="info-grid">
+            <div class="info-row">
+                <div class="info-label">Name</div>
+                <div class="info-value">{{ product.name }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Category</div>
+                <div class="info-value">{{ product.category|default:"N/A" }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Distributor</div>
+                <div class="info-value">{{ product.distributor|default:"N/A" }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Medicine Form</div>
+                <div class="info-value">{{ product.get_medicine_form_display }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Dosage/Strength</div>
+                <div class="info-value">{{ product.weight_or_quantity|default:"N/A" }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Expiry Date</div>
+                <div class="info-value">{{ product.expiry_date|date:"M d, Y"|default:"N/A" }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Batch No</div>
+                <div class="info-value">{{ product.batch_no|default:"N/A" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Current Stock & Pricing</div>
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-value">{{ product.total_boxes|floatformat:0 }}</div>
+                <div class="stat-label">PACKS IN STOCK</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">{{ product.total_items|floatformat:0 }}</div>
+                <div class="stat-label">STRIPS IN STOCK</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">Rs. {{ product.purchase_price|floatformat:2 }}</div>
+                <div class="stat-label">PURCHASE PRICE/PACK</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">Rs. {{ product.sale_price|floatformat:2 }}</div>
+                <div class="stat-label">SALE PRICE/PACK</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Sales & Purchase Summary</div>
+        <div class="stats-row">
+            <div class="stat-box green">
+                <div class="stat-value">Rs. {{ total_sales_amount|floatformat:2 }}</div>
+                <div class="stat-label">TOTAL SALES ({{ total_sales_qty|floatformat:0 }} packs)</div>
+            </div>
+            <div class="stat-box blue">
+                <div class="stat-value">Rs. {{ total_purchases_amount|floatformat:2 }}</div>
+                <div class="stat-label">TOTAL PURCHASES ({{ total_purchases_qty|floatformat:0 }} packs)</div>
+            </div>
+            <div class="stat-box yellow">
+                <div class="stat-value">Rs. {{ profit|floatformat:2 }}</div>
+                <div class="stat-label">PROFIT/LOSS</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">{{ product.purchase_margin_percent|floatformat:1 }}%</div>
+                <div class="stat-label">PROFIT MARGIN</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Transaction History</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Price/Pack</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                <tr>
+                    <td>{{ txn.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        {% if txn.transaction_type == 'SALE' %}
+                            <span class="sale">SALE</span>
+                        {% else %}
+                            <span class="purchase">PURCHASE</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ txn.quantity_boxes|floatformat:0 }} packs</td>
+                    <td>
+                        {% if txn.transaction_type == 'SALE' %}
+                            Rs. {{ txn.unit_sale_price|floatformat:2 }}
+                        {% else %}
+                            Rs. {{ txn.unit_purchase_price|floatformat:2 }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if txn.transaction_type == 'SALE' %}
+                            <span class="sale">Rs. {{ txn.total_sale_amount|floatformat:2 }}</span>
+                        {% else %}
+                            <span class="purchase">Rs. {{ txn.total_purchase_amount|floatformat:2 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No transactions found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>This report was generated automatically by Clinic Management System</p>
+        <p>Generated on {{ generated_at|date:"F d, Y at H:i" }}</p>
+    </div>
+</body>
+</html>
