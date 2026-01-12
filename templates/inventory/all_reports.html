@@ -1,0 +1,256 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}All Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-chart-pie me-2"></i>Reports Center
+            </h1>
+            <p class="text-muted">Generate comprehensive reports for your inventory</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">Total Products</h6>
+                            <h2 class="mb-0">{{ total_products }}</h2>
+                        </div>
+                        <i class="fas fa-pills fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 bg-warning text-dark">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">Low Stock Items</h6>
+                            <h2 class="mb-0">{{ low_stock_count }}</h2>
+                        </div>
+                        <i class="fas fa-exclamation-triangle fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">Expiring Soon</h6>
+                            <h2 class="mb-0">{{ expiring_soon }}</h2>
+                        </div>
+                        <i class="fas fa-clock fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 bg-dark text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">Expired</h6>
+                            <h2 class="mb-0">{{ expired }}</h2>
+                        </div>
+                        <i class="fas fa-times-circle fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Categories -->
+    <div class="row g-4">
+        <!-- Stock Reports -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-boxes me-2"></i>Stock Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Complete inventory stock levels with purchase and sale values.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:stock_report' %}" class="btn btn-outline-success">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:stock_report_pdf' %}" class="btn btn-success">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Report -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Items running low that need to be reordered.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:low_stock_report' %}" class="btn btn-outline-warning">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:low_stock_report_pdf' %}" class="btn btn-warning">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expiry Report -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-times me-2"></i>Expiry Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Expired and expiring medicines sorted by urgency.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:expiry_report' %}" class="btn btn-outline-danger">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:expiry_report_pdf' %}" class="btn btn-danger">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales & Purchase Report -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Sales & Purchase Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Daily, weekly, monthly sales and purchase transactions.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:reports' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:reports_pdf' %}?period=month" class="btn btn-primary">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit/Loss Report -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Profit/Loss Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Revenue, cost, and profit analysis with breakdown.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:profit_loss_report' %}" class="btn btn-outline-info">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:profit_loss_report_pdf' %}?period=month" class="btn btn-info">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Analysis -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Sales Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Fast moving and slow moving items analysis.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:sales_analysis_report' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:sales_analysis_report_pdf' %}?period=month" class="btn btn-secondary">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distributor Report -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-truck me-2"></i>Distributor Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Stock and purchase analysis by distributor/supplier.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:distributor_report' %}" class="btn btn-outline-dark">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:distributor_report_pdf' %}" class="btn btn-dark">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Report -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header" style="background-color: #6f42c1; color: white;">
+                    <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Category Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Stock distribution by medicine category.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:category_report' %}" class="btn btn-outline-secondary" style="border-color: #6f42c1; color: #6f42c1;">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:category_report_pdf' %}" class="btn" style="background-color: #6f42c1; color: white;">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Report -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header" style="background-color: #e83e8c; color: white;">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Expense Report</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Clinic expenses breakdown by category.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:expense_reports' %}" class="btn btn-outline-secondary" style="border-color: #e83e8c; color: #e83e8c;">
+                            <i class="fas fa-eye me-2"></i>View Report
+                        </a>
+                        <a href="{% url 'inventory:expense_reports_pdf' %}?period=month" class="btn" style="background-color: #e83e8c; color: white;">
+                            <i class="fas fa-file-pdf me-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

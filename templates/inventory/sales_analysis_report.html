@@ -1,0 +1,212 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Sales Analysis Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5"><i class="fas fa-chart-line text-success me-2"></i>Sales Analysis</h1>
+            <p class="text-muted">Fast & slow moving items analysis</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:sales_analysis_report_pdf' %}?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}" class="btn btn-danger btn-lg">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Sales</h6>
+                    <h2 class="mb-0">Rs. {{ total_sales|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Items Sold</h6>
+                    <h2 class="mb-0">{{ total_items_sold|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Transactions</h6>
+                    <h2 class="mb-0">{{ total_transactions }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body">
+                    <h6 class="opacity-75">Avg Sale/Day</h6>
+                    <h2 class="mb-0">Rs. {{ avg_daily_sales|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Fast Moving Items -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-rocket me-2"></i>Fast Moving Items (Top 10)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Medicine</th>
+                                    <th>Qty Sold</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in fast_moving %}
+                                <tr>
+                                    <td>
+                                        {% if forloop.counter == 1 %}
+                                        <span class="badge bg-warning text-dark">🥇</span>
+                                        {% elif forloop.counter == 2 %}
+                                        <span class="badge bg-secondary">🥈</span>
+                                        {% elif forloop.counter == 3 %}
+                                        <span class="badge bg-dark">🥉</span>
+                                        {% else %}
+                                        {{ forloop.counter }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="fw-bold">{{ item.name }}</td>
+                                    <td><span class="badge bg-success">{{ item.qty_sold|floatformat:0 }}</span></td>
+                                    <td class="text-success fw-bold">Rs. {{ item.revenue|floatformat:0 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">No sales data found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slow Moving Items -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-snail me-2"></i>Slow Moving Items (Bottom 10)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Medicine</th>
+                                    <th>Qty Sold</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in slow_moving %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td class="fw-bold">{{ item.name }}</td>
+                                    <td><span class="badge bg-danger">{{ item.qty_sold|floatformat:0 }}</span></td>
+                                    <td>{{ item.current_stock|floatformat:0 }} packs</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">No data found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complete Sales Breakdown -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Complete Sales Breakdown</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Qty Sold</th>
+                            <th>Revenue</th>
+                            <th>Cost</th>
+                            <th>Profit</th>
+                            <th>Margin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in sales_breakdown %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ item.name }}</td>
+                            <td>{{ item.category|default:"-" }}</td>
+                            <td>{{ item.qty_sold|floatformat:0 }}</td>
+                            <td class="text-success">Rs. {{ item.revenue|floatformat:0 }}</td>
+                            <td class="text-danger">Rs. {{ item.cost|floatformat:0 }}</td>
+                            <td class="fw-bold {% if item.profit > 0 %}text-success{% else %}text-danger{% endif %}">
+                                Rs. {{ item.profit|floatformat:0 }}
+                            </td>
+                            <td>
+                                <span class="badge {% if item.margin > 20 %}bg-success{% elif item.margin > 10 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ item.margin|floatformat:1 }}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">No sales data for this period</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

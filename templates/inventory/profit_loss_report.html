@@ -1,0 +1,219 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Profit & Loss Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5"><i class="fas fa-balance-scale text-purple me-2"></i>Profit & Loss Report</h1>
+            <p class="text-muted">Financial analysis of inventory operations</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:profit_loss_report_pdf' %}?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}" class="btn btn-danger btn-lg">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="opacity-75">Total Revenue</h6>
+                            <h2 class="mb-0">Rs. {{ total_revenue|floatformat:0 }}</h2>
+                        </div>
+                        <i class="fas fa-arrow-up fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-danger text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="opacity-75">Total Cost</h6>
+                            <h2 class="mb-0">Rs. {{ total_cost|floatformat:0 }}</h2>
+                        </div>
+                        <i class="fas fa-arrow-down fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="opacity-75">Expenses</h6>
+                            <h2 class="mb-0">Rs. {{ total_expenses|floatformat:0 }}</h2>
+                        </div>
+                        <i class="fas fa-receipt fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm {% if net_profit >= 0 %}bg-primary{% else %}bg-dark{% endif %} text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="opacity-75">Net Profit</h6>
+                            <h2 class="mb-0">Rs. {{ net_profit|floatformat:0 }}</h2>
+                        </div>
+                        <i class="fas {% if net_profit >= 0 %}fa-thumbs-up{% else %}fa-thumbs-down{% endif %} fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Breakdown -->
+    <div class="row g-4 mb-4">
+        <!-- Revenue Breakdown -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Revenue Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><i class="fas fa-pills text-success me-2"></i>Medicine Sales</td>
+                            <td class="text-end fw-bold text-success">Rs. {{ medicine_sales|floatformat:0 }}</td>
+                        </tr>
+                        <tr class="border-top">
+                            <td><strong>Total Revenue</strong></td>
+                            <td class="text-end fw-bold text-success fs-5">Rs. {{ total_revenue|floatformat:0 }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-minus-circle me-2"></i>Cost Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><i class="fas fa-shopping-cart text-danger me-2"></i>Cost of Goods Sold</td>
+                            <td class="text-end fw-bold text-danger">Rs. {{ total_cost|floatformat:0 }}</td>
+                        </tr>
+                        {% for expense in expense_breakdown %}
+                        <tr>
+                            <td><i class="fas fa-file-invoice text-warning me-2"></i>{{ expense.category }}</td>
+                            <td class="text-end fw-bold text-warning">Rs. {{ expense.total|floatformat:0 }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="border-top">
+                            <td><strong>Total Expenses</strong></td>
+                            <td class="text-end fw-bold text-danger fs-5">Rs. {{ total_cost_and_expenses|floatformat:0 }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profit Summary Card -->
+    <div class="card border-0 shadow-sm {% if net_profit >= 0 %}border-success{% else %}border-danger{% endif %} border-2">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="{% if net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        {% if net_profit >= 0 %}
+                        <i class="fas fa-smile me-2"></i>Profitable Period!
+                        {% else %}
+                        <i class="fas fa-frown me-2"></i>Loss Period
+                        {% endif %}
+                    </h3>
+                    <p class="text-muted mb-0">
+                        From {{ start_date|date:"d M Y" }} to {{ end_date|date:"d M Y" }}
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <h1 class="display-4 {% if net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        Rs. {{ net_profit|floatformat:0 }}
+                    </h1>
+                    <p class="text-muted">
+                        Margin: <span class="fw-bold {% if profit_margin >= 0 %}text-success{% else %}text-danger{% endif %}">{{ profit_margin|floatformat:1 }}%</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Breakdown -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Daily Summary (Last 7 Days)</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Revenue</th>
+                            <th>Cost</th>
+                            <th>Gross Profit</th>
+                            <th>Margin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in daily_breakdown %}
+                        <tr>
+                            <td class="fw-bold">{{ day.date|date:"D, d M" }}</td>
+                            <td class="text-success">Rs. {{ day.revenue|floatformat:0 }}</td>
+                            <td class="text-danger">Rs. {{ day.cost|floatformat:0 }}</td>
+                            <td class="fw-bold {% if day.profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                Rs. {{ day.profit|floatformat:0 }}
+                            </td>
+                            <td>
+                                <span class="badge {% if day.margin > 20 %}bg-success{% elif day.margin > 10 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ day.margin|floatformat:1 }}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No data for this period</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

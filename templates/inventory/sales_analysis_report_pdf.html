@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Sales Analysis Report</title>
+    <style>
+        @page { size: A4; margin: 1.5cm; }
+        body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #28a745; padding-bottom: 15px; }
+        .header h1 { color: #28a745; margin: 0; font-size: 22px; }
+        .header p { margin: 5px 0; color: #666; }
+        .summary { margin-bottom: 20px; }
+        .summary table { width: 100%; }
+        .summary td { text-align: center; padding: 10px; background: #f8f9fa; }
+        .summary .value { font-size: 16px; font-weight: bold; color: #28a745; }
+        .summary .label { font-size: 9px; color: #666; }
+        .section { margin-top: 20px; }
+        .section-title { padding: 10px 15px; margin-bottom: 0; color: white; font-size: 14px; }
+        .section-title.success { background: #28a745; }
+        .section-title.danger { background: #dc3545; }
+        .section-title.dark { background: #343a40; }
+        table.data { width: 100%; border-collapse: collapse; }
+        table.data th { background: #f8f9fa; padding: 6px 8px; font-size: 9px; text-align: left; border-bottom: 2px solid #ddd; }
+        table.data td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 9px; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-success { color: #28a745; }
+        .text-danger { color: #dc3545; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 8px; }
+        .badge-success { background: #28a745; color: white; }
+        .badge-danger { background: #dc3545; color: white; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .two-col { display: table; width: 100%; }
+        .two-col > div { display: table-cell; width: 50%; padding-right: 10px; vertical-align: top; }
+        .two-col > div:last-child { padding-right: 0; padding-left: 10px; }
+        .footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SALES ANALYSIS REPORT</h1>
+        <p>Period: {{ start_date|date:"d M Y" }} - {{ end_date|date:"d M Y" }}</p>
+        <p>Generated: {{ report_date|date:"d M Y, h:i A" }}</p>
+    </div>
+
+    <div class="summary">
+        <table>
+            <tr>
+                <td>
+                    <div class="value">Rs. {{ total_sales|floatformat:0 }}</div>
+                    <div class="label">TOTAL SALES</div>
+                </td>
+                <td>
+                    <div class="value">{{ total_items_sold|floatformat:0 }}</div>
+                    <div class="label">ITEMS SOLD</div>
+                </td>
+                <td>
+                    <div class="value">{{ total_transactions }}</div>
+                    <div class="label">TRANSACTIONS</div>
+                </td>
+                <td>
+                    <div class="value">Rs. {{ avg_daily_sales|floatformat:0 }}</div>
+                    <div class="label">AVG/DAY</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="two-col">
+        <div>
+            <div class="section-title success">🚀 FAST MOVING (Top 10)</div>
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Medicine</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-right">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in fast_moving %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td class="text-center"><span class="badge badge-success">{{ item.qty_sold|floatformat:0 }}</span></td>
+                        <td class="text-right text-success">Rs. {{ item.revenue|floatformat:0 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center">No data</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div class="section-title danger">🐌 SLOW MOVING (Bottom 10)</div>
+            <table class="data">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Medicine</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-center">Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in slow_moving %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td class="text-center"><span class="badge badge-danger">{{ item.qty_sold|floatformat:0 }}</span></td>
+                        <td class="text-center">{{ item.current_stock|floatformat:0 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center">No data</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section" style="margin-top:25px;">
+        <div class="section-title dark">COMPLETE SALES BREAKDOWN</div>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-right">Revenue</th>
+                    <th class="text-right">Cost</th>
+                    <th class="text-right">Profit</th>
+                    <th class="text-center">Margin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sales_breakdown %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ item.name }}</strong></td>
+                    <td class="text-center">{{ item.qty_sold|floatformat:0 }}</td>
+                    <td class="text-right text-success">Rs. {{ item.revenue|floatformat:0 }}</td>
+                    <td class="text-right text-danger">Rs. {{ item.cost|floatformat:0 }}</td>
+                    <td class="text-right {% if item.profit > 0 %}text-success{% else %}text-danger{% endif %}">
+                        Rs. {{ item.profit|floatformat:0 }}
+                    </td>
+                    <td class="text-center">
+                        {% if item.margin > 20 %}
+                        <span class="badge badge-success">{{ item.margin|floatformat:1 }}%</span>
+                        {% elif item.margin > 10 %}
+                        <span class="badge badge-warning">{{ item.margin|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="badge badge-danger">{{ item.margin|floatformat:1 }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center">No sales data</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        Clinic Management System - Sales Analysis Report | Page 1
+    </div>
+</body>
+</html>

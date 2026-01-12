@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Low Stock Report</title>
+    <style>
+        @page { size: A4; margin: 0.5cm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; font-size: 10px; line-height: 1.4; color: #000; }
+        
+        .report-container { padding: 10px; }
+        
+        .header { 
+            text-align: center; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 10px; 
+        }
+        .header h1 { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
+        .header p { font-size: 9px; }
+        
+        .alert-box {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 5px 4px; font-size: 9px; }
+        th { background: #f0f0f0; font-weight: bold; text-align: left; }
+        
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        .footer {
+            margin-top: 15px;
+            padding-top: 8px;
+            border-top: 1px solid #000;
+            text-align: center;
+            font-size: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="header">
+            <h1>LOW STOCK REPORT</h1>
+            <p>Generated: {{ report_date|date:"d/m/Y h:i A" }} | Threshold: Below {{ threshold }} packs</p>
+        </div>
+
+        <div class="alert-box">
+            {{ products|length }} PRODUCT(S) NEED RESTOCKING
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:4%">#</th>
+                    <th style="width:28%">Medicine Name</th>
+                    <th style="width:15%">Category</th>
+                    <th style="width:12%" class="text-center">Stock</th>
+                    <th style="width:10%" class="text-center">Status</th>
+                    <th style="width:13%" class="text-right">Price</th>
+                    <th style="width:18%">Distributor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category|default:"-" }}</td>
+                    <td class="text-center">{{ product.total_boxes|floatformat:0 }}</td>
+                    <td class="text-center">
+                        {% if product.total_boxes == 0 %}OUT{% elif product.total_boxes < 3 %}CRITICAL{% else %}LOW{% endif %}
+                    </td>
+                    <td class="text-right">Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                    <td>{{ product.distributor.name|default:"-" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">All products are well stocked</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            Low Stock Report | Printed: {{ report_date|date:"d/m/Y h:i A" }}
+        </div>
+    </div>
+</body>
+</html>

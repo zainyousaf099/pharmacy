@@ -46,6 +46,37 @@
     .header-actions {
       display: flex;
       gap: 15px;
+      align-items: center;
+    }
+
+    .nav-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 1.2rem;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-btn:active {
+      transform: translateY(0);
     }
 
     .btn {
@@ -166,10 +197,15 @@
 {% block content %}
 <div class="panel">
     <div class="panel-header">
-        <h2>📋 Prescription Templates</h2>
+        <h2><i class="fas fa-clipboard-list"></i> Prescription Templates</h2>
         <div class="header-actions">
-            <a href="{% url 'template_create' %}" class="btn btn-primary">➕ Create Template</a>
-            <a href="{% url 'doctor_panel' %}" class="btn">⬅ Back to Dashboard</a>
+            <div class="nav-controls">
+                <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+                <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+                <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+            </div>
+            <a href="{% url 'template_create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Create Template</a>
+            <a href="{% url 'doctor_panel' %}" class="btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
     </div>
 
@@ -181,13 +217,13 @@
             <p class="template-description">{{ template.description|default:"No description provided." }}</p>
             
             <div class="template-meta">
-                <span>💊 {{ template.prescriptiontemplatemedicine_set.count }} medicine(s)</span>
-                <span>📅 {{ template.created_at|date:"d M Y" }}</span>
+                <span><i class="fas fa-pills"></i> {{ template.prescriptiontemplatemedicine_set.count }} medicine(s)</span>
+                <span><i class="fas fa-calendar"></i> {{ template.created_at|date:"d M Y" }}</span>
             </div>
 
             <div class="template-actions">
-                <a href="{% url 'template_detail' template.id %}" class="btn">👁 View</a>
-                <button class="btn btn-danger delete-template-btn" data-id="{{ template.id }}" data-name="{{ template.name }}">🗑 Delete</button>
+                <a href="{% url 'template_detail' template.id %}" class="btn"><i class="fas fa-eye"></i> View</a>
+                <button class="btn btn-danger delete-template-btn" data-id="{{ template.id }}" data-name="{{ template.name }}"><i class="fas fa-trash"></i> Delete</button>
             </div>
         </div>
         {% endfor %}
@@ -196,7 +232,7 @@
     <div class="empty-state">
         <h3>No Templates Yet</h3>
         <p>Create your first prescription template to speed up your workflow!</p>
-        <a href="{% url 'template_create' %}" class="btn btn-primary">➕ Create Your First Template</a>
+        <a href="{% url 'template_create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Create Your First Template</a>
     </div>
     {% endif %}
 </div>

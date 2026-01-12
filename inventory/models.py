@@ -54,11 +54,24 @@ class Product(models.Model):
     they will be computed using the purchase_price and purchase_margin_percentage (profit %)
     or you can set explicit sale price fields.
     """
+    
+    MEDICINE_FORM_CHOICES = [
+        ('tablet', 'Tablet'),
+        ('capsule', 'Capsule'),
+        ('syrup', 'Syrup'),
+        ('injection', 'Injection'),
+        ('drops', 'Drops'),
+        ('ointment', 'Ointment/Cream'),
+        ('inhaler', 'Inhaler'),
+        ('suppository', 'Suppository'),
+        ('other', 'Other'),
+    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
     distributor = models.CharField(max_length=255, blank=True, null=True, help_text='Medicine distributor/supplier name')
+    medicine_form = models.CharField(max_length=20, choices=MEDICINE_FORM_CHOICES, default='tablet', help_text='Form of medicine (tablet, syrup, injection, etc.)')
 
     # counts
     products_in_box = models.PositiveIntegerField(default=1, help_text='How many product-units in this entry (usually 1 box)')    
@@ -81,6 +94,11 @@ class Product(models.Model):
     # margins and discount
     purchase_margin_percent = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'), help_text='Expected margin percent to compute sale prices if sale prices not given')
     discount_percent = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'), help_text='Discount percent to apply at sale time (informational)')
+    
+    # Distributor discount fields
+    distributor_discount_percent = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'), help_text='Discount percentage provided by distributor on purchase')
+    distributor_discount_pkr = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'), help_text='Discount amount in PKR provided by distributor')
+    net_purchase_price = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0.00'), help_text='Purchase price after distributor discount')
 
     # inventory & logistics
     rack_no = models.CharField(max_length=100, blank=True, null=True)
@@ -111,12 +129,34 @@ class Product(models.Model):
         if self.subitems_per_item < 1:
             self.subitems_per_item = 1
 
+        # Calculate net purchase price after distributor discount
+        gross_price = Decimal(self.purchase_price or 0)
+        
+        # If discount PKR is provided, calculate percentage
+        if self.distributor_discount_pkr and self.distributor_discount_pkr > 0:
+            self.net_purchase_price = gross_price - Decimal(self.distributor_discount_pkr)
+            if gross_price > 0:
+                self.distributor_discount_percent = quantize_decimal(
+                    (Decimal(self.distributor_discount_pkr) / gross_price) * 100, places=2
+                )
+        # If discount percentage is provided, calculate PKR
+        elif self.distributor_discount_percent and self.distributor_discount_percent > 0:
+            self.distributor_discount_pkr = quantize_decimal(
+                gross_price * (Decimal(self.distributor_discount_percent) / 100), places=2
+            )
+            self.net_purchase_price = gross_price - self.distributor_discount_pkr
+        else:
+            self.net_purchase_price = gross_price
+            self.distributor_discount_pkr = Decimal('0.00')
+            self.distributor_discount_percent = Decimal('0.00')
+
         # compute purchase price per item and per subitem
+        # Use NET purchase price (after discount) for calculations
         # The purchase_price is for the TOTAL quantity (products_in_box packs)
         # So if user enters 10 packs and purchase_price = 4000, then price per pack = 4000/10 = 400
         try:
-            # price per single pack/box
-            price_per_pack = Decimal(self.purchase_price) / Decimal(self.products_in_box)
+            # price per single pack/box (using net price after discount)
+            price_per_pack = Decimal(self.net_purchase_price) / Decimal(self.products_in_box)
         except Exception:
             price_per_pack = Decimal('0')
 
@@ -135,8 +175,8 @@ class Product(models.Model):
         # compute sale prices if not provided using purchase_margin_percent
         if (self.sale_price is None or self.sale_price == Decimal('0')) and self.purchase_margin_percent:
             margin = Decimal(self.purchase_margin_percent) / Decimal('100')
-            # sale price for total quantity (same structure as purchase_price)
-            self.sale_price = quantize_decimal(Decimal(self.purchase_price) * (Decimal('1') + margin), places=6)
+            # sale price for total quantity (based on NET purchase price after discount)
+            self.sale_price = quantize_decimal(Decimal(self.net_purchase_price) * (Decimal('1') + margin), places=6)
 
         # Calculate sale price per item and subitem
         if self.sale_price:
@@ -155,13 +195,16 @@ class Product(models.Model):
         # Note: avoid heavy DB ops on save if used in loops; caching helps but you may
         # want to call Product.update_cached_stock() from management command or signals
         
-        # Check if this is a new product (no pk yet)
-        is_new = self.pk is None
+        # Check if this is a new product - need to check using _state.adding instead of pk
+        # because UUID fields get their value before save()
+        is_new = self._state.adding
+        skip_transaction = kwargs.pop('skip_initial_transaction', False)
         
         super().save(*args, **kwargs)
         
         # Initialize stock for new products by creating initial transaction
-        if is_new and self.products_in_box > 0:
+        # Note: InventoryTransaction.save() will automatically call product.update_cached_stock()
+        if is_new and self.products_in_box > 0 and not skip_transaction:
             InventoryTransaction.objects.create(
                 product=self,
                 transaction_type='PUR',
@@ -179,9 +222,52 @@ class Product(models.Model):
     def compute_sale_price_from_margin(self, percent_margin: Decimal):
         margin = Decimal(percent_margin) / Decimal('100')
         return quantize_decimal(Decimal(self.purchase_price) * (Decimal('1') + margin), places=6)
+    
+    def get_unit_labels(self):
+        """Return dynamic labels based on medicine form"""
+        labels = {
+            'tablet': {'item': 'Strip', 'subitem': 'Tablet'},
+            'capsule': {'item': 'Strip', 'subitem': 'Capsule'},
+            'syrup': {'item': 'Bottle', 'subitem': 'ml'},
+            'injection': {'item': 'Vial/Ampoule', 'subitem': 'ml'},
+            'drops': {'item': 'Bottle', 'subitem': 'ml'},
+            'ointment': {'item': 'Tube', 'subitem': 'gram'},
+            'inhaler': {'item': 'Inhaler', 'subitem': 'dose'},
+            'suppository': {'item': 'Strip', 'subitem': 'Suppository'},
+            'other': {'item': 'Unit', 'subitem': 'Piece'},
+        }
+        return labels.get(self.medicine_form, labels['tablet'])
+    
+    def get_display_stock(self):
+        """Return formatted stock display based on medicine form"""
+        labels = self.get_unit_labels()
+        if self.medicine_form in ['syrup', 'injection', 'drops']:
+            # For liquids, show bottles and ml
+            return f"{self.total_items} {labels['item']}(s)"
+        else:
+            # For solids, show strips and tablets
+            return f"{self.total_items} {labels['item']}(s), {self.total_subitems} {labels['subitem']}(s)"
 
     def update_cached_stock(self):
-        """Calculate totals from InventoryTransaction records and cache them on model."""
+        """
+        Calculate totals from InventoryTransaction records and cache them on model.
+        
+        Logic:
+        - For liquid forms (syrup, drops, etc.): track items (bottles) directly
+        - For solid forms (tablets, capsules): calculate items and boxes from subitems
+        
+        Example for tablets: 1 box = 4 strips, 1 strip = 10 tablets
+        - If 40 tablets in stock: boxes=1, strips=4, tablets=40
+        - If 30 tablets in stock: boxes=0, strips=3, tablets=30
+        
+        Example for syrups: track bottles directly
+        - If 5 bottles in stock: items=5, subitems=5, boxes=0
+        """
+        # Liquid forms track by bottle (items), not by ml (subitems)
+        LIQUID_FORMS = ['syrup', 'drops', 'injection', 'inhaler', 'ointment']
+        is_liquid = self.medicine_form in LIQUID_FORMS
+        
+        # Sum all transactions - incoming quantities minus outgoing quantities
         aggregates = InventoryTransaction.objects.filter(product=self).aggregate(
             in_boxes=models.Sum('quantity_boxes'),
             out_boxes=models.Sum('quantity_boxes_out'),
@@ -190,23 +276,65 @@ class Product(models.Model):
             in_sub=models.Sum('quantity_subitems'),
             out_sub=models.Sum('quantity_subitems_out')
         )
+        
         # For backward compat, if none exist, treat as zero
-        in_boxes = aggregates.get('in_boxes') or Decimal('0')
-        out_boxes = aggregates.get('out_boxes') or Decimal('0')
         in_items = aggregates.get('in_items') or Decimal('0')
         out_items = aggregates.get('out_items') or Decimal('0')
         in_sub = aggregates.get('in_sub') or Decimal('0')
         out_sub = aggregates.get('out_sub') or Decimal('0')
-
-        # We'll prefer computing totals in the finest granularity (subitems) and derive others
-        total_sub = in_sub - out_sub
-        total_items = (in_items - out_items) or (total_sub / Decimal(self.subitems_per_item) if self.subitems_per_item else Decimal('0'))
-        total_boxes = (in_boxes - out_boxes) or (total_items / Decimal(self.items_per_product) if self.items_per_product else Decimal('0'))
-
-        self.total_boxes = quantize_decimal(total_boxes, places=6)
-        self.total_items = quantize_decimal(total_items, places=6)
-        self.total_subitems = quantize_decimal(total_sub, places=6)
-        self.save(update_fields=['total_boxes', 'total_items', 'total_subitems'])
+        
+        if is_liquid:
+            # For liquids: track by bottles (items)
+            # Sales deduct from items, purchases add to items
+            net_items = in_items - out_items
+            if net_items < 0:
+                net_items = Decimal('0')
+            
+            # For liquids, total_items = bottles, total_subitems can mirror items
+            self.total_boxes = Decimal('0')  # Boxes not typically used for liquids
+            self.total_items = quantize_decimal(net_items, places=6)
+            self.total_subitems = quantize_decimal(net_items, places=6)  # Mirror for compatibility
+        else:
+            # For solids: Calculate net subitems (tablets)
+            net_subitems = in_sub - out_sub
+            if net_subitems < 0:
+                net_subitems = Decimal('0')
+            
+            # Get product structure
+            subitems_per_item = Decimal(str(self.subitems_per_item or 1))
+            items_per_product = Decimal(str(self.items_per_product or 1))
+            subitems_per_box = subitems_per_item * items_per_product  # tablets per box
+            
+            # Calculate boxes, items (strips), and remaining subitems from total subitems
+            if subitems_per_box > 0:
+                # How many complete boxes?
+                complete_boxes = int(net_subitems // subitems_per_box)
+                remaining_after_boxes = net_subitems - (Decimal(str(complete_boxes)) * subitems_per_box)
+                
+                # How many complete strips from remaining?
+                if subitems_per_item > 0:
+                    complete_items = int(remaining_after_boxes // subitems_per_item)
+                    # Total items = items in complete boxes + additional complete items
+                    total_items = (Decimal(str(complete_boxes)) * items_per_product) + Decimal(str(complete_items))
+                else:
+                    total_items = Decimal('0')
+                
+                total_boxes = Decimal(str(complete_boxes))
+            else:
+                total_boxes = Decimal('0')
+                total_items = Decimal('0')
+            
+            # Store the values
+            self.total_boxes = quantize_decimal(total_boxes, places=6)
+            self.total_items = quantize_decimal(total_items, places=6)
+            self.total_subitems = quantize_decimal(net_subitems, places=6)
+        
+        # Use direct update query to prevent triggering save() and creating new transactions
+        Product.objects.filter(pk=self.pk).update(
+            total_boxes=self.total_boxes,
+            total_items=self.total_items,
+            total_subitems=self.total_subitems
+        )
 
     # convenience properties
     @property
@@ -265,24 +393,26 @@ class InventoryTransaction(models.Model):
 
     def save(self, *args, **kwargs):
         # ensure quantities consistent: if outgoing or sale, populate outgoing mirror fields
+        # and zero out the incoming fields to avoid double counting
         if self.transaction_type in {self.OUTGOING, self.SALE}:
+            # For SALE/OUTGOING: store quantity in _out fields, zero out regular fields
             self.quantity_boxes_out = self.quantity_boxes
             self.quantity_items_out = self.quantity_items
             self.quantity_subitems_out = self.quantity_subitems
+            # Zero out regular fields so they don't count as incoming
+            self.quantity_boxes = Decimal('0')
+            self.quantity_items = Decimal('0')
+            self.quantity_subitems = Decimal('0')
         else:
-            # incoming/purchase
+            # incoming/purchase - keep quantities in regular fields, zero out _out fields
             self.quantity_boxes_out = Decimal('0')
             self.quantity_items_out = Decimal('0')
             self.quantity_subitems_out = Decimal('0')
 
         super().save(*args, **kwargs)
 
-        # Optionally update cached totals on product
-        try:
-            self.product.update_cached_stock()
-        except Exception:
-            # In heavy traffic environments you may want to queue this call
-            pass
+        # Update cached totals on product after transaction is saved
+        self.product.update_cached_stock()
 
     def __str__(self):
         return f"Txn {self.id} {self.transaction_type} {self.product.name} - boxes:{self.quantity_boxes} items:{self.quantity_items} sub:{self.quantity_subitems}"

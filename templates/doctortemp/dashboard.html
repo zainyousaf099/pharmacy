@@ -50,6 +50,37 @@
       gap: 10px;
     }
 
+    .nav-controls {
+      display: flex;
+      gap: 8px;
+      margin-right: 15px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 1.2rem;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-btn:active {
+      transform: translateY(0);
+    }
+
     .header-actions {
       display: flex;
       gap: 15px;
@@ -72,41 +103,42 @@
       transform: translateY(-2px);
     }
 
-    /* Hamburger */
+    /* Hamburger Menu */
     .hamburger {
+      width: 30px;
+      height: 25px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      justify-content: space-between;
       cursor: pointer;
-      padding: 8px;
-      transition: all 0.3s;
+      transition: transform 0.3s ease;
+      margin-left: 10px;
     }
 
     .hamburger:hover {
-      opacity: 0.8;
+      transform: scale(1.1);
     }
 
     .hamburger span {
       display: block;
       height: 3px;
-      width: 28px;
+      width: 100%;
       background: white;
       border-radius: 3px;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
     }
 
     /* Side Menu */
     .side-menu {
       position: fixed;
       top: 0;
-      right: -300px;
-      width: 280px;
+      right: -318px;
+      width: 250px;
       height: 100%;
       background: rgba(24, 24, 24, 0.95);
-      backdrop-filter: blur(10px);
-      box-shadow: -4px 0 20px rgba(0,0,0,0.5);
-      transition: right 0.3s ease;
-      padding: 30px 25px;
+      box-shadow: -4px 0 12px rgba(0,0,0,0.6);
+      transition: right 0.4s ease;
+      padding: 20px;
       z-index: 1001;
     }
 
@@ -117,70 +149,50 @@
     .side-menu h4 {
       margin-top: 0;
       color: #fff;
-      border-bottom: 2px solid rgba(255,255,255,0.2);
-      padding-bottom: 15px;
-      font-size: 1.3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 10px;
     }
 
     .side-menu ul {
       list-style: none;
       padding: 0;
-      margin: 25px 0;
-    }
-
-    .side-menu ul li {
       margin: 20px 0;
     }
 
+    .side-menu ul li {
+      margin: 15px 0;
+    }
+
     .side-menu ul li a {
-      color: rgba(255, 255, 255, 0.9);
+      color: white;
       text-decoration: none;
-      font-size: 1.05rem;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px;
-      border-radius: 6px;
+      font-size: 1rem;
+      transition: color 0.3s;
     }
 
     .side-menu ul li a:hover {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-      padding-left: 15px;
+      color: #ff6b6b;
     }
 
     .close-btn {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 2rem;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
       cursor: pointer;
       color: white;
-      width: 35px;
-      height: 35px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: all 0.3s;
-    }
-
-    .close-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: rotate(90deg);
     }
 
     /* Overlay */
     .overlay {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(3px);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
       z-index: 1000;
       display: none;
-      transition: all 0.3s;
     }
 
     .overlay.active {
@@ -260,6 +272,12 @@
       font-family: inherit;
     }
 
+    select option {
+      background-color: #1a1a1a !important;
+      color: white !important;
+      padding: 8px 12px;
+    }
+
     input[type="text"]:focus,
     textarea:focus,
     select:focus {
@@ -280,6 +298,170 @@
       font-family: 'Segoe UI', sans-serif;
     }
 
+    /* Patient Details Card Styles */
+    .patient-details-card {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      min-height: 180px;
+    }
+
+    .patient-details-card.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-style: italic;
+    }
+
+    .patient-details-card .patient-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 12px;
+    }
+
+    .patient-details-card .patient-avatar {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #a00 0%, #600 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .patient-details-card .patient-name-section {
+      flex: 1;
+    }
+
+    .patient-details-card .patient-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 3px;
+    }
+
+    .patient-details-card .patient-ref {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .patient-details-card .patient-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .patient-details-card .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .patient-details-card .info-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .patient-details-card .info-item i {
+      width: 20px;
+      text-align: center;
+      color: #ff6b6b;
+      font-size: 0.85rem;
+    }
+
+    .patient-details-card .info-item .info-content {
+      flex: 1;
+    }
+
+    .patient-details-card .info-item .info-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .patient-details-card .info-item .info-value {
+      font-size: 0.9rem;
+      color: white;
+      font-weight: 500;
+    }
+
+    /* Clinical Notes Section */
+    .clinical-notes-section {
+      margin-top: 20px;
+    }
+
+    .clinical-notes-section #toggleClinicalNotesBtn {
+      background: rgba(139, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .clinical-notes-section #toggleClinicalNotesBtn:hover {
+      background: rgba(139, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .clinical-notes-section #toggleClinicalNotesBtn i {
+      transition: transform 0.3s;
+    }
+
+    #clinicalNotesContent {
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #clinicalNotesContent .form-group {
+      margin-bottom: 15px;
+    }
+
+    #clinicalNotesContent .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+    }
+
+    #clinicalNotesContent textarea {
+      min-height: 60px;
+      font-size: 0.9rem;
+    }
+
     /* Prescription Table */
     .prescription-table-wrapper {
       overflow: visible;
@@ -291,6 +473,7 @@
       border-collapse: separate;
       border-spacing: 0;
       position: relative;
+      table-layout: auto;
     }
 
     .prescription-table tbody {
@@ -301,12 +484,13 @@
       background: rgba(0, 0, 0, 0.3);
       color: white;
       font-weight: 600;
-      padding: 12px;
+      padding: 10px 8px;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      white-space: nowrap;
     }
 
     .prescription-table thead th:first-child {
@@ -318,9 +502,10 @@
     }
 
     .prescription-table tbody td {
-      padding: 12px;
+      padding: 10px 8px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       vertical-align: middle;
+      width:77px
     }
 
     .prescription-table tbody tr:hover {
@@ -329,7 +514,7 @@
 
     .medicine-input-cell {
       position: relative;
-      width: 40%;
+      width: 22%;
     }
 
     .medicine-input-wrapper {
@@ -337,13 +522,27 @@
       width: 100%;
     }
 
-    .days-cell {
-      width: 20%;
+    .qty-cell {
+      width: 10%;
     }
 
-    .checkbox-cell {
+    .dosage-form-cell {
       width: 13%;
-      text-align: center;
+    }
+
+    .frequency-cell {
+      width: 12%;
+    }
+
+    .urdu-cell {
+      width: 20%;
+      text-align: right;
+      direction: rtl;
+      font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', Arial, sans-serif;
+    }
+
+    .days-cell {
+      width: 10%;
     }
 
     .prescription-table .medicineSearch {
@@ -354,6 +553,54 @@
     .prescription-table select {
       width: 100%;
       margin: 0;
+      padding: 10px 8px;
+      font-size: 0.9rem;
+    }
+
+    .prescription-table input[type="number"] {
+      width: 100%;
+      padding: 10px 6px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .prescription-table input[type="number"]:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .qty-input {
+      width: 100% !important;
+    }
+
+    .dosage-form-select {
+      width: 100%;
+    }
+
+    .frequency-select {
+      width: 100%;
+    }
+
+    .days-select {
+      width: 100%;
+    }
+
+    .urdu-description {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
     }
 
     /* Checkboxes */
@@ -429,6 +676,16 @@
     .btn-primary:hover {
       background: #c00;
       border-color: #c00;
+    }
+
+    .btn-success {
+      background: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+      border-color: #1e7e34;
     }
 
     .btn-group {
@@ -512,6 +769,81 @@
     @keyframes tickPulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.1); }
+    }
+
+    /* Admission Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      display: none;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(40, 40, 40, 0.98);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 16px;
+      color: white;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      max-width: 500px;
+      width: 90%;
+      animation: modalShow 0.3s ease-out;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(90deg);
+    }
+
+    @keyframes modalShow {
+      from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
     }
     
     /* Medicine Autocomplete Styles */
@@ -627,19 +959,677 @@
     .autocomplete-results::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.3);
     }
+
+    /* Patient Queue Panel Styles */
+    .queue-toggle-btn {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #a00 0%, #700 100%);
+      color: white;
+      padding: 15px 8px;
+      border-radius: 0 10px 10px 0;
+      cursor: pointer;
+      z-index: 999;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      box-shadow: 3px 0 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .queue-toggle-btn:hover {
+      padding-left: 12px;
+      background: linear-gradient(135deg, #c00 0%, #900 100%);
+    }
+
+    .queue-toggle-btn .queue-count {
+      background: #00ff66;
+      color: #000;
+      padding: 4px 6px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      writing-mode: horizontal-tb;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .queue-panel {
+      position: fixed;
+      left: -350px;
+      top: 0;
+      width: 320px;
+      height: 100%;
+      background: rgba(20, 20, 20, 0.98);
+      backdrop-filter: blur(15px);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.6);
+      transition: left 0.4s ease;
+      z-index: 1002;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .queue-panel.active {
+      left: 0;
+    }
+
+    .queue-panel-header {
+      padding: 20px;
+      background: linear-gradient(135deg, #a00 0%, #700 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .queue-panel-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .queue-close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .queue-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .queue-stats {
+      display: flex;
+      gap: 10px;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .queue-stat {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+    }
+
+    .queue-stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00ff66;
+    }
+
+    .queue-stat-label {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .queue-stat.active .queue-stat-number {
+      color: #ffa500;
+    }
+
+    .queue-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .queue-item {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .queue-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(5px);
+    }
+
+    .queue-item.with-doctor {
+      border-color: #ffa500;
+      background: rgba(255, 165, 0, 0.15);
+    }
+
+    .queue-item.with-doctor::before {
+      content: 'IN PROGRESS';
+      position: absolute;
+      top: -8px;
+      right: 10px;
+      background: #ffa500;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .queue-number {
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #a00 0%, #700 100%);
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .queue-item-content {
+      margin-left: 30px;
+    }
+
+    .queue-patient-name {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+
+    .queue-patient-details {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .queue-patient-ref {
+      color: #00ff66;
+      font-weight: 500;
+    }
+
+    .queue-time {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 5px;
+    }
+
+    .queue-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .queue-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .queue-refresh-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .queue-refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .queue-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1001;
+      display: none;
+    }
+
+    .queue-overlay.active {
+      display: block;
+    }
+
+    /* Queue list scrollbar */
+    .queue-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .queue-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .queue-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .queue-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(0, 255, 102, 0); }
+    }
+
+    .queue-toggle-btn.has-waiting {
+      animation: pulseGreen 2s infinite;
+    }
+
+    /* ===== Improved Prescription Form Styles ===== */
+    
+    /* Template Section */
+    .template-section {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .template-section .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .template-section .form-label i {
+      color: #00ff66;
+    }
+
+    .template-selector {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .template-selector select {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px 15px;
+      color: white;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .template-selector select:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .template-selector select:focus {
+      border-color: #00ff66;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 255, 102, 0.15);
+    }
+
+    .btn-template {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-template:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-template.btn-manage {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-template.btn-manage:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Enhanced Prescription Table */
+    .prescription-table thead th {
+      
+    }
+
+    .prescription-table thead th i {
+      margin-right: 6px;
+      opacity: 0.8;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .action-btn i {
+      opacity: 0.9;
+    }
+
+    .btn-add {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-add:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-save {
+      background: rgba(170, 0, 0, 0.6);
+      border-color: rgba(170, 0, 0, 0.8);
+    }
+
+    .btn-save:hover {
+      background: rgba(170, 0, 0, 0.8);
+      border-color: rgba(200, 0, 0, 0.9);
+    }
+
+    .btn-admit {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-admit:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Clinical Notes Section */
+    .clinical-notes-section {
+      margin-top: 25px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+    }
+
+    .clinical-notes-section > button {
+      width: 100%;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+
+    .clinical-notes-section > button:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .clinical-notes-section > button i:first-child {
+      color: #00ff66;
+    }
+
+    #clinicalNotesChevron {
+      transition: transform 0.3s;
+    }
+
+    .clinical-notes-section.expanded #clinicalNotesChevron {
+      transform: rotate(180deg);
+    }
+
+    .clinical-notes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .clinical-notes-grid .form-group {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s;
+    }
+
+    .clinical-notes-grid .form-group:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .clinical-notes-grid .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .clinical-notes-grid .form-label i {
+      color: #00ff66;
+      width: 18px;
+      text-align: center;
+    }
+
+    .clinical-notes-grid textarea {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      font-size: 0.9rem;
+      resize: vertical;
+      transition: all 0.3s;
+    }
+
+    .clinical-notes-grid textarea:focus {
+      border-color: #00ff66;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 255, 102, 0.15);
+    }
+
+    .clinical-notes-grid textarea::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .template-selector {
+        flex-direction: column;
+      }
+
+      .template-selector select,
+      .btn-template {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .clinical-notes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prescription-table-wrapper {
+        margin: 0 -15px;
+        padding: 0 15px;
+      }
+
+      .prescription-table thead th {
+        font-size: 0.75rem;
+        padding: 8px 5px;
+      }
+
+      .prescription-table tbody td {
+        padding: 8px 5px;
+      }
+
+      .urdu-description {
+        font-size: 0.8rem;
+        padding: 6px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .prescription-table {
+        min-width: 650px;
+      }
+
+      .prescription-table thead th {
+        font-size: 0.7rem;
+      }
+    }
   </style>
 {% endblock style %}
 
     
 {% block content %}
+  <!-- Patient Queue Toggle Button -->
+  <button class="queue-toggle-btn" id="queueToggleBtn" title="Patient Queue">
+    <span class="queue-count" id="queueCountBadge">0</span>
+    <i class="fas fa-clipboard-list"></i> QUEUE
+  </button>
+
+  <!-- Queue Overlay -->
+  <div class="queue-overlay" id="queueOverlay"></div>
+
+  <!-- Patient Queue Panel -->
+  <div class="queue-panel" id="queuePanel">
+    <div class="queue-panel-header">
+      <h3><i class="fas fa-clipboard-list"></i> Patient Queue</h3>
+      <button class="queue-close-btn" id="queueCloseBtn">&times;</button>
+    </div>
+    
+    <div class="queue-stats">
+      <div class="queue-stat">
+        <div class="queue-stat-number" id="waitingCount">0</div>
+        <div class="queue-stat-label">Waiting</div>
+      </div>
+      <div class="queue-stat active">
+        <div class="queue-stat-number" id="withDoctorCount">0</div>
+        <div class="queue-stat-label">With Doctor</div>
+      </div>
+    </div>
+    
+    <div class="queue-list" id="queueList">
+      <div class="queue-empty">
+        <div class="queue-empty-icon"><i class="fas fa-clock"></i></div>
+        <p>No patients in queue</p>
+        <p style="font-size: 0.8rem;">Patients will appear here when added from OPD</p>
+      </div>
+    </div>
+    
+    <div style="padding: 15px;">
+      <button class="queue-refresh-btn" id="refreshQueueBtn"><i class="fas fa-sync-alt"></i> Refresh Queue</button>
+    </div>
+  </div>
+
   <div class="panel">
     <!-- Panel Header -->
     <div class="panel-header">
-      <h2>🩺 Doctor's Panel</h2>
+      <h2><i class="fas fa-stethoscope"></i> Doctor's Panel</h2>
       
       <div class="header-actions">
-        <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
-        <!-- Hamburger Menu -->
+        <div class="nav-controls">
+          <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+          <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+          <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+        </div>
+        <a href="{% url 'doctor_admitted_patients_list' %}" class="back-btn" style="background: #28a745; border-color: #28a745;"><i class="fas fa-hospital"></i> Admitted Patients</a>
+        <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
         <div class="hamburger" id="hamburger">
           <span></span>
           <span></span>
@@ -653,19 +1643,17 @@
       
       <!-- Left Section: Prescription Form -->
       <div class="card">
-        <h3 class="card-title">Add Prescription</h3>
+        <h3 class="card-title"><i class="fas fa-prescription"></i> Add Prescription</h3>
         
         <!-- Template Selection -->
-        <div class="template-section" style="margin-bottom: 20px;">
-          <div class="form-group">
-            <label class="form-label">📋 Load Template (Optional)</label>
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <select id="templateSelect" style="flex: 1;">
-                <option value="">-- Select a template --</option>
-              </select>
-              <button class="btn" id="loadTemplateBtn" style="padding: 12px 20px;">Load</button>
-              <a href="{% url 'template_list' %}" class="btn" style="padding: 12px 20px; text-decoration: none;">Manage</a>
-            </div>
+        <div class="template-section">
+          <label class="form-label"><i class="fas fa-clipboard-list"></i> Load Template (Optional)</label>
+          <div class="template-selector">
+            <select id="templateSelect">
+              <option value="">-- Select a template --</option>
+            </select>
+            <button class="btn btn-template" id="loadTemplateBtn"><i class="fas fa-download"></i> Load</button>
+            <a href="{% url 'template_list' %}" class="btn btn-template btn-manage"><i class="fas fa-cog"></i> Manage</a>
           </div>
         </div>
         
@@ -673,11 +1661,12 @@
           <table class="prescription-table" id="prescriptionTable">
             <thead>
               <tr>
-                <th>Medicine</th>
-                <th>Duration</th>
-                <th>Morning</th>
-                <th>Evening</th>
-                <th>Night</th>
+                <th><i class="fas fa-pills"></i> Medicine</th>
+                <th>QTY</th>
+                <th>Dosage Form</th>
+                <th>Frequency</th>
+                <th>اردو</th>
+                <th>Days</th>
               </tr>
             </thead>
             <tbody>
@@ -693,41 +1682,118 @@
                     <input type="hidden" class="medicine-id">
                   </div>
                 </td>
-                <td class="days-cell">
-                  <select class="days-select" title="Select duration">
-                    <option value="1">1 day</option>
-                    <option value="2">2 days</option>
-                    <option value="3">3 days</option>
-                    <option value="4">4 days</option>
-                    <option value="5">5 days</option>
-                    <option value="6">6 days</option>
-                    <option value="7">7 days</option>
-                    <option value="10">10 days</option>
-                    <option value="14">14 days</option>
-                    <option value="30">30 days</option>
+                <td class="qty-cell">
+                  <input type="number" class="qty-input" value="1" min="1" title="Quantity">
+                </td>
+                <td class="dosage-form-cell">
+                  <select class="dosage-form-select" title="Select dosage form">
+                    <option value="MG">MG</option>
+                    <option value="CC">CC</option>
+                    <option value="ML">ML</option>
+                    <option value="TABLETS">Tablets</option>
+                    <option value="CAPSULES">Capsules</option>
+                    <option value="DROPS">Drops</option>
+                    <option value="TSP">Teaspoon</option>
+                    <option value="TBSP">Tablespoon</option>
+                    <option value="SACHET">Sachet</option>
+                    <option value="PUFF">Puff</option>
+                    <option value="UNIT">Unit</option>
                   </select>
                 </td>
-                <td class="checkbox-cell">
-                  <input type="checkbox" class="morning-check" title="Morning dose">
+                <td class="frequency-cell">
+                  <select class="frequency-select" title="Select frequency" onchange="updateUrduDescription(this)">
+                    <option value="OD">OD</option>
+                    <option value="BD">BD</option>
+                    <option value="TDS">TDS</option>
+                    <option value="QID">QID</option>
+                    <option value="HS">HS</option>
+                    <option value="QAM">QAM</option>
+                    <option value="QPM">QPM</option>
+                    <option value="SOS">SOS</option>
+                    <option value="STAT">STAT</option>
+                    <option value="QOD">QOD</option>
+                    <option value="QW">QW</option>
+                    <option value="Q6H">Q6H</option>
+                    <option value="Q8H">Q8H</option>
+                    <option value="AC">AC</option>
+                    <option value="PC">PC</option>
+                  </select>
                 </td>
-                <td class="checkbox-cell">
-                  <input type="checkbox" class="evening-check" title="Evening dose">
+                <td class="urdu-cell">
+                  <div class="urdu-description">روزانہ ایک بار</div>
                 </td>
-                <td class="checkbox-cell">
-                  <input type="checkbox" class="night-check" title="Night dose">
+                <td class="days-cell">
+                  <select class="days-select" title="Select duration">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="10">10</option>
+                    <option value="14">14</option>
+                    <option value="30">30</option>
+                  </select>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         
-        <div class="btn-group">
-          <button class="btn" id="addRowBtn">➕ Add Medicine</button>
-          <button class="btn btn-primary" id="printSaveBtn"> Save & Print</button>
+        <!-- Special Note Field -->
+        <div class="form-group" style="margin-top: 15px;">
+          <label class="form-label"><i class="fas fa-sticky-note"></i> Special Note</label>
+          <input type="text" id="specialNote" placeholder="Enter special instructions for prescription..." style="width: 100%;">
+        </div>
+        
+        <div class="action-buttons">
+          <button class="action-btn btn-add" id="addRowBtn"><i class="fas fa-plus-circle"></i> Add Medicine</button>
+          <button class="action-btn btn-save" id="printSaveBtn"><i class="fas fa-save"></i> Save & Print</button>
+          <button class="action-btn btn-admit" id="admitPatientBtn"><i class="fas fa-hospital-user"></i> Admit Patient</button>
+        </div>
+        
+        <!-- Clinical Notes Section (Collapsible) -->
+        <div class="clinical-notes-section">
+          <button type="button" id="toggleClinicalNotesBtn">
+            <i class="fas fa-notes-medical"></i> Add Clinical Notes <i class="fas fa-chevron-down" id="clinicalNotesChevron"></i>
+          </button>
+          
+          <div id="clinicalNotesContent" style="display: none;">
+            <div class="clinical-notes-grid">
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-comment-medical"></i> Presenting Complaints</label>
+                <textarea id="presentingComplaints" placeholder="Common symptoms for this condition..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-child"></i> Development</label>
+                <textarea id="development" placeholder="Development notes..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-syringe"></i> Vaccination</label>
+                <textarea id="vaccination" placeholder="Vaccination notes..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-stethoscope"></i> Medical Examination</label>
+                <textarea id="medicalExamination" placeholder="Medical examination findings..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-microscope"></i> Investigation Advised</label>
+                <textarea id="investigationAdvised" placeholder="Investigation advised..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-diagnoses"></i> Provisional Diagnosis</label>
+                <textarea id="provisionalDiagnosis" placeholder="Provisional diagnosis..." rows="2"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <!-- Right Section: Patient Search -->
       <div class="card">
         <h3 class="card-title">Patient Information</h3>
         
@@ -738,37 +1804,24 @@
                    id="patientSearchInput" 
                    placeholder="Enter reference no. or patient name...">
           </div>
-          <button class="btn" id="searchPatientBtn">🔍 Search</button>
+          <button class="btn" id="searchPatientBtn"><i class="fas fa-search"></i> Search</button>
         </div>
         
         <div id="searchMessage" class="search-message"></div>
         
         <div class="form-group">
           <label class="form-label">Patient Details</label>
-          <textarea id="patientDetailsTextarea" 
-                    placeholder="Patient information will appear here after search..." 
-                    readonly></textarea>
+          <div id="patientDetailsCard" class="patient-details-card empty">
+            <span>Patient information will appear here after search...</span>
+          </div>
+          <input type="hidden" id="patientDetailsData">
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Side Menu -->
-  <div class="side-menu" id="sideMenu">
-    <span class="close-btn" id="closeMenu">&times;</span>
-    <h4>Navigation</h4>
-    <ul>
-      <li><a href="#">🏠 Dashboard</a></li>
-      <li><a href="#">📋 My Prescriptions</a></li>
-      <li><a href="#">👥 Patients</a></li>
-      <li><a href="#">⚙️ Settings</a></li>
-      <li><a href="/accounts/login/">🚪 Logout</a></li>
-    </ul>
-  </div>
-
-  <!-- Overlay -->
-  <div class="overlay" id="overlay"></div>
+  <!-- Side Menu and Overlay - Removed (now in base.html) -->
 
   <!-- Success Popup -->
   <div class="popup-overlay" id="popup">
@@ -778,11 +1831,139 @@
     </div>
   </div>
 
+  <!-- Admit Patient Modal -->
+  <div class="modal-overlay" id="admitModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-hospital"></i> Admit Patient</h3>
+        <button class="modal-close" id="closeAdmitModal">&times;</button>
+      </div>
+      
+      <form id="admitPatientForm">
+        <div class="form-group">
+          <label class="form-label">Patient Reference Number</label>
+          <input type="text" id="admitPatientRef" readonly placeholder="Search a patient first...">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Patient Name</label>
+          <input type="text" id="admitPatientName" readonly>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Admission Reason *</label>
+          <textarea id="admitReason" placeholder="Enter reason for admission..." style="min-height: 100px;" required></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Initial Diagnosis</label>
+          <textarea id="admitDiagnosis" placeholder="Enter initial diagnosis..." style="min-height: 100px;"></textarea>
+        </div>
+        
+        <div class="btn-group">
+          <button type="button" class="btn" id="cancelAdmit">Cancel</button>
+          <button type="submit" class="btn btn-success">Admit Patient</button>
+        </div>
+      </form>
+      
+      <div id="admitMessage" class="search-message"></div>
+    </div>
+  </div>
+
+<!-- Side Menu -->
+<div class="side-menu" id="sideMenu">
+  <span class="close-btn" id="closeMenu">&times;</span>
+  <h4><i class="fas fa-stethoscope"></i> Menu</h4>
+  <ul>
+    <li><a href="{% url 'doctor_panel' %}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li><a href="{% url 'template_list' %}"><i class="fas fa-clipboard-list"></i> My Templates</a></li>
+    <li><a href="{% url 'patient_statistics' %}"><i class="fas fa-users"></i> Patients</a></li>
+    <li><a href="{% url 'doctor_admitted_patients_list' %}"><i class="fas fa-hospital"></i> Admitted Patients</a></li>
+    <li><a href="/admin/" target="_blank"><i class="fas fa-cog"></i> Admin Panel</a></li>
+    <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
+    <li><a href="/accounts/login/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+  </ul>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
 {% endblock content %}
 
 
 {% block js %}
 <script>
+  // ========== CLINICAL NOTES HELPER FUNCTIONS ==========
+  // Helper function to get clinical notes data
+  function getClinicalNotesData() {
+    return {
+      presenting_complaints: document.getElementById('presentingComplaints').value.trim(),
+      development: document.getElementById('development').value.trim(),
+      vaccination: document.getElementById('vaccination').value.trim(),
+      medical_examination: document.getElementById('medicalExamination').value.trim(),
+      investigation_advised: document.getElementById('investigationAdvised').value.trim(),
+      provisional_diagnosis: document.getElementById('provisionalDiagnosis').value.trim()
+    };
+  }
+  
+  // Clear clinical notes
+  function clearClinicalNotes() {
+    document.getElementById('presentingComplaints').value = '';
+    document.getElementById('development').value = '';
+    document.getElementById('vaccination').value = '';
+    document.getElementById('medicalExamination').value = '';
+    document.getElementById('investigationAdvised').value = '';
+    document.getElementById('provisionalDiagnosis').value = '';
+  }
+
+  // Menu toggle
+  const hamburger = document.getElementById("hamburger");
+  const sideMenu = document.getElementById("sideMenu");
+  const overlay = document.getElementById("overlay");
+  const closeMenu = document.getElementById("closeMenu");
+
+  hamburger.addEventListener("click", () => {
+    sideMenu.classList.add("active");
+    overlay.classList.add("active");
+  });
+
+  closeMenu.addEventListener("click", () => {
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+
+  overlay.addEventListener("click", () => {
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+
+  // Urdu descriptions for frequencies
+  const frequencyUrdu = {
+    'OD': 'روزانہ ایک بار',
+    'BD': 'دن میں دو بار',
+    'TDS': 'دن میں تین بار',
+    'QID': 'دن میں چار بار',
+    'HS': 'سوتے وقت',
+    'QAM': 'ہر صبح',
+    'QPM': 'ہر شام',
+    'SOS': 'ضرورت کے وقت',
+    'STAT': 'فوراً',
+    'QOD': 'ایک دن چھوڑ کر',
+    'QW': 'ہفتے میں ایک بار',
+    'Q6H': 'ہر 6 گھنٹے',
+    'Q8H': 'ہر 8 گھنٹے',
+    'AC': 'کھانے سے پہلے',
+    'PC': 'کھانے کے بعد'
+  };
+
+  // Function to update Urdu description when frequency changes
+  function updateUrduDescription(selectElement) {
+    const row = selectElement.closest('.prescription-row');
+    const urduDiv = row.querySelector('.urdu-description');
+    const frequency = selectElement.value;
+    urduDiv.textContent = frequencyUrdu[frequency] || frequency;
+  }
+
   // Initialize autocomplete for all medicine search inputs
   function initAutocomplete(searchInput) {
     const wrapper = searchInput.parentElement;
@@ -831,7 +2012,7 @@
                 }
                 
                 html += `
-                  <div class="autocomplete-item" data-id="${medicine.id}" data-name="${medicine.name}">
+                  <div class="autocomplete-item" data-id="${medicine.id}" data-name="${medicine.name}" data-dosage="${medicine.dosage || ''}" data-form="${medicine.medicine_form || 'tablet'}">
                     <div class="medicine-name">${medicine.name}</div>
                     <div class="medicine-details">
                       ${medicine.category ? medicine.category + ' • ' : ''}${medicine.dosage || 'No dosage info'}
@@ -858,9 +2039,52 @@
                   e.stopPropagation();
                   const id = this.getAttribute('data-id');
                   const name = this.getAttribute('data-name');
-                  console.log('Clicked medicine:', name, 'ID:', id);
+                  const dosage = this.getAttribute('data-dosage') || '';
+                  const medicineForm = this.getAttribute('data-form') || 'tablet';
+                  
+                  console.log('Clicked medicine:', name, 'ID:', id, 'Dosage:', dosage, 'Form:', medicineForm);
                   searchInput.value = name;
                   hiddenIdInput.value = id;
+                  
+                  // Auto-fill QTY from dosage (extract number from strings like "400mg", "500mg", "250ml")
+                  const row = searchInput.closest('.prescription-row');
+                  if (row) {
+                    // Extract numeric value from dosage
+                    const qtyMatch = dosage.match(/(\d+)/);
+                    if (qtyMatch) {
+                      const qtyInput = row.querySelector('.qty-input');
+                      if (qtyInput) {
+                        qtyInput.value = qtyMatch[1];
+                      }
+                    }
+                    
+                    // Auto-fill dosage form based on medicine form
+                    const dosageFormSelect = row.querySelector('.dosage-form-select');
+                    if (dosageFormSelect) {
+                      // Map medicine_form to dosage_form options
+                      const formMap = {
+                        'tablet': 'TABLETS',
+                        'capsule': 'CAPSULES',
+                        'syrup': 'ML',
+                        'injection': 'ML',
+                        'drops': 'DROPS',
+                        'ointment': 'MG',
+                        'inhaler': 'PUFF',
+                        'suppository': 'UNIT',
+                        'other': 'UNIT'
+                      };
+                      
+                      // Also check dosage string for unit hints
+                      let selectedForm = formMap[medicineForm] || 'MG';
+                      const dosageLower = dosage.toLowerCase();
+                      if (dosageLower.includes('mg')) selectedForm = 'MG';
+                      else if (dosageLower.includes('ml')) selectedForm = 'ML';
+                      else if (dosageLower.includes('cc')) selectedForm = 'CC';
+                      
+                      dosageFormSelect.value = selectedForm;
+                    }
+                  }
+                  
                   resultsDiv.classList.remove('show');
                   resultsDiv.style.display = 'none';
                   resultsDiv.innerHTML = '';
@@ -898,6 +2122,25 @@
     initAutocomplete(input);
   });
 
+  // Enter key acts like Tab in prescription table
+  document.getElementById('prescriptionTable').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const focusable = Array.from(this.querySelectorAll('input:not([type="hidden"]), select'));
+      const currentIndex = focusable.indexOf(document.activeElement);
+      if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+        focusable[currentIndex + 1].focus();
+      } else if (currentIndex === focusable.length - 1) {
+        // Last field - add new row and focus first input
+        document.getElementById('addRowBtn').click();
+        setTimeout(() => {
+          const newFocusable = Array.from(this.querySelectorAll('input:not([type="hidden"]), select'));
+          newFocusable[newFocusable.length - 6].focus(); // Focus medicine input of new row
+        }, 100);
+      }
+    }
+  });
+
   // Add new row functionality
   document.getElementById("addRowBtn").addEventListener("click", function() {
     const table = document.getElementById("prescriptionTable");
@@ -917,28 +2160,59 @@
           <input type="hidden" class="medicine-id">
         </div>
       </td>
-      <td class="days-cell">
-        <select class="days-select" title="Select duration">
-          <option value="1">1 day</option>
-          <option value="2">2 days</option>
-          <option value="3">3 days</option>
-          <option value="4">4 days</option>
-          <option value="5">5 days</option>
-          <option value="6">6 days</option>
-          <option value="7">7 days</option>
-          <option value="10">10 days</option>
-          <option value="14">14 days</option>
-          <option value="30">30 days</option>
+      <td class="qty-cell">
+        <input type="number" class="qty-input" value="1" min="1" title="Quantity">
+      </td>
+      <td class="dosage-form-cell">
+        <select class="dosage-form-select" title="Select dosage form">
+          <option value="MG">MG</option>
+          <option value="CC">CC</option>
+          <option value="ML">ML</option>
+          <option value="TABLETS">Tablets</option>
+          <option value="CAPSULES">Capsules</option>
+          <option value="DROPS">Drops</option>
+          <option value="TSP">Teaspoon</option>
+          <option value="TBSP">Tablespoon</option>
+          <option value="SACHET">Sachet</option>
+          <option value="PUFF">Puff</option>
+          <option value="UNIT">Unit</option>
         </select>
       </td>
-      <td class="checkbox-cell">
-        <input type="checkbox" class="morning-check" title="Morning dose">
+      <td class="frequency-cell">
+        <select class="frequency-select" title="Select frequency" onchange="updateUrduDescription(this)">
+          <option value="OD">OD</option>
+          <option value="BD">BD</option>
+          <option value="TDS">TDS</option>
+          <option value="QID">QID</option>
+          <option value="HS">HS</option>
+          <option value="QAM">QAM</option>
+          <option value="QPM">QPM</option>
+          <option value="SOS">SOS</option>
+          <option value="STAT">STAT</option>
+          <option value="QOD">QOD</option>
+          <option value="QW">QW</option>
+          <option value="Q6H">Q6H</option>
+          <option value="Q8H">Q8H</option>
+          <option value="AC">AC</option>
+          <option value="PC">PC</option>
+        </select>
       </td>
-      <td class="checkbox-cell">
-        <input type="checkbox" class="evening-check" title="Evening dose">
+      <td class="urdu-cell">
+        <div class="urdu-description">روزانہ ایک بار</div>
       </td>
-      <td class="checkbox-cell">
-        <input type="checkbox" class="night-check" title="Night dose">
+      <td class="days-cell">
+        <select class="days-select" title="Select duration">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="10">10</option>
+          <option value="14">14</option>
+          <option value="30">30</option>
+        </select>
       </td>
     `;
 
@@ -947,6 +2221,12 @@
     // Initialize autocomplete for the new row
     const newSearchInput = newRow.querySelector('.medicineSearch');
     initAutocomplete(newSearchInput);
+    
+    // Attach event handler for frequency change
+    const frequencySelect = newRow.querySelector('.frequency-select');
+    frequencySelect.addEventListener('change', function() {
+      updateUrduDescription(this);
+    });
   });
 
   // Print/Save functionality - Collect all prescriptions and save
@@ -957,19 +2237,19 @@
     rows.forEach(row => {
       const medicineId = row.querySelector('.medicine-id').value;
       const medicineName = row.querySelector('.medicineSearch').value.trim();
+      const qty = row.querySelector('.qty-input').value;
+      const dosageForm = row.querySelector('.dosage-form-select').value;
+      const frequency = row.querySelector('.frequency-select').value;
       const days = row.querySelector('.days-select').value;
-      const morning = row.querySelector('.morning-check').checked;
-      const evening = row.querySelector('.evening-check').checked;
-      const night = row.querySelector('.night-check').checked;
       
       if (medicineId && medicineName) {
         prescriptions.push({
           medicine_id: medicineId,
           medicine_name: medicineName,
-          days: days,
-          morning: morning,
-          evening: evening,
-          night: night
+          qty: qty,
+          dosage_form: dosageForm,
+          frequency: frequency,
+          days: days
         });
       }
     });
@@ -1007,10 +2287,60 @@
       if (data.success) {
         Modal.success('Prescription saved successfully!', 'Success', 2000);
         
-        // Open print window
+        // Mark patient as checked in queue
+        if (currentPatientRefNo) {
+          fetch('/doctor/api/mark-checked/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ patient_ref_no: currentPatientRefNo })
+          })
+          .then(resp => resp.json())
+          .then(qData => {
+            if (qData.success) {
+              console.log('Patient marked as checked');
+              // Refresh queue count
+              fetchPatientQueue();
+            }
+          })
+          .catch(err => console.error('Error marking patient checked:', err));
+        }
+        
+        // Open print window with template_id if available
         if (data.print_url) {
           setTimeout(() => {
-            window.open(data.print_url, '_blank');
+            let printUrl = data.print_url + (currentTemplateId ? `&template_id=${currentTemplateId}` : '');
+            
+            // Add special note
+            const specialNote = document.getElementById('specialNote').value.trim();
+            if (specialNote) {
+              printUrl += `&special_note=${encodeURIComponent(specialNote)}`;
+            }
+            
+            // Add clinical notes as query parameters if any are filled
+            const clinicalNotes = getClinicalNotesData();
+            if (clinicalNotes.presenting_complaints) {
+              printUrl += `&pc=${encodeURIComponent(clinicalNotes.presenting_complaints)}`;
+            }
+            if (clinicalNotes.development) {
+              printUrl += `&dev=${encodeURIComponent(clinicalNotes.development)}`;
+            }
+            if (clinicalNotes.vaccination) {
+              printUrl += `&vac=${encodeURIComponent(clinicalNotes.vaccination)}`;
+            }
+            if (clinicalNotes.medical_examination) {
+              printUrl += `&me=${encodeURIComponent(clinicalNotes.medical_examination)}`;
+            }
+            if (clinicalNotes.investigation_advised) {
+              printUrl += `&ia=${encodeURIComponent(clinicalNotes.investigation_advised)}`;
+            }
+            if (clinicalNotes.provisional_diagnosis) {
+              printUrl += `&pd=${encodeURIComponent(clinicalNotes.provisional_diagnosis)}`;
+            }
+            
+            window.open(printUrl, '_blank');
           }, 500);
         }
         
@@ -1031,8 +2361,12 @@
           
           // Clear patient search
           patientSearchInput.value = '';
-          patientDetailsTextarea.value = '';
+          clearPatientCard();
           currentPatientRefNo = null;
+          currentTemplateId = null; // Reset template
+          
+          // Clear clinical notes
+          clearClinicalNotes();
         }, 2000);
       } else {
         Modal.error('Error saving prescriptions: ' + (data.error || 'Unknown error'), 'Save Failed');
@@ -1048,11 +2382,75 @@
   // Patient Search Functionality
   const searchPatientBtn = document.getElementById('searchPatientBtn');
   const patientSearchInput = document.getElementById('patientSearchInput');
-  const patientDetailsTextarea = document.getElementById('patientDetailsTextarea');
+  const patientDetailsCard = document.getElementById('patientDetailsCard');
   const searchMessage = document.getElementById('searchMessage');
   
   // Store current patient reference number
   let currentPatientRefNo = null;
+  let currentTemplateId = null; // Track loaded template
+
+  // Function to render patient details card
+  function renderPatientCard(patient) {
+    return `
+      <div class="patient-header">
+        <div class="patient-avatar">${patient.initials}</div>
+        <div class="patient-name-section">
+          <div class="patient-name">${patient.name}</div>
+          <span class="patient-ref">${patient.ref_no}</span>
+        </div>
+      </div>
+      <div class="patient-info-grid">
+        <div class="info-item">
+          <i class="fas fa-phone"></i>
+          <div class="info-content">
+            <div class="info-label">Phone</div>
+            <div class="info-value">${patient.phone}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-birthday-cake"></i>
+          <div class="info-content">
+            <div class="info-label">Age</div>
+            <div class="info-value">${patient.age}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-weight"></i>
+          <div class="info-content">
+            <div class="info-label">Weight</div>
+            <div class="info-value">${patient.weight}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-ruler-vertical"></i>
+          <div class="info-content">
+            <div class="info-label">Height</div>
+            <div class="info-value">${patient.height}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-thermometer-half"></i>
+          <div class="info-content">
+            <div class="info-label">Temperature</div>
+            <div class="info-value">${patient.temperature}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-calendar-alt"></i>
+          <div class="info-content">
+            <div class="info-label">Registered</div>
+            <div class="info-value">${patient.registered}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Function to clear patient card
+  function clearPatientCard() {
+    patientDetailsCard.innerHTML = '<span>Patient information will appear here after search...</span>';
+    patientDetailsCard.classList.add('empty');
+  }
 
   function searchPatient() {
     const query = patientSearchInput.value.trim();
@@ -1073,7 +2471,8 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          patientDetailsTextarea.value = data.patient.details;
+          patientDetailsCard.innerHTML = renderPatientCard(data.patient);
+          patientDetailsCard.classList.remove('empty');
           currentPatientRefNo = data.patient.ref_no;
           searchMessage.textContent = '✓ Patient found!';
           searchMessage.className = 'search-message success';
@@ -1081,7 +2480,7 @@
             searchMessage.style.display = 'none';
           }, 3000);
         } else {
-          patientDetailsTextarea.value = '';
+          clearPatientCard();
           currentPatientRefNo = null;
           searchMessage.textContent = '✗ ' + (data.error || 'Patient not found');
           searchMessage.className = 'search-message error';
@@ -1091,7 +2490,7 @@
         console.error('Search error:', error);
         searchMessage.textContent = '✗ Error searching patient';
         searchMessage.className = 'search-message error';
-        patientDetailsTextarea.value = '';
+        clearPatientCard();
         currentPatientRefNo = null;
       });
   }
@@ -1105,26 +2504,7 @@
     }
   });
 
-  // Menu toggle
-  const hamburger = document.getElementById("hamburger");
-  const sideMenu = document.getElementById("sideMenu");
-  const overlay = document.getElementById("overlay");
-  const closeMenu = document.getElementById("closeMenu");
-
-  hamburger.addEventListener("click", () => {
-    sideMenu.classList.add("active");
-    overlay.classList.add("active");
-  });
-
-  closeMenu.addEventListener("click", () => {
-    sideMenu.classList.remove("active");
-    overlay.classList.remove("active");
-  });
-
-  overlay.addEventListener("click", () => {
-    sideMenu.classList.remove("active");
-    overlay.classList.remove("active");
-  });
+  // Menu toggle - Removed (now in base.html)
 
   // ============ PRESCRIPTION TEMPLATE FUNCTIONALITY ============
   
@@ -1179,6 +2559,7 @@
           data.medicines.forEach((medicine, index) => {
             const newRow = document.createElement('tr');
             newRow.className = 'prescription-row';
+            const urduText = frequencyUrdu[medicine.frequency] || medicine.frequency;
             newRow.innerHTML = `
               <td class="medicine-input-cell">
                 <div class="medicine-input-wrapper">
@@ -1192,28 +2573,59 @@
                   <input type="hidden" class="medicine-id" value="${medicine.medicine_id}">
                 </div>
               </td>
-              <td class="days-cell">
-                <select class="days-select" title="Select duration">
-                  <option value="1" ${medicine.days === 1 ? 'selected' : ''}>1 day</option>
-                  <option value="2" ${medicine.days === 2 ? 'selected' : ''}>2 days</option>
-                  <option value="3" ${medicine.days === 3 ? 'selected' : ''}>3 days</option>
-                  <option value="4" ${medicine.days === 4 ? 'selected' : ''}>4 days</option>
-                  <option value="5" ${medicine.days === 5 ? 'selected' : ''}>5 days</option>
-                  <option value="6" ${medicine.days === 6 ? 'selected' : ''}>6 days</option>
-                  <option value="7" ${medicine.days === 7 ? 'selected' : ''}>7 days</option>
-                  <option value="10" ${medicine.days === 10 ? 'selected' : ''}>10 days</option>
-                  <option value="14" ${medicine.days === 14 ? 'selected' : ''}>14 days</option>
-                  <option value="30" ${medicine.days === 30 ? 'selected' : ''}>30 days</option>
+              <td class="qty-cell">
+                <input type="number" class="qty-input" value="${medicine.qty || 1}" min="1" title="Quantity">
+              </td>
+              <td class="dosage-form-cell">
+                <select class="dosage-form-select" title="Select dosage form">
+                  <option value="MG" ${medicine.dosage_form === 'MG' ? 'selected' : ''}>MG</option>
+                  <option value="CC" ${medicine.dosage_form === 'CC' ? 'selected' : ''}>CC</option>
+                  <option value="ML" ${medicine.dosage_form === 'ML' ? 'selected' : ''}>ML</option>
+                  <option value="TABLETS" ${medicine.dosage_form === 'TABLETS' ? 'selected' : ''}>Tablets</option>
+                  <option value="CAPSULES" ${medicine.dosage_form === 'CAPSULES' ? 'selected' : ''}>Capsules</option>
+                  <option value="DROPS" ${medicine.dosage_form === 'DROPS' ? 'selected' : ''}>Drops</option>
+                  <option value="TSP" ${medicine.dosage_form === 'TSP' ? 'selected' : ''}>Teaspoon</option>
+                  <option value="TBSP" ${medicine.dosage_form === 'TBSP' ? 'selected' : ''}>Tablespoon</option>
+                  <option value="SACHET" ${medicine.dosage_form === 'SACHET' ? 'selected' : ''}>Sachet</option>
+                  <option value="PUFF" ${medicine.dosage_form === 'PUFF' ? 'selected' : ''}>Puff</option>
+                  <option value="UNIT" ${medicine.dosage_form === 'UNIT' ? 'selected' : ''}>Unit</option>
                 </select>
               </td>
-              <td class="checkbox-cell">
-                <input type="checkbox" class="morning-check" ${medicine.morning ? 'checked' : ''} title="Morning dose">
+              <td class="frequency-cell">
+                <select class="frequency-select" title="Select frequency" onchange="updateUrduDescription(this)">
+                  <option value="OD" ${medicine.frequency === 'OD' ? 'selected' : ''}>OD</option>
+                  <option value="BD" ${medicine.frequency === 'BD' ? 'selected' : ''}>BD</option>
+                  <option value="TDS" ${medicine.frequency === 'TDS' ? 'selected' : ''}>TDS</option>
+                  <option value="QID" ${medicine.frequency === 'QID' ? 'selected' : ''}>QID</option>
+                  <option value="HS" ${medicine.frequency === 'HS' ? 'selected' : ''}>HS</option>
+                  <option value="QAM" ${medicine.frequency === 'QAM' ? 'selected' : ''}>QAM</option>
+                  <option value="QPM" ${medicine.frequency === 'QPM' ? 'selected' : ''}>QPM</option>
+                  <option value="SOS" ${medicine.frequency === 'SOS' ? 'selected' : ''}>SOS</option>
+                  <option value="STAT" ${medicine.frequency === 'STAT' ? 'selected' : ''}>STAT</option>
+                  <option value="QOD" ${medicine.frequency === 'QOD' ? 'selected' : ''}>QOD</option>
+                  <option value="QW" ${medicine.frequency === 'QW' ? 'selected' : ''}>QW</option>
+                  <option value="Q6H" ${medicine.frequency === 'Q6H' ? 'selected' : ''}>Q6H</option>
+                  <option value="Q8H" ${medicine.frequency === 'Q8H' ? 'selected' : ''}>Q8H</option>
+                  <option value="AC" ${medicine.frequency === 'AC' ? 'selected' : ''}>AC</option>
+                  <option value="PC" ${medicine.frequency === 'PC' ? 'selected' : ''}>PC</option>
+                </select>
               </td>
-              <td class="checkbox-cell">
-                <input type="checkbox" class="evening-check" ${medicine.evening ? 'checked' : ''} title="Evening dose">
+              <td class="urdu-cell">
+                <div class="urdu-description">${urduText}</div>
               </td>
-              <td class="checkbox-cell">
-                <input type="checkbox" class="night-check" ${medicine.night ? 'checked' : ''} title="Night dose">
+              <td class="days-cell">
+                <select class="days-select" title="Select duration">
+                  <option value="1" ${medicine.days === 1 ? 'selected' : ''}>1</option>
+                  <option value="2" ${medicine.days === 2 ? 'selected' : ''}>2</option>
+                  <option value="3" ${medicine.days === 3 ? 'selected' : ''}>3</option>
+                  <option value="4" ${medicine.days === 4 ? 'selected' : ''}>4</option>
+                  <option value="5" ${medicine.days === 5 ? 'selected' : ''}>5</option>
+                  <option value="6" ${medicine.days === 6 ? 'selected' : ''}>6</option>
+                  <option value="7" ${medicine.days === 7 ? 'selected' : ''}>7</option>
+                  <option value="10" ${medicine.days === 10 ? 'selected' : ''}>10</option>
+                  <option value="14" ${medicine.days === 14 ? 'selected' : ''}>14</option>
+                  <option value="30" ${medicine.days === 30 ? 'selected' : ''}>30</option>
+                </select>
               </td>
             `;
             
@@ -1226,6 +2638,9 @@
           
           // Show success message
           Modal.success(`Template loaded successfully!<br><strong>${data.medicines.length} medicine(s)</strong> added to prescription.`, 'Template Loaded', 3000);
+          
+          // Store the template ID for later use
+          currentTemplateId = templateId;
           
           // Reset template selection
           templateSelect.value = '';
@@ -1242,5 +2657,294 @@
 
   // Load templates when page loads
   loadTemplates();
+
+  // ========== ADMIT PATIENT FUNCTIONALITY ==========
+  const admitPatientBtn = document.getElementById('admitPatientBtn');
+  const admitModal = document.getElementById('admitModal');
+  const closeAdmitModal = document.getElementById('closeAdmitModal');
+  const cancelAdmit = document.getElementById('cancelAdmit');
+  const admitPatientForm = document.getElementById('admitPatientForm');
+  const admitMessage = document.getElementById('admitMessage');
+
+  // Open admit modal
+  admitPatientBtn.addEventListener('click', function() {
+    if (!currentPatientRefNo) {
+      Modal.error('Please search and select a patient first!', 'Patient Not Selected');
+      return;
+    }
+    
+    // Fill in patient details
+    document.getElementById('admitPatientRef').value = currentPatientRefNo;
+    const patientNameEl = patientDetailsCard.querySelector('.patient-name');
+    document.getElementById('admitPatientName').value = patientNameEl ? patientNameEl.textContent : '';
+    
+    // Clear previous inputs
+    document.getElementById('admitReason').value = '';
+    document.getElementById('admitDiagnosis').value = '';
+    admitMessage.textContent = '';
+    admitMessage.style.display = 'none';
+    
+    admitModal.classList.add('show');
+  });
+
+  // Close modal functions
+  closeAdmitModal.addEventListener('click', function() {
+    admitModal.classList.remove('show');
+  });
+
+  cancelAdmit.addEventListener('click', function() {
+    admitModal.classList.remove('show');
+  });
+
+  admitModal.addEventListener('click', function(e) {
+    if (e.target === admitModal) {
+      admitModal.classList.remove('show');
+    }
+  });
+
+  // Submit admission form
+  admitPatientForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const patientRef = document.getElementById('admitPatientRef').value;
+    const admissionReason = document.getElementById('admitReason').value.trim();
+    const initialDiagnosis = document.getElementById('admitDiagnosis').value.trim();
+    
+    if (!admissionReason) {
+      admitMessage.textContent = 'Please enter admission reason';
+      admitMessage.style.display = 'block';
+      admitMessage.className = 'search-message error';
+      return;
+    }
+    
+    admitMessage.textContent = 'Admitting patient...';
+    admitMessage.style.display = 'block';
+    admitMessage.className = 'search-message warning';
+    
+    fetch('/admission/admit-patient/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({
+        patient_ref: patientRef,
+        admission_reason: admissionReason,
+        initial_diagnosis: initialDiagnosis
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        admitMessage.textContent = data.message;
+        admitMessage.className = 'search-message success';
+        
+        Modal.success(`Patient admitted successfully!<br><strong>Admission No:</strong> ${data.admission_number}`, 'Admission Successful', 3000);
+        
+        setTimeout(() => {
+          admitModal.classList.remove('show');
+        }, 2000);
+      } else {
+              admitMessage.textContent = data.error;
+        admitMessage.className = 'search-message error';
+        Modal.error(data.error, 'Admission Failed');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      admitMessage.textContent = 'Error admitting patient';
+      admitMessage.className = 'search-message error';
+      Modal.error('An error occurred. Please try again.', 'Connection Error');
+    });
+  });
+
+  // =============================================
+  // PATIENT QUEUE FUNCTIONALITY
+  // =============================================
+  
+  const queueToggleBtn = document.getElementById('queueToggleBtn');
+  const queuePanel = document.getElementById('queuePanel');
+  const queueOverlay = document.getElementById('queueOverlay');
+  const queueCloseBtn = document.getElementById('queueCloseBtn');
+  const queueList = document.getElementById('queueList');
+  const queueCountBadge = document.getElementById('queueCountBadge');
+  const waitingCountEl = document.getElementById('waitingCount');
+  const withDoctorCountEl = document.getElementById('withDoctorCount');
+  const refreshQueueBtn = document.getElementById('refreshQueueBtn');
+  
+  let queueRefreshInterval;
+  
+  // Toggle queue panel
+  queueToggleBtn.addEventListener('click', function() {
+    queuePanel.classList.add('active');
+    queueOverlay.classList.add('active');
+    fetchPatientQueue();
+  });
+  
+  // Close queue panel
+  function closeQueuePanel() {
+    queuePanel.classList.remove('active');
+    queueOverlay.classList.remove('active');
+  }
+  
+  queueCloseBtn.addEventListener('click', closeQueuePanel);
+  queueOverlay.addEventListener('click', closeQueuePanel);
+  
+  // Refresh button
+  refreshQueueBtn.addEventListener('click', fetchPatientQueue);
+  
+  // Fetch patient queue from server
+  function fetchPatientQueue() {
+    fetch('/doctor/api/patient-queue/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          renderQueue(data.queue);
+          updateQueueStats(data.total_waiting, data.total_with_doctor);
+        } else {
+          console.error('Error fetching queue:', data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching queue:', error);
+      });
+  }
+  
+  // Update queue statistics
+  function updateQueueStats(waiting, withDoctor) {
+    waitingCountEl.textContent = waiting;
+    withDoctorCountEl.textContent = withDoctor;
+    queueCountBadge.textContent = waiting;
+    
+    // Add pulse animation if there are waiting patients
+    if (waiting > 0) {
+      queueToggleBtn.classList.add('has-waiting');
+    } else {
+      queueToggleBtn.classList.remove('has-waiting');
+    }
+  }
+  
+  // Render the queue list
+  function renderQueue(patients) {
+    if (patients.length === 0) {
+      queueList.innerHTML = `
+        <div class="queue-empty">
+          <div class="queue-empty-icon">🕐</div>
+          <p>No patients in queue</p>
+          <p style="font-size: 0.8rem;">Patients will appear here when added from OPD</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let html = '';
+    patients.forEach(patient => {
+      const isWithDoctor = patient.status === 'with_doctor';
+      const statusClass = isWithDoctor ? 'with-doctor' : '';
+      const gender = patient.gender || 'N/A';
+      
+      html += `
+        <div class="queue-item ${statusClass}" 
+             data-ref="${patient.ref_no}" 
+             data-patient-id="${patient.id}"
+             onclick="selectPatientFromQueue('${patient.ref_no}', ${patient.id})">
+          <div class="queue-number">${patient.queue_number}</div>
+          <div class="queue-item-content">
+            <div class="queue-patient-name">${patient.name}</div>
+            <div class="queue-patient-details">
+              <span class="queue-patient-ref">#${patient.ref_no}</span>
+              <span>${patient.age || 'N/A'}</span>
+            </div>
+            <div class="queue-time">⏰ Added at ${patient.queued_at}</div>
+          </div>
+        </div>
+      `;
+    });
+    
+    queueList.innerHTML = html;
+  }
+  
+  // Select a patient from queue
+  function selectPatientFromQueue(referenceNo, patientId) {
+    // First, mark as with_doctor on server
+    fetch('/doctor/api/select-patient/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ patient_id: patientId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Close queue panel
+        closeQueuePanel();
+        
+        // Simulate search for the patient (using existing search functionality)
+        document.getElementById('patientSearchInput').value = referenceNo;
+        document.getElementById('searchPatientBtn').click();
+        
+        // Show notification
+        Modal.success('Patient selected from queue', 'Queue', 2000);
+        
+        // Refresh queue
+        setTimeout(fetchPatientQueue, 500);
+      } else {
+        Modal.error(data.error || 'Failed to select patient', 'Error');
+      }
+    })
+    .catch(error => {
+      console.error('Error selecting patient:', error);
+      Modal.error('Error selecting patient from queue', 'Error');
+    });
+  }
+  
+  // Auto-refresh queue every 30 seconds
+  function startQueueAutoRefresh() {
+    queueRefreshInterval = setInterval(function() {
+      // Only fetch if panel is closed (to update badge)
+      if (!queuePanel.classList.contains('active')) {
+        fetch('/doctor/api/patient-queue/')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              updateQueueStats(data.total_waiting, data.total_with_doctor);
+            }
+          })
+          .catch(error => console.error('Error refreshing queue:', error));
+      } else {
+        fetchPatientQueue();
+      }
+    }, 30000); // 30 seconds
+  }
+  
+  // Initial fetch and start auto-refresh
+  fetchPatientQueue();
+  startQueueAutoRefresh();
+  
+  // Mark patient as checked after prescription is saved
+  // This hooks into the existing save functionality
+  const originalPrintSave = document.getElementById('printSaveBtn');
+  if (originalPrintSave) {
+    const originalClickHandler = originalPrintSave.onclick;
+    // Note: The marking as checked is done in the save prescription success handler below
+  }
+  
+  // ========== CLINICAL NOTES TOGGLE ==========
+  const toggleClinicalNotesBtn = document.getElementById('toggleClinicalNotesBtn');
+  const clinicalNotesContent = document.getElementById('clinicalNotesContent');
+  const clinicalNotesSection = document.querySelector('.clinical-notes-section');
+  
+  toggleClinicalNotesBtn.addEventListener('click', function() {
+    if (clinicalNotesContent.style.display === 'none') {
+      clinicalNotesContent.style.display = 'block';
+      clinicalNotesSection.classList.add('expanded');
+    } else {
+      clinicalNotesContent.style.display = 'none';
+      clinicalNotesSection.classList.remove('expanded');
+    }
+  });
 </script>
 {% endblock js %}
+

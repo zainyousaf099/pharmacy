@@ -1,0 +1,91 @@
+{
+  "name": "clinic-management-system",
+  "version": "1.0.0",
+  "description": "Clinic Management System - Complete Healthcare Solution",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "build-dir": "electron-builder --win --x64 --dir",
+    "build-portable": "electron-builder --win portable",
+    "build-all": "electron-builder --win nsis portable"
+  },
+  "author": "Clinic Management",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  },
+  "build": {
+    "appId": "com.clinic.management.system",
+    "productName": "Clinic Management System",
+    "copyright": "Copyright © 2024-2026 Clinic Management",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "publisherName": "Clinic Management"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Clinic Management",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "index.html",
+      "styles.css",
+      "network-discovery.js",
+      "config.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../python-portable",
+        "to": "python-portable",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../",
+        "to": "django-app",
+        "filter": [
+          "manage.py",
+          "start_server.py",
+          "requirements.txt",
+          "db.sqlite3",
+          "core/**/*",
+          "accounts/**/*",
+          "admission/**/*",
+          "doctor/**/*",
+          "inventory/**/*",
+          "opd/**/*",
+          "pharmacy/**/*",
+          "templates/**/*",
+          "static/**/*",
+          "!**/__pycache__/**",
+          "!**/*.pyc",
+          "!**/*.pyo"
+        ]
+      }
+    ],
+    "asar": false,
+    "compression": "normal"
+  }
+}

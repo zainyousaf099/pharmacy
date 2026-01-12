@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Profit & Loss Report</title>
+    <style>
+        @page { size: A4; margin: 1.5cm; }
+        body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #6f42c1; padding-bottom: 15px; }
+        .header h1 { color: #6f42c1; margin: 0; font-size: 22px; }
+        .header p { margin: 5px 0; color: #666; }
+        .summary { margin-bottom: 25px; }
+        .summary table { width: 100%; }
+        .summary td { text-align: center; padding: 15px 10px; }
+        .summary .box { border-radius: 5px; padding: 15px; }
+        .summary .box.green { background: #d4edda; border: 1px solid #c3e6cb; }
+        .summary .box.red { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .summary .box.yellow { background: #fff3cd; border: 1px solid #ffeeba; }
+        .summary .box.blue { background: #d1ecf1; border: 1px solid #bee5eb; }
+        .summary .value { font-size: 18px; font-weight: bold; }
+        .summary .label { font-size: 9px; color: #666; margin-top: 5px; }
+        .text-success { color: #28a745; }
+        .text-danger { color: #dc3545; }
+        .section { margin-top: 25px; }
+        .section-title { background: #343a40; color: white; padding: 10px 15px; font-size: 13px; }
+        .two-col { display: table; width: 100%; margin-bottom: 20px; }
+        .two-col > div { display: table-cell; width: 50%; padding: 10px; vertical-align: top; }
+        .breakdown-box { background: #f8f9fa; padding: 15px; border-radius: 5px; height: 100%; }
+        .breakdown-box h4 { margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid; }
+        .breakdown-box h4.revenue { color: #28a745; border-color: #28a745; }
+        .breakdown-box h4.cost { color: #dc3545; border-color: #dc3545; }
+        .breakdown-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd; }
+        .breakdown-row:last-child { border-bottom: none; font-weight: bold; padding-top: 15px; border-top: 2px solid #333; }
+        .profit-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; text-align: center; border-radius: 10px; margin: 20px 0; }
+        .profit-box h2 { margin: 0; font-size: 28px; }
+        .profit-box p { margin: 10px 0 0 0; opacity: 0.8; }
+        table.data { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table.data th { background: #f8f9fa; padding: 8px; font-size: 10px; text-align: left; border-bottom: 2px solid #ddd; }
+        table.data td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 9px; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 8px; }
+        .badge-success { background: #28a745; color: white; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .badge-danger { background: #dc3545; color: white; }
+        .footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PROFIT & LOSS REPORT</h1>
+        <p>Period: {{ start_date|date:"d M Y" }} - {{ end_date|date:"d M Y" }}</p>
+        <p>Generated: {{ report_date|date:"d M Y, h:i A" }}</p>
+    </div>
+
+    <div class="summary">
+        <table>
+            <tr>
+                <td>
+                    <div class="box green">
+                        <div class="value text-success">Rs. {{ total_revenue|floatformat:0 }}</div>
+                        <div class="label">TOTAL REVENUE</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="box red">
+                        <div class="value text-danger">Rs. {{ total_cost|floatformat:0 }}</div>
+                        <div class="label">COST OF GOODS</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="box yellow">
+                        <div class="value" style="color:#856404;">Rs. {{ total_expenses|floatformat:0 }}</div>
+                        <div class="label">EXPENSES</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="box blue">
+                        <div class="value {% if net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">Rs. {{ net_profit|floatformat:0 }}</div>
+                        <div class="label">NET PROFIT</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="two-col">
+        <div>
+            <div class="breakdown-box">
+                <h4 class="revenue">Revenue Breakdown</h4>
+                <div class="breakdown-row">
+                    <span>Medicine Sales</span>
+                    <span class="text-success">Rs. {{ medicine_sales|floatformat:0 }}</span>
+                </div>
+                <div class="breakdown-row">
+                    <span><strong>Total Revenue</strong></span>
+                    <span class="text-success"><strong>Rs. {{ total_revenue|floatformat:0 }}</strong></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="breakdown-box">
+                <h4 class="cost">Cost Breakdown</h4>
+                <div class="breakdown-row">
+                    <span>Cost of Goods Sold</span>
+                    <span class="text-danger">Rs. {{ total_cost|floatformat:0 }}</span>
+                </div>
+                {% for expense in expense_breakdown %}
+                <div class="breakdown-row">
+                    <span>{{ expense.category }}</span>
+                    <span style="color:#856404;">Rs. {{ expense.total|floatformat:0 }}</span>
+                </div>
+                {% endfor %}
+                <div class="breakdown-row">
+                    <span><strong>Total Costs</strong></span>
+                    <span class="text-danger"><strong>Rs. {{ total_cost_and_expenses|floatformat:0 }}</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profit-box" style="{% if net_profit < 0 %}background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);{% endif %}">
+        <p>NET PROFIT / LOSS</p>
+        <h2>Rs. {{ net_profit|floatformat:0 }}</h2>
+        <p>Profit Margin: {{ profit_margin|floatformat:1 }}%</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">DAILY BREAKDOWN (Last 7 Days)</div>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th class="text-right">Revenue</th>
+                    <th class="text-right">Cost</th>
+                    <th class="text-right">Gross Profit</th>
+                    <th class="text-center">Margin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in daily_breakdown %}
+                <tr>
+                    <td><strong>{{ day.date|date:"D, d M" }}</strong></td>
+                    <td class="text-right text-success">Rs. {{ day.revenue|floatformat:0 }}</td>
+                    <td class="text-right text-danger">Rs. {{ day.cost|floatformat:0 }}</td>
+                    <td class="text-right {% if day.profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        Rs. {{ day.profit|floatformat:0 }}
+                    </td>
+                    <td class="text-center">
+                        {% if day.margin > 20 %}
+                        <span class="badge badge-success">{{ day.margin|floatformat:1 }}%</span>
+                        {% elif day.margin > 10 %}
+                        <span class="badge badge-warning">{{ day.margin|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="badge badge-danger">{{ day.margin|floatformat:1 }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center">No data for this period</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        Clinic Management System - Profit & Loss Report | Page 1
+    </div>
+</body>
+</html>

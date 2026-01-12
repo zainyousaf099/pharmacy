@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Discharge Patient{% endblock title %}
+
+{% block style %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #001a4d 0%, #0047b3 50%, #3399ff 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .info-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .info-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 5px;
+  }
+
+  .info-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 20px;
+  }
+
+  thead th {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  tbody td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .total-row {
+    background: rgba(40, 167, 69, 0.2);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .grand-total {
+    background: rgba(40, 167, 69, 0.3);
+    font-size: 1.3rem;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 0.95rem;
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background: #218838;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container">
+  <div class="header">
+    <h1>✅ Discharge Patient</h1>
+    <a href="{% url 'admitted_patients_list' %}" class="back-btn">← Back</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Patient Information</div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Name</div>
+        <div class="info-value">{{ admission.opd_patient.name }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Admission No</div>
+        <div class="info-value">{{ admission.admission_number }}</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Room</div>
+        <div class="info-value">
+          {% if admission.room %}
+            {{ admission.room.room_number }}
+          {% else %}
+            N/A
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Bed</div>
+        <div class="info-value">{{ admission.bed.bed_number|default:"N/A" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💰 Billing Summary</div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th style="text-align: right;">Amount (Rs.)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Room Charges ({{ admission.admission_date|date:"d M" }} - Today)</td>
+          <td style="text-align: right;">{{ room_charges }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {% if medicine_charges %}
+    <h4 style="margin: 20px 0 10px;">Medicine Charges</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Medicine</th>
+          <th>Quantity</th>
+          <th style="text-align: right;">Unit Price</th>
+          <th style="text-align: right;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for charge in medicine_charges %}
+        <tr>
+          <td>{{ charge.medicine_name }}</td>
+          <td>{{ charge.quantity }}</td>
+          <td style="text-align: right;">{{ charge.unit_price }}</td>
+          <td style="text-align: right;">{{ charge.total_price }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+          <td colspan="3">Total Medicine Charges</td>
+          <td style="text-align: right;">{{ total_medicine }}</td>
+        </tr>
+      </tbody>
+    </table>
+    {% endif %}
+
+    {% if other_charges %}
+    <h4 style="margin: 20px 0 10px;">Other Charges</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th style="text-align: right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for charge in other_charges %}
+        <tr>
+          <td>{{ charge.description }}</td>
+          <td style="text-align: right;">{{ charge.amount }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+          <td>Total Other Charges</td>
+          <td style="text-align: right;">{{ total_other }}</td>
+        </tr>
+      </tbody>
+    </table>
+    {% endif %}
+
+    <table>
+      <tbody>
+        <tr class="grand-total">
+          <td><strong>GRAND TOTAL</strong></td>
+          <td style="text-align: right;"><strong>Rs. {{ grand_total }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Discharge Summary</div>
+    <form method="POST">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label">Discharge Summary / Notes</label>
+        <textarea name="discharge_summary" placeholder="Enter discharge summary, medications to continue, follow-up instructions, etc."></textarea>
+      </div>
+
+      <div class="btn-group">
+        <a href="{% url 'admitted_patients_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-success">Confirm Discharge & Generate Bill</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

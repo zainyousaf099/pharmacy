@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Expiry Report</title>
+    <style>
+        @page { size: A4; margin: 0.5cm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; font-size: 10px; line-height: 1.4; color: #000; }
+        
+        .report-container { padding: 10px; }
+        
+        .header { 
+            text-align: center; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 10px; 
+        }
+        .header h1 { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
+        .header p { font-size: 9px; }
+        
+        .summary {
+            display: table;
+            width: 100%;
+            margin-bottom: 10px;
+            border: 1px solid #000;
+        }
+        .summary-item {
+            display: table-cell;
+            width: 33.33%;
+            text-align: center;
+            padding: 8px;
+            border-right: 1px solid #000;
+        }
+        .summary-item:last-child { border-right: none; }
+        .summary-value { font-size: 14px; font-weight: bold; }
+        .summary-label { font-size: 8px; }
+        
+        .section-title { 
+            font-size: 11px; 
+            font-weight: bold; 
+            padding: 6px 8px; 
+            background: #f0f0f0;
+            border: 1px solid #000;
+            border-bottom: none;
+            margin-top: 10px;
+        }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 5px 4px; font-size: 9px; }
+        th { background: #f0f0f0; font-weight: bold; text-align: left; }
+        
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        .footer {
+            margin-top: 15px;
+            padding-top: 8px;
+            border-top: 1px solid #000;
+            text-align: center;
+            font-size: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="header">
+            <h1>EXPIRY REPORT</h1>
+            <p>Generated: {{ report_date|date:"d/m/Y h:i A" }} | Filter: {{ days_filter }} days</p>
+        </div>
+
+        <div class="summary">
+            <div class="summary-item">
+                <div class="summary-value">{{ expired|length }}</div>
+                <div class="summary-label">ALREADY EXPIRED</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{{ expiring_soon|length }}</div>
+                <div class="summary-label">EXPIRING SOON</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">Rs. {{ total_at_risk|floatformat:0 }}</div>
+                <div class="summary-label">VALUE AT RISK</div>
+            </div>
+        </div>
+
+        {% if expired %}
+        <div class="section-title">EXPIRED PRODUCTS ({{ expired|length }})</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine Name</th>
+                    <th>Batch</th>
+                    <th>Expiry Date</th>
+                    <th class="text-center">Days Expired</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-right">Loss Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in expired %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.batch_number|default:"-" }}</td>
+                    <td>{{ product.expiry_date|date:"d/m/Y" }}</td>
+                    <td class="text-center">{{ product.days_expired }}</td>
+                    <td class="text-center">{{ product.total_boxes|floatformat:0 }}</td>
+                    <td class="text-right">Rs. {{ product.loss_value|floatformat:0 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% if expiring_soon %}
+        <div class="section-title">EXPIRING SOON ({{ expiring_soon|length }})</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine Name</th>
+                    <th>Batch</th>
+                    <th>Expiry Date</th>
+                    <th class="text-center">Days Left</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-right">Value at Risk</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in expiring_soon %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.batch_number|default:"-" }}</td>
+                    <td>{{ product.expiry_date|date:"d/m/Y" }}</td>
+                    <td class="text-center">{{ product.days_left }}</td>
+                    <td class="text-center">{{ product.total_boxes|floatformat:0 }}</td>
+                    <td class="text-right">Rs. {{ product.risk_value|floatformat:0 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <div class="footer">
+            Expiry Report | Printed: {{ report_date|date:"d/m/Y h:i A" }}
+        </div>
+    </div>
+</body>
+</html>

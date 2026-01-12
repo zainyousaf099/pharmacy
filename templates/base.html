@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock title %}</title>
+    {% load static %}
+    <!-- Font Awesome Icons (Local - Offline Support) -->
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
     
     <!-- Universal Modal Styles -->
     <style>
@@ -243,6 +246,182 @@
         </div>
     </div>
 
+    <!-- Doctor Sidebar (visible only on doctor pages) -->
+    {% if request.path|slice:":8" == "/doctor/" %}
+    <style>
+        .doctor-sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: rgba(24, 24, 24, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+            transition: right 0.3s ease;
+            padding: 30px 25px;
+            z-index: 1001;
+        }
+        
+        .doctor-sidebar.active {
+            right: 0;
+        }
+        
+        .doctor-sidebar h4 {
+            margin-top: 0;
+            color: #fff;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .doctor-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 25px 0;
+        }
+        
+        .doctor-sidebar ul li {
+            margin: 20px 0;
+        }
+        
+        .doctor-sidebar ul li a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .doctor-sidebar ul li a:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            padding-left: 15px;
+        }
+        
+        .sidebar-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            display: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-overlay.active {
+            display: block;
+        }
+        
+        .sidebar-hamburger {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: none; /* Hidden by default, templates can override */
+        }
+        
+        .sidebar-hamburger:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .sidebar-hamburger span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+    </style>
+    
+    <div class="sidebar-hamburger" id="sidebarHamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <div class="doctor-sidebar" id="doctorSidebar">
+        <span class="sidebar-close" id="sidebarClose">&times;</span>
+        <h4>Navigation</h4>
+        <ul>
+            <li><a href="{% url 'doctor_panel' %}"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="{% url 'template_list' %}"><i class="fas fa-clipboard-list"></i> My Prescriptions</a></li>
+            <li><a href="{% url 'patient_statistics' %}"><i class="fas fa-users"></i> Patients</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="/accounts/login/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('doctorSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const hamburger = document.getElementById('sidebarHamburger');
+            const closeBtn = document.getElementById('sidebarClose');
+            
+            if (hamburger) {
+                hamburger.addEventListener('click', () => {
+                    sidebar.classList.add('active');
+                    overlay.classList.add('active');
+                });
+            }
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            if (overlay) {
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+        });
+    </script>
+    {% endif %}
+
     {% block content %}
       
     {% endblock content %}
@@ -269,17 +448,18 @@
                 this.title = document.getElementById('modalTitle');
                 this.body = document.getElementById('modalBody');
                 this.footer = document.getElementById('modalFooter');
+                this.currentType = 'info';
 
-                // Close on overlay click
+                // Close on overlay click (only for non-error modals)
                 this.overlay.addEventListener('click', (e) => {
-                    if (e.target === this.overlay) {
+                    if (e.target === this.overlay && this.currentType !== 'error') {
                         this.close();
                     }
                 });
 
-                // Close on Escape key
+                // Close on Escape key (only for non-error modals)
                 document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && this.overlay.classList.contains('active')) {
+                    if (e.key === 'Escape' && this.overlay.classList.contains('active') && this.currentType !== 'error') {
                         this.close();
                     }
                 });
@@ -295,6 +475,9 @@
                     autoDismiss = 0,
                     onClose = null
                 } = options;
+
+                // Store current type for click handling
+                this.currentType = type;
 
                 // Set header type
                 this.header.className = 'universal-modal-header ' + type;

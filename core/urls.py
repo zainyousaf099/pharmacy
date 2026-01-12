@@ -10,8 +10,10 @@ urlpatterns = [
     path('doctor/',include('doctor.urls')),
     path('pharmacy/',include('pharmacy.urls')),
     path('inventory/',include('inventory.urls')),
+    path('admission/',include('admission.urls')),
     
     # Modal System Demo
     path('modal-demo/', TemplateView.as_view(template_name='modal_demo.html'), name='modal_demo'),
 ]
+
 

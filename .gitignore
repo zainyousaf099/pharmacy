@@ -11,3 +11,34 @@ env/
 
 # OS files
 .DS_Store
+
+# Heavy/Build files - Don't push to Git
+electron/dist/
+electron/build/
+electron/node_modules/
+*.exe
+*.rar
+*.zip
+*.blockmap
+*.dll
+*.pyd
+
+# Database files
+*.sqlite3
+db_backup*.sqlite3
+
+# Python portable (heavy)
+python-portable/
+electron/dist/win-unpacked/resources/python-portable/
+electron/dist/win-unpacked/resources/django-app/python-portable/
+
+# Deployment packages
+Clinic_App_Deployment/
+Clinic_App_Deployment.rar
+
+# Node modules
+node_modules/
+
+# Log files
+*.log
+electron-debug.log

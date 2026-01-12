@@ -4,63 +4,243 @@
 <head>
     <title>Print Patient Receipt</title>
     <style>
-        body { font-family: monospace; font-size: 14px; }
-        .receipt { width: 250px; margin: auto; text-align: center; }
-        .qr img { width: 120px; margin-top: 10px; }
-        .line { border-top: 1px dashed #000; margin: 5px 0; }
-         .receipt {
-    width: 80mm;   /* thermal roll size */
-    padding: 5mm;
-    font-size: 14px;
-    text-align: center;
-  }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Courier New', monospace; 
+            font-size: 12px;
+            background: #f5f5f5;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        
+        .receipt {
+            width: 72mm;   /* 80mm - padding */
+            max-width: 72mm;
+            padding: 3mm;
+            margin: 10px auto;
+            background: #fff;
+            text-align: center;
+            color: #000 !important;
+        }
+        
+        .clinic-name {
+            font-size: 14px;
+            font-weight: 900 !important;
+            margin-bottom: 2mm;
+            color: #000 !important;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        .line {
+            border-top: 2px solid #000;
+            margin: 3mm 0;
+        }
+        
+        .queue-box {
+            background: #000 !important;
+            color: #fff !important;
+            padding: 4mm;
+            margin: 3mm 0;
+            font-size: 24px;
+            font-weight: 900 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        
+        .info-row {
+            font-size: 12px;
+            margin: 1.5mm 0;
+            text-align: left;
+            font-weight: bold !important;
+            color: #000 !important;
+        }
+        
+        .info-row b {
+            display: inline-block;
+            width: 55px;
+            font-weight: 900 !important;
+        }
+        
+        .qr-container {
+            margin: 3mm 0;
+        }
+        
+        .qr-container img {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .scan-text {
+            font-size: 10px;
+            margin-top: 1mm;
+        }
 
-  .line {
-    border-top: 1px dashed #000;
-    margin: 5px 0;
-  }
+        /* Print buttons */
+        .print-actions {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .print-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .print-btn:hover {
+            background: #388E3C;
+        }
+        
+        .close-btn {
+            background: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .close-btn:hover {
+            background: #c62828;
+        }
+        
+        .back-home {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            z-index: 100;
+        }
+        
+        .back-home:hover {
+            background: #555;
+        }
 
-  img {
-    max-width: 100%;
-  }
-
-  /* remove browser default header/footer */
-  @page {
-    size: 80mm auto;   /* auto height based on content */
-    margin: 0;
-  }
-.back-home {
-  position: absolute;
-  top: 13px;
-  left: 250px;
-  background: rgba(255, 255, 255, 0.063);
-  color: rgb(0, 0, 0);
-  padding: 8px 14px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: background 0.3s;  
-}
-
-.back-home:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
+        /* Print specific styles */
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+        
+        @media print {
+            body {
+                background: #fff !important;
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .receipt {
+                margin: 0;
+                padding: 2mm;
+                width: 76mm;
+                max-width: 76mm;
+                color: #000 !important;
+            }
+            
+            .receipt * {
+                color: #000 !important;
+                font-weight: 900 !important;
+                -webkit-font-smoothing: none;
+            }
+            
+            .clinic-name {
+                font-weight: 900 !important;
+                font-size: 14px !important;
+                letter-spacing: 0.5px;
+                text-shadow: 0 0 0 #000, 0 0 0 #000;
+            }
+            
+            .queue-box {
+                background: #000 !important;
+                color: #fff !important;
+                font-weight: 900 !important;
+                font-size: 24px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .info-row {
+                font-weight: bold !important;
+                font-size: 12px !important;
+            }
+            
+            .info-row b {
+                font-weight: 900 !important;
+            }
+            
+            .line {
+                border-top: 2px solid #000 !important;
+            }
+            
+            .back-home,
+            .print-actions {
+                display: none !important;
+            }
+        }
     </style>
 </head>
-<body onload="window.print()">
-    <a href="javascript:history.back()" class="back-home">⬅ Back</a>
-  <div class="receipt">
-    <h2>{{ clinic_name }}</h2>
-    <div class="line"></div>
-    <p><b>Ref No:</b> {{ patient.ref_no }}</p>
-    <p><b>Name:</b> {{ patient.name }}</p>
-    <p><b>Date:</b> {{ patient.created_at|date:"d M Y H:i" }}</p>
-    <div class="line"></div>
-    <div class="qr">
-        <img src="data:image/png;base64,{{ qr_image }}" alt="QR Code">
+<body>
+    <a href="javascript:history.back()" class="back-home"><i class="fas fa-arrow-left"></i> Back</a>
+    
+    <div class="print-actions">
+        <button class="print-btn" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        <button class="close-btn" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
     </div>
-    <p>Scan QR to fetch patient</p>
-</div>
-
+    
+    <div class="receipt">
+        <div class="clinic-name">{{ clinic_name }}</div>
+        <div class="line"></div>
+        
+        {% if queue_number %}
+        <div class="queue-box">
+            QUEUE # {{ queue_number }}
+        </div>
+        {% endif %}
+        
+        <div class="info-row"><b>Ref No:</b> {{ patient.ref_no }}</div>
+        <div class="info-row"><b>Name:</b> {{ patient.name }}</div>
+        <div class="info-row"><b>Date:</b> {{ patient.created_at|date:"d M Y H:i" }}</div>
+        
+        <div class="line"></div>
+        
+        <div class="qr-container">
+            <img src="data:image/png;base64,{{ qr_image }}" alt="QR Code">
+        </div>
+        <div class="scan-text">Scan QR to fetch patient</div>
+    </div>
+    
+    <script>
+        // Auto-print after a short delay (for desktop app)
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+    </script>
 </body>
 </html>

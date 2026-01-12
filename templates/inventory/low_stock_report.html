@@ -1,0 +1,102 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Low Stock Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Low Stock Report</h1>
+            <p class="text-muted">Products with stock below {{ threshold }} packs</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:low_stock_report_pdf' %}?threshold={{ threshold }}" class="btn btn-danger btn-lg">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Threshold Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Low Stock Threshold</label>
+                    <input type="number" name="threshold" class="form-control" value="{{ threshold }}" min="1">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Apply Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    {% if products %}
+    <div class="alert alert-danger mb-4">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <strong>{{ products|length }}</strong> product(s) need immediate restocking!
+    </div>
+    {% endif %}
+
+    <!-- Low Stock Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-danger">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Current Stock</th>
+                            <th>Status</th>
+                            <th>Purchase Price</th>
+                            <th>Distributor</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ product.name }}</td>
+                            <td>{{ product.category|default:"-" }}</td>
+                            <td>
+                                <span class="badge bg-danger fs-6">{{ product.total_boxes|floatformat:0 }} packs</span>
+                            </td>
+                            <td>
+                                {% if product.total_boxes == 0 %}
+                                <span class="badge bg-dark">Out of Stock</span>
+                                {% elif product.total_boxes < 3 %}
+                                <span class="badge bg-danger">Critical</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">Low</span>
+                                {% endif %}
+                            </td>
+                            <td>Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                            <td>{{ product.distributor.name|default:"-" }}</td>
+                            <td>
+                                <a href="{% url 'inventory:product_update' product.pk %}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-plus"></i> Restock
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                                <p class="text-success mb-0">All products are well stocked!</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

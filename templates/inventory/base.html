@@ -20,25 +20,83 @@
             --info-color: #0dcaf0;
             --warning-color: #ffc107;
             --danger-color: #dc3545;
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --card-border: #dee2e6;
+            --input-bg: #ffffff;
+            --input-border: #dee2e6;
+            --table-bg: #ffffff;
+            --table-hover: #f8f9fa;
+            --table-border: #dee2e6;
+            --navbar-bg: #0d6efd;
+            --footer-bg: #f8f9fa;
+            --dropdown-bg: #ffffff;
+            --modal-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #28a745;
+            --bg-color: #0d2818;
+            --text-color: #e9ecef;
+            --card-bg: rgba(0, 0, 0, 0.3);
+            --card-border: rgba(40, 167, 69, 0.3);
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --input-border: rgba(40, 167, 69, 0.3);
+            --table-bg: rgba(0, 0, 0, 0.2);
+            --table-hover: rgba(40, 167, 69, 0.15);
+            --table-border: rgba(40, 167, 69, 0.2);
+            --navbar-bg: #1a472a;
+            --footer-bg: rgba(0, 0, 0, 0.3);
+            --dropdown-bg: #1a472a;
+            --modal-bg: #1a472a;
         }
 
         body {
-            background-color: #f8f9fa;
+            background: var(--bg-color);
+            color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #0d2818 0%, #1a472a 50%, #2d5a3d 100%);
+            min-height: 100vh;
         }
 
         .navbar {
             box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            background-color: var(--navbar-bg) !important;
+        }
+
+        [data-theme="dark"] .navbar {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border-bottom: 1px solid rgba(40, 167, 69, 0.3);
         }
 
         .card {
             border-radius: 12px;
             transition: all 0.3s ease;
+            background-color: var(--card-bg);
+            border-color: var(--card-border);
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .card {
+            backdrop-filter: blur(10px);
         }
 
         .card-header {
             border-radius: 12px 12px 0 0 !important;
             font-weight: 600;
+            background-color: var(--card-bg);
+            border-color: var(--card-border);
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .card-header {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
         }
 
         .btn {
@@ -52,9 +110,44 @@
             box-shadow: 0 4px 8px rgba(0,0,0,.2);
         }
 
+        [data-theme="dark"] .btn-primary {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            border-color: #28a745;
+        }
+
+        [data-theme="dark"] .btn-outline-primary {
+            color: #28a745;
+            border-color: #28a745;
+        }
+
+        [data-theme="dark"] .btn-outline-primary:hover {
+            background-color: #28a745;
+            color: white;
+        }
+
         .table {
             border-radius: 8px;
             overflow: hidden;
+            background-color: var(--table-bg);
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .table {
+            --bs-table-bg: transparent;
+            --bs-table-striped-bg: rgba(40, 167, 69, 0.1);
+            --bs-table-hover-bg: rgba(40, 167, 69, 0.15);
+            border-color: var(--table-border);
+        }
+
+        [data-theme="dark"] .table thead th {
+            background: rgba(40, 167, 69, 0.3);
+            color: #28a745;
+            border-color: rgba(40, 167, 69, 0.3);
+        }
+
+        [data-theme="dark"] .table td, [data-theme="dark"] .table th {
+            border-color: rgba(40, 167, 69, 0.2);
+            color: var(--text-color);
         }
 
         .badge {
@@ -64,13 +157,32 @@
 
         .form-control, .form-select {
             border-radius: 8px;
-            border: 1px solid #dee2e6;
+            border: 1px solid var(--input-border);
             padding: 0.6rem 1rem;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .form-control, [data-theme="dark"] .form-select {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-color: rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        [data-theme="dark"] .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        [data-theme="dark"] .form-control:focus, [data-theme="dark"] .form-select:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+            background-color: rgba(40, 167, 69, 0.1);
         }
 
         .alert {
@@ -108,6 +220,107 @@
             content: "›";
         }
 
+        [data-theme="dark"] .breadcrumb-item a {
+            color: #28a745;
+        }
+
+        [data-theme="dark"] .breadcrumb-item.active {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--footer-bg) !important;
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] footer {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border-top: 1px solid rgba(40, 167, 69, 0.2);
+        }
+
+        /* Dropdown */
+        [data-theme="dark"] .dropdown-menu {
+            background-color: var(--dropdown-bg);
+            border-color: rgba(40, 167, 69, 0.3);
+        }
+
+        [data-theme="dark"] .dropdown-item {
+            color: white;
+        }
+
+        [data-theme="dark"] .dropdown-item:hover {
+            background-color: rgba(40, 167, 69, 0.3);
+            color: #28a745;
+        }
+
+        [data-theme="dark"] .dropdown-divider {
+            border-color: rgba(40, 167, 69, 0.2);
+        }
+
+        /* Modal */
+        [data-theme="dark"] .modal-content {
+            background-color: var(--modal-bg);
+            border-color: rgba(40, 167, 69, 0.3);
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .modal-header, [data-theme="dark"] .modal-footer {
+            border-color: rgba(40, 167, 69, 0.2);
+        }
+
+        /* List Group */
+        [data-theme="dark"] .list-group-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-color: rgba(40, 167, 69, 0.2);
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .list-group-item:hover {
+            background-color: rgba(40, 167, 69, 0.15);
+        }
+
+        /* Text colors */
+        [data-theme="dark"] .text-muted {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+
+        [data-theme="dark"] .text-dark {
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .bg-light {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        [data-theme="dark"] .bg-white {
+            background-color: var(--card-bg) !important;
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 5px 12px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .theme-toggle i {
+            font-size: 1rem;
+        }
+
         @media print {
             .no-print {
                 display: none !important;
@@ -141,6 +354,12 @@
                 </div>
                 
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item d-flex align-items-center">
+                        <button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                            <span id="themeText">Dark</span>
+                        </button>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'inventory:dashboard' %}">
                             <i class="fas fa-tachometer-alt me-1"></i>Dashboard
@@ -151,10 +370,20 @@
                             <i class="fas fa-pills me-1"></i>Medicines
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inventory:reports' %}">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-chart-bar me-1"></i>Reports
                         </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'inventory:all_reports' %}"><i class="fas fa-file-alt me-2"></i>All Reports</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:stock_report' %}"><i class="fas fa-boxes me-2"></i>Stock Report</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:low_stock_report' %}"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:expiry_report' %}"><i class="fas fa-calendar-times me-2"></i>Expiry Report</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:sales_analysis_report' %}"><i class="fas fa-chart-line me-2"></i>Sales Analysis</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:profit_loss_report' %}"><i class="fas fa-balance-scale me-2"></i>Profit & Loss</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'inventory:expense_list' %}">
@@ -164,6 +393,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'inventory:product_create' %}">
                             <i class="fas fa-plus me-1"></i>Add Medicine
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pharmacypanel' %}" style="background: rgba(255, 255, 255, 0.2); border-radius: 8px; margin-left: 10px; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.4);" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
                         </a>
                     </li>
                 </ul>
@@ -282,6 +516,41 @@
             });
         }
     });
+    </script>
+    
+    <!-- Dark Mode Toggle Script -->
+    <script>
+    // Check for saved theme preference or default to light
+    function initTheme() {
+        const savedTheme = localStorage.getItem('inventoryTheme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeToggle(savedTheme);
+    }
+
+    function toggleDarkMode() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('inventoryTheme', newTheme);
+        updateThemeToggle(newTheme);
+    }
+
+    function updateThemeToggle(theme) {
+        const icon = document.getElementById('themeIcon');
+        const text = document.getElementById('themeText');
+        
+        if (theme === 'dark') {
+            icon.className = 'fas fa-sun';
+            text.textContent = 'Light';
+        } else {
+            icon.className = 'fas fa-moon';
+            text.textContent = 'Dark';
+        }
+    }
+
+    // Initialize theme on page load
+    initTheme();
     </script>
     
     {% block extra_js %}{% endblock %}

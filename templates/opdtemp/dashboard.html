@@ -13,7 +13,7 @@
 
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #001a4d 0%, #0047b3 50%, #3399ff 100%);
+    background: linear-gradient(135deg, #000a1a 0%, #001a4d 50%, #002966 100%);
     min-height: 100vh;
     padding: 20px;
     color: white;
@@ -42,6 +42,37 @@
     display: flex;
     gap: 15px;
     align-items: center;
+  }
+
+  .nav-controls {
+    display: flex;
+    gap: 8px;
+    margin-right: 10px;
+  }
+
+  .nav-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1.2rem;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .nav-btn:active {
+    transform: translateY(0);
   }
 
   .back-btn {
@@ -180,12 +211,12 @@
 
   /* Card Style */
   .card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
     border-radius: 20px;
-    padding: 30px;
+    padding: 35px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
@@ -195,19 +226,21 @@
   }
 
   .card-title {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     color: white;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 15px;
+    gap: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .card-title span {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   /* Form Styling */
@@ -217,39 +250,62 @@
 
   .form-row label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.3px;
   }
 
   .form-row input[type="text"],
   .form-row input[type="number"] {
     width: 100%;
-    padding: 12px 15px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.15);
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
     color: white;
-    font-size: 1rem;
+    font-size: 1.05rem;
     transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+
+  /* Age inputs side by side */
+  .age-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .age-inputs input {
+    width: 80px !important;
+    padding: 14px 12px !important;
+    text-align: center;
+  }
+
+  .age-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
   }
 
   .form-row input:focus {
     outline: none;
-    border-color: rgba(51, 153, 255, 0.8);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 15px rgba(51, 153, 255, 0.3);
+    border-color: rgba(51, 153, 255, 0.9);
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 0 20px rgba(51, 153, 255, 0.4), inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
 
   .form-row input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.45);
+    font-style: italic;
   }
 
   .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 25px;
   }
 
   /* Button Styling */
@@ -285,36 +341,168 @@
   /* Search Section */
   .search-section {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 25px;
   }
 
   .search-section input {
     flex: 1;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-section input:focus {
+    outline: none;
+    border-color: rgba(51, 153, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(51, 153, 255, 0.5), inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .search-section input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
   }
 
   .search-section button {
     width: auto;
     margin-top: 0;
-    padding: 12px 25px;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #3399ff 0%, #0066cc 100%);
+    border: 2px solid rgba(51, 153, 255, 0.4);
+    font-size: 1.05rem;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(51, 153, 255, 0.3);
+  }
+
+  .search-section button:hover {
+    background: linear-gradient(135deg, #0066cc 0%, #0047b3 100%);
+    box-shadow: 0 6px 20px rgba(51, 153, 255, 0.5);
+    transform: translateY(-2px);
   }
 
   /* Patient Details Box */
   .patient-details {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 15px;
-    padding: 20px;
+    background: linear-gradient(145deg, rgba(0, 50, 100, 0.4) 0%, rgba(0, 30, 60, 0.5) 100%);
+    border-radius: 16px;
+    padding: 0;
     min-height: 250px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-family: 'Courier New', monospace;
-    font-size: 0.95rem;
-    line-height: 1.8;
-    white-space: pre-wrap;
-    color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(51, 153, 255, 0.3);
+    overflow: hidden;
   }
 
-  .patient-details strong {
+  .patient-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .patient-empty i {
+    font-size: 3rem;
+    color: rgba(51, 153, 255, 0.3);
+    margin-bottom: 15px;
+    display: block;
+  }
+
+  .patient-empty p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .patient-empty small {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .patient-header {
+    background: linear-gradient(135deg, rgba(51, 153, 255, 0.2) 0%, rgba(0, 102, 204, 0.15) 100%);
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid rgba(51, 153, 255, 0.2);
+  }
+
+  .patient-avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3399ff 0%, #0066cc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(51, 153, 255, 0.4);
+  }
+
+  .patient-name-ref h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 4px 0;
+  }
+
+  .patient-name-ref span {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(51, 153, 255, 0.2);
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  .patient-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .patient-info-item {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 12px 14px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .patient-info-item i {
     color: #3399ff;
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  .patient-info-item .info-content {
+    flex: 1;
+  }
+
+  .patient-info-item .info-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .patient-info-item .info-value {
+    font-size: 0.95rem;
+    color: white;
+    font-weight: 500;
+  }
+
+  .patient-info-item.full-width {
+    grid-column: 1 / -1;
   }
 
   /* Popup Modal */
@@ -396,9 +584,15 @@
 {% block content %}
 <!-- Header -->
 <div class="header">
-  <h1>📋 Reception Panel / OPD</h1>
+  <h1><i class="fas fa-clipboard-list"></i> Reception Panel / OPD</h1>
   <div class="header-actions">
-    <a href="javascript:history.back()" class="back-btn">⬅ Back</a>
+    <div class="nav-controls">
+      <div class="nav-btn" onclick="history.back()" title="Back"><i class="fas fa-arrow-left"></i></div>
+      <div class="nav-btn" onclick="history.forward()" title="Forward"><i class="fas fa-arrow-right"></i></div>
+      <div class="nav-btn" onclick="location.reload()" title="Refresh"><i class="fas fa-sync-alt"></i></div>
+    </div>
+    <a href="{% url 'admitted_patients_list' %}" class="back-btn" style="background: #28a745; border-color: #28a745;"><i class="fas fa-hospital"></i> Admitted Patients</a>
+    <a href="javascript:history.back()" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
     <div class="hamburger" id="hamburger">
       <span></span>
       <span></span>
@@ -412,7 +606,7 @@
   <!-- Left Card - Add Patient -->
   <div class="card">
     <div class="card-title">
-      <span>👤</span>
+      <span><i class="fas fa-user-plus"></i></span>
       ADD PATIENT DETAILS
     </div>
 
@@ -431,8 +625,13 @@
         </div>
 
         <div class="form-row">
-          <label for="id_age">Age</label>
-          {{ form.age }}
+          <label>Age</label>
+          <div class="age-inputs">
+            {{ form.age_years }}
+            <span class="age-label">Years</span>
+            {{ form.age_months }}
+            <span class="age-label">Months</span>
+          </div>
         </div>
 
         <div class="form-row">
@@ -452,7 +651,7 @@
       </div>
 
       <button type="submit" class="btn btn-primary" id="printSaveBtn">
-        ✓ ADD / PRINT
+        <i class="fas fa-check"></i> ADD / PRINT
       </button>
     </form>
   </div>
@@ -460,7 +659,7 @@
   <!-- Right Card - Search Patient -->
   <div class="card">
     <div class="card-title">
-      <span>🔍</span>
+      <span><i class="fas fa-search"></i></span>
       SEARCH PATIENT
     </div>
 
@@ -477,19 +676,69 @@
 
     <div style="margin-top: 30px;">
       <div class="card-title" style="font-size: 1.1rem; margin-bottom: 15px; border: none; padding-bottom: 0;">
-        <span>📄</span>
+        <span><i class="fas fa-file-alt"></i></span>
         Patient Details
       </div>
 
-      <div class="patient-details">{% if selected_patient %}<strong>Ref:</strong> {{ selected_patient.ref_no }}
-<strong>Name:</strong> {{ selected_patient.name }}
-<strong>Phone:</strong> {{ selected_patient.phone }}
-<strong>Age:</strong> {{ selected_patient.age }} years
-<strong>Temperature:</strong> {{ selected_patient.temperature }}°F
-<strong>Weight:</strong> {{ selected_patient.weight }} kg
-<strong>Height:</strong> {{ selected_patient.height }} cm
-<strong>Registered:</strong> {{ selected_patient.created_at|date:"d M Y, h:i A" }}{% else %}No patient selected.
-Please search for a patient using the search box above.{% endif %}</div>
+      <div class="patient-details">{% if selected_patient %}
+        <div class="patient-header">
+          <div class="patient-avatar">{{ selected_patient.name|slice:":2"|upper }}</div>
+          <div class="patient-name-ref">
+            <h3>{{ selected_patient.name }}</h3>
+            <span>{{ selected_patient.ref_no }}</span>
+          </div>
+        </div>
+        <div class="patient-info-grid">
+          <div class="patient-info-item">
+            <i class="fas fa-phone"></i>
+            <div class="info-content">
+              <div class="info-label">Phone</div>
+              <div class="info-value">{{ selected_patient.phone|default:"N/A" }}</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-birthday-cake"></i>
+            <div class="info-content">
+              <div class="info-label">Age</div>
+              <div class="info-value">{{ selected_patient.age|default:"N/A" }}</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-thermometer-half"></i>
+            <div class="info-content">
+              <div class="info-label">Temperature</div>
+              <div class="info-value">{{ selected_patient.temperature }}°F</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-weight"></i>
+            <div class="info-content">
+              <div class="info-label">Weight</div>
+              <div class="info-value">{{ selected_patient.weight }} kg</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-ruler-vertical"></i>
+            <div class="info-content">
+              <div class="info-label">Height</div>
+              <div class="info-value">{{ selected_patient.height }} cm</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-calendar-alt"></i>
+            <div class="info-content">
+              <div class="info-label">Registered</div>
+              <div class="info-value">{{ selected_patient.created_at|date:"d M Y" }}</div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="patient-empty">
+          <i class="fas fa-user-slash"></i>
+          <p>No patient selected</p>
+          <small>Search by Ref No, Name or Phone</small>
+        </div>
+      {% endif %}</div>
     </div>
   </div>
 </div>
@@ -497,11 +746,12 @@ Please search for a patient using the search box above.{% endif %}</div>
 <!-- Side Menu -->
 <div class="side-menu" id="sideMenu">
   <span class="close-btn" id="closeMenu">&times;</span>
-  <h4>📋 Menu</h4>
+  <h4><i class="fas fa-clipboard-list"></i> Menu</h4>
   <ul>
-    <li><a href="/">🏠 Home</a></li>
-    <li><a href="#">⚙️ Settings</a></li>
-    <li><a href="/">🚪 Logout</a></li>
+    <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+    <li><a href="/admin/" target="_blank"><i class="fas fa-cog"></i> Admin Panel</a></li>
+    <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
+    <li><a href="/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
   </ul>
 </div>
 
@@ -511,8 +761,8 @@ Please search for a patient using the search box above.{% endif %}</div>
 <!-- Popup Modal -->
 <div class="popup-overlay" id="popup">
   <div class="popup-box">
-    <div class="tick">✔</div>
-    <div>Patient saved successfully! Please check your printer.</div>
+    <div class="tick"><i class="fas fa-check-circle"></i></div>
+    <div>Patient saved successfully!</div>
   </div>
 </div>
 
@@ -520,6 +770,11 @@ Please search for a patient using the search box above.{% endif %}</div>
 
 {% block js %}
 <script>
+  // Check if we need to open print window for new patient
+  {% if print_patient_id %}
+  window.open("{% url 'print_patient_receipt' print_patient_id %}", "_blank", "width=600,height=700");
+  {% endif %}
+
   // Menu toggle functionality
   const hamburger = document.getElementById("hamburger");
   const sideMenu = document.getElementById("sideMenu");
@@ -551,6 +806,24 @@ Please search for a patient using the search box above.{% endif %}</div>
     
     input.addEventListener('blur', function() {
       this.parentElement.style.transform = 'scale(1)';
+    });
+  });
+
+  // Enter key acts like Tab in forms
+  document.querySelectorAll('.form-grid, .search-section').forEach(container => {
+    container.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        const focusable = Array.from(document.querySelectorAll('.form-grid input, .form-grid select, .search-section input, .search-section button'));
+        const currentIndex = focusable.indexOf(e.target);
+        if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+          focusable[currentIndex + 1].focus();
+        } else if (currentIndex === focusable.length - 1) {
+          // Last field - submit form
+          const submitBtn = document.getElementById('printSaveBtn');
+          if (submitBtn) submitBtn.click();
+        }
+      }
     });
   });
 </script>

@@ -53,22 +53,32 @@
                         </div>
 
                         <div class="row g-3 mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="{{ form.medicine_form.id_for_label }}" class="form-label fw-bold">
+                                    {{ form.medicine_form.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.medicine_form }}
+                                <small class="text-muted d-block">Select the form/type of medicine</small>
+                                {% if form.medicine_form.errors %}
+                                    <div class="text-danger small mt-1">{{ form.medicine_form.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
                                 <label for="{{ form.distributor.id_for_label }}" class="form-label fw-bold">
                                     {{ form.distributor.label }}
                                 </label>
                                 {{ form.distributor }}
-                                <small class="text-muted d-block">Select the supplier/distributor for this medicine</small>
+                                <small class="text-muted d-block">Select the supplier/distributor</small>
                                 {% if form.distributor.errors %}
                                     <div class="text-danger small mt-1">{{ form.distributor.errors }}</div>
                                 {% endif %}
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="{{ form.weight_or_quantity.id_for_label }}" class="form-label fw-bold">
                                     {{ form.weight_or_quantity.label }}
                                 </label>
                                 {{ form.weight_or_quantity }}
-                                <small class="text-muted d-block">e.g., 500mg, 100ml, 10mg</small>
+                                <small class="text-muted d-block">e.g., 500mg, 100ml</small>
                             </div>
                         </div>
 
@@ -76,17 +86,16 @@
                         <div class="section-header mb-3 mt-4">
                             <h5 class="text-primary"><i class="fas fa-layer-group me-2"></i>Quantity Structure</h5>
                             <hr>
-                            <div class="alert alert-info">
+                            <div class="alert alert-info" id="quantityExample">
                                 <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Example:</strong> If you purchased 10 packs, each pack has 10 strips, and each strip has 15 tablets, enter:
-                                <br><small>Packs: 10, Strips per Pack: 10, Tablets per Strip: 15</small>
+                                <strong>Example:</strong> <span id="exampleText">If you purchased 10 packs, each pack has 10 strips, and each strip has 15 tablets</span>
                             </div>
                         </div>
 
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
                                 <label for="{{ form.products_in_box.id_for_label }}" class="form-label fw-bold">
-                                    {{ form.products_in_box.label }} <span class="text-danger">*</span>
+                                    <span id="label_products_in_box">{{ form.products_in_box.label }}</span> <span class="text-danger">*</span>
                                 </label>
                                 {{ form.products_in_box }}
                                 {% if form.products_in_box.errors %}
@@ -95,18 +104,20 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="{{ form.items_per_product.id_for_label }}" class="form-label fw-bold">
-                                    {{ form.items_per_product.label }} <span class="text-danger">*</span>
+                                    <span id="label_items_per_product">{{ form.items_per_product.label }}</span> <span class="text-danger">*</span>
                                 </label>
                                 {{ form.items_per_product }}
+                                <small class="text-muted d-block" id="help_items_per_product">How many items per pack?</small>
                                 {% if form.items_per_product.errors %}
                                     <div class="text-danger small mt-1">{{ form.items_per_product.errors }}</div>
                                 {% endif %}
                             </div>
                             <div class="col-md-4">
                                 <label for="{{ form.subitems_per_item.id_for_label }}" class="form-label fw-bold">
-                                    {{ form.subitems_per_item.label }} <span class="text-danger">*</span>
+                                    <span id="label_subitems_per_item">{{ form.subitems_per_item.label }}</span> <span class="text-danger">*</span>
                                 </label>
                                 {{ form.subitems_per_item }}
+                                <small class="text-muted d-block" id="help_subitems_per_item">How many units per item?</small>
                                 {% if form.subitems_per_item.errors %}
                                     <div class="text-danger small mt-1">{{ form.subitems_per_item.errors }}</div>
                                 {% endif %}
@@ -125,7 +136,7 @@
                                     {{ form.purchase_price.label }} <span class="text-danger">*</span>
                                 </label>
                                 {{ form.purchase_price }}
-                                <small class="text-muted d-block">Total purchase price for all packs</small>
+                                <small class="text-muted d-block">Total purchase price (before discount)</small>
                                 {% if form.purchase_price.errors %}
                                     <div class="text-danger small mt-1">{{ form.purchase_price.errors }}</div>
                                 {% endif %}
@@ -142,20 +153,67 @@
                             </div>
                         </div>
 
+                        <!-- Distributor Discount Section -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-info"><i class="fas fa-tags me-2"></i>Distributor Discount</h5>
+                            <hr>
+                            <div class="alert alert-warning py-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <small>Enter discount in <strong>PKR</strong> or <strong>Percentage</strong> - the other will be calculated automatically</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="{{ form.distributor_discount_pkr.id_for_label }}" class="form-label fw-bold">
+                                    {{ form.distributor_discount_pkr.label }}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rs.</span>
+                                    {{ form.distributor_discount_pkr }}
+                                </div>
+                                <small class="text-muted d-block">Discount amount in PKR</small>
+                                {% if form.distributor_discount_pkr.errors %}
+                                    <div class="text-danger small mt-1">{{ form.distributor_discount_pkr.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="{{ form.distributor_discount_percent.id_for_label }}" class="form-label fw-bold">
+                                    {{ form.distributor_discount_percent.label }}
+                                </label>
+                                <div class="input-group">
+                                    {{ form.distributor_discount_percent }}
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <small class="text-muted d-block">Discount percentage</small>
+                                {% if form.distributor_discount_percent.errors %}
+                                    <div class="text-danger small mt-1">{{ form.distributor_discount_percent.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Net Purchase Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rs.</span>
+                                    <input type="text" class="form-control fw-bold text-success" id="netPurchasePrice" readonly value="0.00">
+                                </div>
+                                <small class="text-muted d-block">Price after discount</small>
+                            </div>
+                        </div>
+
                         <!-- Price Calculator Display -->
                         <div class="alert alert-success" id="priceCalculator" style="display:none;">
-                            <h6 class="fw-bold mb-2"><i class="fas fa-calculator me-2"></i>Calculated Prices:</h6>
+                            <h6 class="fw-bold mb-2"><i class="fas fa-calculator me-2"></i>Calculated Prices (Based on Net Price After Discount):</h6>
                             <div class="row">
                                 <div class="col-md-4">
                                     <small class="text-muted">Purchase Price per Pack:</small>
                                     <div class="fw-bold" id="purchasePricePerPack">-</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <small class="text-muted">Purchase Price per Strip:</small>
+                                    <small class="text-muted" id="labelPurchaseItem">Purchase Price per Strip:</small>
                                     <div class="fw-bold" id="purchasePricePerStrip">-</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <small class="text-muted">Purchase Price per Tablet:</small>
+                                    <small class="text-muted" id="labelPurchaseSubitem">Purchase Price per Tablet:</small>
                                     <div class="fw-bold" id="purchasePricePerTablet">-</div>
                                 </div>
                             </div>
@@ -166,11 +224,11 @@
                                     <div class="fw-bold text-success" id="salePricePerPack">-</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <small class="text-muted">Sale Price per Strip:</small>
+                                    <small class="text-muted" id="labelSaleItem">Sale Price per Strip:</small>
                                     <div class="fw-bold text-success" id="salePricePerStrip">-</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <small class="text-muted">Sale Price per Tablet:</small>
+                                    <small class="text-muted" id="labelSaleSubitem">Sale Price per Tablet:</small>
                                     <div class="fw-bold text-success" id="salePricePerTablet">-</div>
                                 </div>
                             </div>
@@ -221,22 +279,127 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const medicineForm = document.getElementById('medicine_form');
     const packs = document.getElementById('id_products_in_box');
-    const strips = document.getElementById('id_items_per_product');
-    const tablets = document.getElementById('id_subitems_per_item');
+    const strips = document.getElementById('items_per_product');
+    const tablets = document.getElementById('subitems_per_item');
     const purchasePrice = document.getElementById('id_purchase_price');
     const margin = document.getElementById('id_purchase_margin_percent');
     const calculator = document.getElementById('priceCalculator');
+    
+    // Discount fields
+    const discountPkr = document.getElementById('id_distributor_discount_pkr');
+    const discountPercent = document.getElementById('id_distributor_discount_percent');
+    const netPurchasePrice = document.getElementById('netPurchasePrice');
+    
+    // Flag to prevent infinite loops during auto-calculation
+    let isCalculating = false;
+
+    // Dynamic label mapping based on medicine form
+    const labelConfig = {
+        'tablet': {
+            item: 'Strip',
+            subitem: 'Tablet',
+            example: 'If you purchased 10 packs, each pack has 10 strips, and each strip has 15 tablets',
+            itemHelp: 'How many strips per pack?',
+            subitemHelp: 'How many tablets per strip?'
+        },
+        'capsule': {
+            item: 'Strip',
+            subitem: 'Capsule',
+            example: 'If you purchased 10 packs, each pack has 10 strips, and each strip has 10 capsules',
+            itemHelp: 'How many strips per pack?',
+            subitemHelp: 'How many capsules per strip?'
+        },
+        'syrup': {
+            item: 'Bottle',
+            subitem: 'ml',
+            example: 'If you purchased 5 packs, each pack has 6 bottles, and each bottle has 120ml',
+            itemHelp: 'How many bottles per pack?',
+            subitemHelp: 'How many ml per bottle?'
+        },
+        'injection': {
+            item: 'Vial/Ampoule',
+            subitem: 'ml',
+            example: 'If you purchased 10 boxes, each box has 5 vials, and each vial has 5ml',
+            itemHelp: 'How many vials per box?',
+            subitemHelp: 'How many ml per vial?'
+        },
+        'drops': {
+            item: 'Bottle',
+            subitem: 'ml',
+            example: 'If you purchased 6 packs, each pack has 1 bottle, and each bottle has 10ml',
+            itemHelp: 'How many bottles per pack?',
+            subitemHelp: 'How many ml per bottle?'
+        },
+        'ointment': {
+            item: 'Tube',
+            subitem: 'gram',
+            example: 'If you purchased 10 packs, each pack has 5 tubes, and each tube has 30grams',
+            itemHelp: 'How many tubes per pack?',
+            subitemHelp: 'How many grams per tube?'
+        },
+        'inhaler': {
+            item: 'Inhaler',
+            subitem: 'dose',
+            example: 'If you purchased 10 boxes, each box has 1 inhaler, and each inhaler has 200 doses',
+            itemHelp: 'How many inhalers per box?',
+            subitemHelp: 'How many doses per inhaler?'
+        },
+        'suppository': {
+            item: 'Strip',
+            subitem: 'Suppository',
+            example: 'If you purchased 10 packs, each pack has 5 strips, and each strip has 5 suppositories',
+            itemHelp: 'How many strips per pack?',
+            subitemHelp: 'How many suppositories per strip?'
+        },
+        'other': {
+            item: 'Unit',
+            subitem: 'Piece',
+            example: 'Define your own structure',
+            itemHelp: 'How many units per pack?',
+            subitemHelp: 'How many pieces per unit?'
+        }
+    };
+
+    function updateLabels() {
+        const selectedForm = medicineForm.value;
+        const config = labelConfig[selectedForm] || labelConfig['tablet'];
+
+        // Update labels
+        document.getElementById('label_items_per_product').textContent = `${config.item}s per Pack`;
+        document.getElementById('label_subitems_per_item').textContent = `${config.subitem}s per ${config.item}`;
+        
+        // Update help text
+        document.getElementById('help_items_per_product').textContent = config.itemHelp;
+        document.getElementById('help_subitems_per_item').textContent = config.subitemHelp;
+        
+        // Update example
+        document.getElementById('exampleText').textContent = config.example;
+        
+        // Update price calculator labels
+        document.getElementById('labelPurchaseItem').textContent = `Purchase Price per ${config.item}:`;
+        document.getElementById('labelPurchaseSubitem').textContent = `Purchase Price per ${config.subitem}:`;
+        document.getElementById('labelSaleItem').textContent = `Sale Price per ${config.item}:`;
+        document.getElementById('labelSaleSubitem').textContent = `Sale Price per ${config.subitem}:`;
+        
+        // Update placeholders
+        strips.placeholder = `How many ${config.item.toLowerCase()}s?`;
+        tablets.placeholder = `How many ${config.subitem.toLowerCase()}s?`;
+    }
 
     function calculatePrices() {
         const packsVal = parseFloat(packs.value) || 1;
         const stripsVal = parseFloat(strips.value) || 1;
         const tabletsVal = parseFloat(tablets.value) || 1;
-        const priceVal = parseFloat(purchasePrice.value) || 0;
+        const grossPriceVal = parseFloat(purchasePrice.value) || 0;
         const marginVal = parseFloat(margin.value) || 0;
+        
+        // Get net price (after discount)
+        const netPriceVal = parseFloat(netPurchasePrice.value) || grossPriceVal;
 
-        if (priceVal > 0) {
-            const pricePerPack = priceVal / packsVal;
+        if (netPriceVal > 0) {
+            const pricePerPack = netPriceVal / packsVal;
             const pricePerStrip = pricePerPack / stripsVal;
             const pricePerTablet = pricePerStrip / tabletsVal;
 
@@ -247,22 +410,115 @@ document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById('purchasePricePerPack').textContent = 'Rs. ' + pricePerPack.toFixed(2);
             document.getElementById('purchasePricePerStrip').textContent = 'Rs. ' + pricePerStrip.toFixed(2);
-            document.getElementById('purchasePricePerTablet').textContent = 'Rs. ' + pricePerTablet.toFixed(2);
+            document.getElementById('purchasePricePerTablet').textContent = 'Rs. ' + pricePerTablet.toFixed(6);
 
             document.getElementById('salePricePerPack').textContent = 'Rs. ' + salePerPack.toFixed(2);
             document.getElementById('salePricePerStrip').textContent = 'Rs. ' + salePerStrip.toFixed(2);
-            document.getElementById('salePricePerTablet').textContent = 'Rs. ' + salePerTablet.toFixed(2);
+            document.getElementById('salePricePerTablet').textContent = 'Rs. ' + salePerTablet.toFixed(6);
 
             calculator.style.display = 'block';
         } else {
             calculator.style.display = 'none';
         }
     }
+    
+    // Calculate discount - PKR to Percent
+    function calculateDiscountFromPkr() {
+        if (isCalculating) return;
+        isCalculating = true;
+        
+        const grossPrice = parseFloat(purchasePrice.value) || 0;
+        const discountPkrVal = parseFloat(discountPkr.value) || 0;
+        
+        if (grossPrice > 0 && discountPkrVal > 0) {
+            const percentVal = (discountPkrVal / grossPrice) * 100;
+            discountPercent.value = percentVal.toFixed(2);
+            netPurchasePrice.value = (grossPrice - discountPkrVal).toFixed(2);
+        } else if (discountPkrVal === 0) {
+            discountPercent.value = '';
+            netPurchasePrice.value = grossPrice.toFixed(2);
+        }
+        
+        calculatePrices();
+        isCalculating = false;
+    }
+    
+    // Calculate discount - Percent to PKR
+    function calculateDiscountFromPercent() {
+        if (isCalculating) return;
+        isCalculating = true;
+        
+        const grossPrice = parseFloat(purchasePrice.value) || 0;
+        const discountPercentVal = parseFloat(discountPercent.value) || 0;
+        
+        if (grossPrice > 0 && discountPercentVal > 0) {
+            const pkrVal = (grossPrice * discountPercentVal) / 100;
+            discountPkr.value = pkrVal.toFixed(2);
+            netPurchasePrice.value = (grossPrice - pkrVal).toFixed(2);
+        } else if (discountPercentVal === 0) {
+            discountPkr.value = '';
+            netPurchasePrice.value = grossPrice.toFixed(2);
+        }
+        
+        calculatePrices();
+        isCalculating = false;
+    }
+    
+    // Update net price when gross price changes
+    function updateNetPrice() {
+        const grossPrice = parseFloat(purchasePrice.value) || 0;
+        const discountPkrVal = parseFloat(discountPkr.value) || 0;
+        const discountPercentVal = parseFloat(discountPercent.value) || 0;
+        
+        if (discountPkrVal > 0) {
+            netPurchasePrice.value = (grossPrice - discountPkrVal).toFixed(2);
+            // Recalculate percentage based on new gross price
+            if (grossPrice > 0) {
+                discountPercent.value = ((discountPkrVal / grossPrice) * 100).toFixed(2);
+            }
+        } else if (discountPercentVal > 0) {
+            const pkrVal = (grossPrice * discountPercentVal) / 100;
+            discountPkr.value = pkrVal.toFixed(2);
+            netPurchasePrice.value = (grossPrice - pkrVal).toFixed(2);
+        } else {
+            netPurchasePrice.value = grossPrice.toFixed(2);
+        }
+        
+        calculatePrices();
+    }
 
-    [packs, strips, tablets, purchasePrice, margin].forEach(element => {
+    // Event listeners
+    medicineForm.addEventListener('change', updateLabels);
+    [packs, strips, tablets, margin].forEach(element => {
         element.addEventListener('input', calculatePrices);
     });
+    
+    // Purchase price change - update net price and recalculate
+    purchasePrice.addEventListener('input', updateNetPrice);
+    
+    // Discount field listeners
+    discountPkr.addEventListener('input', calculateDiscountFromPkr);
+    discountPercent.addEventListener('input', calculateDiscountFromPercent);
 
+    // Enter key acts like Tab in form
+    const form = document.getElementById('productForm');
+    form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const focusable = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([readonly]), select, textarea'));
+            const currentIndex = focusable.indexOf(e.target);
+            if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+                focusable[currentIndex + 1].focus();
+            } else if (currentIndex === focusable.length - 1) {
+                // Last field - submit form
+                form.querySelector('button[type="submit"]').click();
+            }
+        }
+    });
+
+    // Initialize
+    updateLabels();
+    updateNetPrice();
     calculatePrices();
 });
 </script>

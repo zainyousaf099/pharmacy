@@ -1,0 +1,134 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Distributor Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5"><i class="fas fa-truck text-primary me-2"></i>Distributor Report</h1>
+            <p class="text-muted">Inventory analysis by distributor/supplier</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:distributor_report_pdf' %}{% if selected_distributor %}?distributor={{ selected_distributor }}{% endif %}" class="btn btn-danger btn-lg">
+                <i class="fas fa-file-pdf me-2"></i>Download PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Select Distributor</label>
+                    <select name="distributor" class="form-select">
+                        <option value="">All Distributors</option>
+                        {% for dist in distributors %}
+                        <option value="{{ dist.id }}" {% if selected_distributor == dist.id|stringformat:"s" %}selected{% endif %}>
+                            {{ dist.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Distributors</h6>
+                    <h2 class="mb-0">{{ total_distributors }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Products</h6>
+                    <h2 class="mb-0">{{ total_products }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Stock Value</h6>
+                    <h2 class="mb-0">Rs. {{ total_value|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Purchases</h6>
+                    <h2 class="mb-0">Rs. {{ total_purchases|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distributor Cards -->
+    {% for dist_data in distributor_data %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="fas fa-building me-2 text-primary"></i>{{ dist_data.distributor.name|default:"No Distributor Assigned" }}
+            </h5>
+            <div>
+                <span class="badge bg-primary">{{ dist_data.products|length }} Products</span>
+                <span class="badge bg-success">Rs. {{ dist_data.total_value|floatformat:0 }} Value</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Stock</th>
+                            <th>Purchase Price</th>
+                            <th>Sale Price</th>
+                            <th>Stock Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in dist_data.products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ product.name }}</td>
+                            <td>{{ product.category|default:"-" }}</td>
+                            <td>
+                                <span class="{% if product.total_boxes < 5 %}text-danger{% endif %}">
+                                    {{ product.total_boxes|floatformat:0 }} packs
+                                </span>
+                            </td>
+                            <td>Rs. {{ product.purchase_price|floatformat:2 }}</td>
+                            <td class="text-success">Rs. {{ product.sale_price|floatformat:2 }}</td>
+                            <td class="fw-bold">Rs. {{ product.stock_value|floatformat:0 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-5">
+        <i class="fas fa-inbox text-muted fa-4x mb-3"></i>
+        <h4 class="text-muted">No distributor data found</h4>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Assign Room & Bed{% endblock title %}
+
+{% block style %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #001a4d 0%, #0047b3 50%, #3399ff 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: white;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  select, input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+  }
+
+  select:focus, input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  option {
+    background: #001a4d;
+    color: white;
+  }
+
+  .info-box {
+    background: rgba(0, 123, 255, 0.2);
+    border: 1px solid rgba(0, 123, 255, 0.4);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+
+  .info-label {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .info-value {
+    font-weight: 700;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: #0066cc;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #0052a3;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container">
+  <div class="header">
+    <h1><i class="fas fa-bed"></i> Assign Room & Bed</h1>
+    <a href="{% url 'admitted_patients_list' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Patient Information</div>
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">Name:</span>
+        <span class="info-value">{{ admission.opd_patient.name }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Admission No:</span>
+        <span class="info-value">{{ admission.admission_number }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Ref No:</span>
+        <span class="info-value">{{ admission.opd_patient.ref_no }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Admitted:</span>
+        <span class="info-value">{{ admission.admission_date|date:"d M Y, h:i A" }}</span>
+      </div>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+      
+      <div class="form-group">
+        <label class="form-label">Select Room *</label>
+        <select name="room_id" id="roomSelect" required>
+          <option value="">-- Select Room --</option>
+          {% for room in rooms %}
+          <option value="{{ room.id }}" data-rate="{{ room.daily_rate }}">
+            {{ room.room_number }} - {{ room.get_room_type_display }} (Rs. {{ room.daily_rate }}/day) - {{ room.available_beds }} bed(s) available
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Bed *</label>
+        <select name="bed_id" id="bedSelect" required>
+          <option value="">-- Select Room First --</option>
+        </select>
+      </div>
+
+      <div class="btn-group">
+        <a href="{% url 'admitted_patients_list' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Assign Room & Bed</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const roomSelect = document.getElementById('roomSelect');
+  const bedSelect = document.getElementById('bedSelect');
+
+  roomSelect.addEventListener('change', function() {
+    const roomId = this.value;
+    bedSelect.innerHTML = '<option value="">Loading...</option>';
+
+    if (!roomId) {
+      bedSelect.innerHTML = '<option value="">-- Select Room First --</option>';
+      return;
+    }
+
+    fetch(`/admission/api/available-beds/?room_id=${roomId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.beds.length > 0) {
+          bedSelect.innerHTML = '<option value="">-- Select Bed --</option>';
+          data.beds.forEach(bed => {
+            const option = document.createElement('option');
+            option.value = bed.id;
+            option.textContent = `Bed ${bed.bed_number}`;
+            bedSelect.appendChild(option);
+          });
+        } else {
+          bedSelect.innerHTML = '<option value="">No beds available</option>';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        bedSelect.innerHTML = '<option value="">Error loading beds</option>';
+      });
+  });
+</script>
+{% endblock content %}

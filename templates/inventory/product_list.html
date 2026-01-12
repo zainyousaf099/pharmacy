@@ -13,6 +13,9 @@
             <p class="text-muted">Manage all medicines and products</p>
         </div>
         <div class="col-md-6 text-end">
+            <a class="btn btn-outline-secondary me-2" href="{% url 'inventory:all_reports' %}">
+                <i class="fas fa-chart-bar me-2"></i>All Reports
+            </a>
             <a class="btn btn-primary btn-lg" href="{% url 'inventory:product_create' %}">
                 <i class="fas fa-plus me-2"></i>Add New Medicine
             </a>

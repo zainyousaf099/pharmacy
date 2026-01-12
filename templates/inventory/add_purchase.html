@@ -127,4 +127,24 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enter key acts like Tab in form
+    const form = document.querySelector('form');
+    form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const focusable = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([readonly]), select, textarea'));
+            const currentIndex = focusable.indexOf(e.target);
+            if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+                focusable[currentIndex + 1].focus();
+            } else if (currentIndex === focusable.length - 1) {
+                // Last field - submit form
+                form.querySelector('button[type="submit"]').click();
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

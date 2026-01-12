@@ -1,16 +1,41 @@
 
 from pathlib import Path
+import os
+import sys
+import shutil
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# For packaged app, use a writable location for database
+def get_database_path():
+    # Check if running as packaged app (in Program Files or similar)
+    if getattr(sys, 'frozen', False) or 'Program Files' in str(BASE_DIR) or 'resources' in str(BASE_DIR):
+        # Use AppData folder for database (writable location)
+        app_data = Path(os.environ.get('LOCALAPPDATA', os.path.expanduser('~')))
+        db_folder = app_data / 'ClinicManagement'
+        db_folder.mkdir(parents=True, exist_ok=True)
+        db_path = db_folder / 'db.sqlite3'
+        
+        # Copy original database if it doesn't exist in AppData
+        original_db = BASE_DIR / 'db.sqlite3'
+        if not db_path.exists() and original_db.exists():
+            shutil.copy2(original_db, db_path)
+        
+        return db_path
+    else:
+        # Development mode - use local database
+        return BASE_DIR / 'db.sqlite3'
 
+DATABASE_PATH = get_database_path()
 
 SECRET_KEY = 'django-insecure-j548s$)v4@&*jzfqtjj-sd)f$k_8ylrbd4-w)j9b5wws%cvg83'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Allow access from local network (LAN)
+ALLOWED_HOSTS = ['*']  # Allows all IPs (for local network only)
+# Alternative: ALLOWED_HOSTS = ['192.168.1.*', '192.168.0.*', 'localhost', '127.0.0.1']
 
 
 
@@ -26,6 +51,8 @@ INSTALLED_APPS = [
     'doctor',
     'opd',
     'pharmacy',
+    'admission',
+    
 ]
 
 MIDDLEWARE = [
@@ -64,7 +91,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DATABASE_PATH,
     }
 }
 

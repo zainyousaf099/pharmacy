@@ -5,6 +5,19 @@ from django.utils import timezone
 from accounts.models import StaffID
 
 class Patient(models.Model):
+    QUEUE_STATUS_CHOICES = [
+        ('waiting', 'Waiting'),
+        ('with_doctor', 'With Doctor'),
+        ('checked', 'Checked'),
+        ('none', 'Not in Queue'),
+    ]
+    
+    PHARMACY_QUEUE_STATUS_CHOICES = [
+        ('waiting', 'Waiting for Medicine'),
+        ('dispensing', 'Dispensing'),
+        ('completed', 'Completed'),
+        ('none', 'Not in Pharmacy Queue'),
+    ]
    
     ref_no = models.CharField(
         max_length=32,
@@ -16,9 +29,31 @@ class Patient(models.Model):
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=30, blank=True, null=True)
     temperature = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    age = models.PositiveIntegerField(blank=True, null=True)
+    age_years = models.PositiveIntegerField(blank=True, null=True, help_text="Age in years")
+    age_months = models.PositiveIntegerField(blank=True, null=True, help_text="Age in months (0-11)")
     weight = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text="kg")
     height = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text="cm")
+    
+    @property
+    def age(self):
+        """Return formatted age string like '3 years 4 months' or '6 months'"""
+        if self.age_years and self.age_months:
+            return f"{self.age_years}y {self.age_months}m"
+        elif self.age_years:
+            return f"{self.age_years}y"
+        elif self.age_months:
+            return f"{self.age_months}m"
+        return None
+    
+    # Doctor Queue system fields
+    queue_status = models.CharField(max_length=20, choices=QUEUE_STATUS_CHOICES, default='none')
+    queue_number = models.PositiveIntegerField(null=True, blank=True)
+    queued_at = models.DateTimeField(null=True, blank=True)
+    
+    # Pharmacy Queue system fields
+    pharmacy_queue_status = models.CharField(max_length=20, choices=PHARMACY_QUEUE_STATUS_CHOICES, default='none')
+    pharmacy_queue_number = models.PositiveIntegerField(null=True, blank=True)
+    pharmacy_queued_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
