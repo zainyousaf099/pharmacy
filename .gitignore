@@ -1,13 +1,56 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
 *.pyc
 
-# Virtual environment
+# Virtual environments
 env/
+venv/
+ENV/
 
-# IDE files
+# Database (keep structure, exclude data)
+db.sqlite3
+db_backup_*.sqlite3
+
+# Static files collected for production
+staticfiles/
+
+# Local settings
+*.local
+network_config.json
+
+# Electron build files (keep source, exclude dist)
+electron/dist/
+electron/node_modules/
+electron/build/*.exe
+electron/build/*.blockmap
+
+# Python portable (for desktop only)
+python-portable/
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS files
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+electron-debug.log
+
+# Deployment packages
+Clinic_App_Deployment/
+Clinic_App_Deployment.rar
+*.rar
+
+# Media uploads
+media/
+
+# Temporary files
+*.tmp
+*.temp

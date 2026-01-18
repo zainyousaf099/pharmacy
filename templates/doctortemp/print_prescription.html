@@ -6,9 +6,11 @@
     <title>Prescription - {{ patient.ref_no }}</title>
     <style>
         @media print {
-            body { 
-                margin: 0; 
-                padding: 0;
+            html, body { 
+                margin: 0 !important; 
+                padding: 0 !important;
+                height: 100% !important;
+                overflow: hidden !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -17,14 +19,20 @@
                 margin: 0;
                 size: A4 portrait;
             }
-            .prescription-container {
-                width: 100%;
-                height: 100vh;
-                margin: 0;
-                padding: 0;
-                box-shadow: none;
-                page-break-after: avoid;
-                page-break-inside: avoid;
+            .prescription-page {
+                width: 210mm !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                margin: 0 !important;
+                padding: 0 8mm !important;
+                box-shadow: none !important;
+                overflow: hidden !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            /* Hide browser print URL/date */
+            a[href]:after {
+                content: none !important;
             }
         }
 
@@ -35,283 +43,604 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
+            font-family: 'Times New Roman', Times, serif;
+            background: #e0e0e0;
             color: #000;
-            font-size: 10pt;
+            font-size: 12pt;
         }
 
-        .prescription-container {
+        .prescription-page {
             width: 210mm;
             height: 297mm;
+            max-height: 297mm;
             margin: 10px auto;
+            padding: 0 8mm;
             background: white;
             position: relative;
-            padding: 10mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
             overflow: hidden;
         }
 
-        /* Header */
-        .header-banner {
-            background: #000;
-            color: white;
-            text-align: center;
-            padding: 8px;
-            font-size: 28px;
+        /* ===== HEADER SECTION ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1px;
+            border-bottom: 1px solid #ddd;
+            background: #fff;
+        }
+
+        .header-left {
+            text-align: left;
+        }
+
+        .header-left h1 {
+            font-size: 26px;
             font-weight: bold;
-            letter-spacing: 4px;
-        }
-
-        /* Doctor Info */
-        .doctor-section {
-            display: table;
-            width: 100%;
-            border-bottom: 2px solid #000;
-            padding: 8px 15px;
-        }
-
-        .doctor-left {
-            display: table-cell;
-            width: 50%;
-            vertical-align: top;
-            font-size: 9pt;
-            line-height: 1.2;
-        }
-
-        .doctor-left h2 {
-            font-size: 18px;
-            font-weight: bold;
+            color: #000;
             margin-bottom: 2px;
+            text-transform: uppercase;
         }
 
-        .doctor-right {
-            display: table-cell;
-            width: 50%;
-            vertical-align: top;
+        .header-left .credentials {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
+            font-weight: 900;
+        }
+
+        .header-left .credentials p {
+            margin: 0;
+        }
+
+        .header-right {
             text-align: right;
             direction: rtl;
-            font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', 'Nafees Web Naskh', 'Arabic Typesetting', Arial, sans-serif;
-            font-size: 11pt;
-            line-height: 1.3;
+            font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', 'Nafees Web Naskh', 'Arabic Typesetting', 'Noto Nastaliq Urdu', Arial, sans-serif;
         }
 
-        .doctor-right h2 {
-            font-size: 20px;
+        .header-right h1 {
+            font-size: 33px;
             font-weight: bold;
+            color: #000;
             margin-bottom: 2px;
         }
 
-        /* Patient Line */
-        .patient-line {
+        .header-right .credentials {
+            font-size: 20px;
+            color: #333;
+            line-height: 1.4;
+            font-weight: 800;
+        }
+
+        /* ===== PATIENT INFO BAR ===== */
+        .patient-bar {
+            background: linear-gradient(to right, #c5e1a5, #fff59d);
             border-bottom: 2px solid #000;
-            padding: 5px 15px;
-            font-size: 9pt;
+            padding: 6px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .patient-bar .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .patient-bar label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .patient-bar .value {
+            border-bottom: 1px solid #333;
+            min-width: 80px;
+            padding: 0 5px;
+            font-weight: 500;
+        }
+
+        .patient-bar .value.name {
+            min-width: 150px;
+        }
+
+        /* Patient Details Header - Simple */
+        .patient-details-header {
+            background: #fff;
+            color: #000;
+            padding: 4px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .patient-line b {
-            margin-right: 5px;
-        }
-
-        .patient-line u {
-            border-bottom: 1px solid #000;
-            text-decoration: none;
-            display: inline-block;
-            min-width: 60px;
-            margin-right: 10px;
-        }
-
-        /* Content */
-        .content {
-            padding: 8px 0;
-            position: relative;
-            min-height: 200mm;
+        .patient-main-info {
             display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
         }
 
-        /* Left column for sections */
-        .left-column {
-            width: 30%;
-            padding-right: 15px;
-        }
-
-        /* Vertical separator line */
-        .vertical-line {
-            position: relative;
-            width: 2px;
-            background-color: #000;
-            margin: 0 10px;
-        }
-
-        /* Right column for medicines */
-        .right-column {
-            width: 65%;
-            padding-left: 15px;
-        }
-
-        .sections-wrapper {
-            padding: 0;
-        }
-
-        .section {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .section:last-child {
-            margin-bottom: 10px;
-        }
-
-        .section-label {
-            font-style: italic;
-            font-size: 10pt;
+        .patient-ref {
+            background: #f5f5f5;
+            color: #333;
+            padding: 4px 10px;
             font-weight: 600;
+            font-size: 10px;
+            border-radius: 15px;
+            border: 1px solid #ddd;
+            margin-left: auto;
+        }
+
+        .patient-name-large {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #000;
+        }
+
+        .patient-basic {
+            font-size: 12px;
+            color: #000;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .patient-basic span {
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        /* Patient Vitals Row - Modern */
+        .patient-vitals {
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vital-item {
+            text-align: center;
+            padding: 0 8px;
+            flex: 1;
+        }
+
+        .vital-item:not(:last-child) {
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .vital-item .vital-label {
+            font-size: 11px;
+            color: #000;
+            text-transform: uppercase;
             display: block;
-            margin-bottom: 5px;
-            text-align: left;
+            margin-bottom: 2px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
-        .rx-label {
-            font-size: 26px;
-            display: block;
-            margin-bottom: 5px;
+        .vital-item .vital-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
         }
 
-        .medicine-section {
-            padding-top: 10px;
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            display: flex;
+            height: calc(297mm - 220px);
+            overflow: hidden;
         }
 
-        .medicine-section .section-label {
-            font-size: 12pt;
+        /* Left Column - Clinical Notes */
+        .left-column {
+            width: 35%;
+            padding: 8px;
+            border-right: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .clinical-section {
+            margin-bottom: 20px;
+            padding-bottom: 3px;    
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .clinical-section:last-child {
+            border-bottom: none;
+        }
+
+        .clinical-content {
+            font-size: 13px;
+            line-height: 1.2;
+            min-height: 15px;
+            color: #333;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            max-width: 100%;
+            overflow: hidden;
             font-weight: 700;
         }
 
-        .medicine-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 9pt;
+        /* Right Column - Prescriptions */
+        .right-column {
+            width: 65%;
+            padding: 8px;
         }
 
-        .medicine-table th {
-            border: 1px solid #000;
-            padding: 5px;
-            background-color: #f0f0f0;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .medicine-table td {
-            border: 1px solid #000;
-            padding: 5px;
-            text-align: center;
-        }
-
-        .medicine-table td:first-child {
-            text-align: left;
-        }
-
-        .content-area {
-            min-height: 30px;
-            padding-left: 0;
-            line-height: 1.5;
-            font-size: 9pt;
-        }
-
-        /* Footer */
-        .footer {
-            position: relative;
-            margin-top: -86px;
-            margin-left: calc(30% + 22px);
-            padding-left: 0;
+        .rx-header {
             display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .rx-symbol {
+            font-size: 24px;
+            font-weight: bold;
+            font-family: serif;
+            margin-right: 8px;
+            color: #000;
+        }
+
+        .rx-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Medicine List - Simple Professional Style */
+        .medicine-list {
+            margin-top: 5px;
+        }
+
+        .medicine-item {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .medicine-item:last-child {
+            border-bottom: none;
+        }
+
+        .medicine-number {
+            width: 20px;
+            font-weight: bold;
+            color: #000;
+            font-size: 15px;
+        }
+
+        .medicine-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .medicine-name .strength {
+            font-weight: 600;
+            color: #000;
+            font-size: 16px;
+        }
+
+        .dose-times {
+            display: flex;
             gap: 10px;
+            margin-right: 10px;
+        }
+
+        .dose-box {
+            text-align: center;
+            min-width: 40px;
+        }
+
+        .dose-box .time-label {
+            font-size: 11px;
+            color: #000;
+            display: block;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .dose-box .time-label-ur {
+            font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', Arial, sans-serif;
+            font-size: 11px;
+            color: #000;
+            display: block;
+            font-weight: 600;
+        }
+
+        .dose-box .check {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .dose-box .check.yes {
+            color: #000;
+        }
+
+        .dose-box .check.no {
+            color: #ccc;
+        }
+
+        .medicine-days {
+            min-width: 50px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .medicine-days span {
+            display: block;
+            font-size: 11px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .medicine-qty {
+            min-width: 50px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #000;
+            padding: 4px 8px;
+            margin-right: 8px;
+        }
+
+        .medicine-qty .qty-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
+            display: block;
+        }
+
+        .medicine-qty .qty-form {
+            font-size: 12px;
+            color: #000;
+            display: block;
+            font-weight: 600;
+        }
+
+        .medicine-frequency {
+            min-width: 80px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+            padding: 4px 8px;
+            margin-right: 8px;
+        }
+
+        .medicine-frequency .freq-code {
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+            display: block;
+        }
+
+        .medicine-frequency .freq-urdu {
+            font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', Arial, sans-serif;
+            font-size: 16px;
+            color: #000;
+            display: block;
+            direction: rtl;
+            font-weight: 700;
+        }
+
+        /* Special Instructions */
+        .special-instructions {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .special-instructions h4 {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #000;
+        }
+
+        .special-instructions p {
+            font-size: 11px;
+            line-height: 1.4;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* ===== FOOTER SECTION ===== */
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 77mm;
+            right: auto;
+            width: 62%;
+            padding: 0;
+            background: #fff;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            /* border: 2px solid #000; */
+            border-bottom: none;
         }
 
         .footer-left {
             display: flex;
-            gap: 10px;
-            align-items: flex-start;
+            flex: 1;
         }
 
         .address-box {
-            border: 2px solid #000;
-            padding: 4px 6px;
-            font-size: 6.5pt;
-            line-height: 1.1;
-            min-width: 100px;
+            flex: 1;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.2;
+            color: #000;
+            border-right: 2px solid #000;
+            font-weight: bold;
         }
 
-        .address-box strong {
-            display: block;
-            font-size: 7pt;
-            margin-bottom: 2px;
-            background: #000;
-            color: white;
-            padding: 2px 3px;
-            text-align: center;
+        .address-box:last-child {
+            border-right: none;
+        }
+
+        .address-box .box-title {
             font-weight: bold;
+            color: #000;
+            font-size: 16px;
+            margin-bottom: 5px;
+            text-decoration: underline;
+        }
+
+        .address-box .city {
+            font-weight: bold;
+            color: #000;
+            font-size: 15px;
+        }
+
+        .footer-center {
+            text-align: center;
+        }
+
+        .seal-area {
+            width: 50px;
+            height: 50px;
+            border: 1px dashed #aaa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seal-area span {
+            font-size: 6px;
+            color: #999;
+            text-align: center;
+            line-height: 1.1;
         }
 
         .footer-right {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
+            text-align: right;
         }
 
-        .appointment-info {
-            font-size: 8pt;
-            line-height: 1.3;
-            text-align: left;
-        }
-
-        .appointment-info p {
-            margin: 2px 0;
-            white-space: nowrap;
-        }
-
-        .appointment-info em {
-            font-weight: bold;
-            font-style: italic;
-        }
-
-        .urdu-text {
-            direction: rtl;
-            font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', 'Nafees Web Naskh', 'Arabic Typesetting', Arial, sans-serif;
-            font-size: 8pt;
-            margin-top: 3px;
+        .appointment-box {
+            font-size: 11px;
             line-height: 1.4;
-            max-width: 180px;
-        }
-
-        .baby-img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 3px;
-            filter: grayscale(100%);
-            border: 1px solid #000;
-        }
-
-        .branding {
-            text-align: center;
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #ccc;
-            font-size: 7pt;
-            color: #666;
-        }
-
-        .branding strong {
             font-weight: 600;
+        }
+
+        .appointment-box .title {
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 3px;
+            font-size: 13px;
+        }
+
+        .appointment-box .phone {
+            font-size: 13px;
+            font-weight: bold;
             color: #000;
         }
 
+        .appointment-box .urdu-note {
+            font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', Arial, sans-serif;
+            direction: rtl;
+            font-size: 11px;
+            margin-top: 3px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .date-box {
+            margin-top: 5px;
+            padding: 3px 10px;
+            background: #333;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            display: inline-block;
+            border-radius: 3px;
+        }
+
+        /* Branding */
+        .branding {
+            text-align: center;
+            font-size: 11px;
+            color: #000;
+            margin-top: 4px;
+            padding-top: 4px;
+            border-top: 1px solid #ddd;
+            font-weight: 600;
+        }
+
+        /* Appointment Row */
+        .appointment-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 6px 0;
+            border: none;
+            gap: 20px;
+            font-size: 15px;
+            line-height: 1.2;
+            position: absolute;
+            bottom: -15mm;
+            left: -77mm;
+            width: 210mm;
+            margin-left: 0;
+            background: #000;
+            color: #fff;
+        }
+
+        .appointment-row .title {
+            font-weight: bold;
+            color: #fff;
+            font-size: 17px;
+        }
+
+        .appointment-row .phone {
+            font-weight: bold;
+            color: #fff;
+            font-size: 17px;
+        }
+
+        .appointment-row .urdu-text {
+            font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', Arial, sans-serif;
+            direction: rtl;
+            font-size: 19px;
+            color: #fff;
+            background: #000;
+            padding: 5px 15px;
+            border-radius: 3px;
+            font-weight: normal;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* ===== PRINT BUTTONS ===== */
         .print-actions {
             position: fixed;
             top: 20px;
@@ -321,41 +650,8 @@
             z-index: 1000;
         }
 
-        .print-button {
+        .btn {
             padding: 12px 24px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            font-weight: bold;
-        }
-
-        .print-button:hover {
-            background: #388E3C;
-        }
-        
-        .close-button {
-            padding: 12px 24px;
-            background: #f44336;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            font-weight: bold;
-        }
-
-        .close-button:hover {
-            background: #c62828;
-        }
-        
-        .back-button {
-            padding: 12px 24px;
-            background: #333;
             color: white;
             border: none;
             border-radius: 5px;
@@ -364,203 +660,254 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             font-weight: bold;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .back-button:hover {
-            background: #555;
-        }
+        .btn-print { background: #4CAF50; }
+        .btn-print:hover { background: #388E3C; }
+        
+        .btn-close { background: #f44336; }
+        .btn-close:hover { background: #c62828; }
+        
+        .btn-back { background: #333; }
+        .btn-back:hover { background: #555; }
     </style>
 </head>
 <body>
+    <!-- Print Actions -->
     <div class="print-actions no-print">
-        <a href="javascript:history.back()" class="back-button"><i class="fas fa-arrow-left"></i> Back</a>
-        <button class="print-button" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
-        <button class="close-button" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
+        <a href="javascript:history.back()" class="btn btn-back">← Back</a>
+        <button class="btn btn-print" onclick="window.print()">🖨 Print</button>
+        <button class="btn btn-close" onclick="window.close()">✕ Close</button>
     </div>
 
-    <div class="prescription-container">
+    <div class="prescription-page">
+        <!-- Clinic Name Banner -->
+        <div style="text-align: center; padding: 8px 0; border-bottom: 2px solid #000;">
+            <h2 style="margin: 0; font-size: 40px; font-weight: bold; background-color: black; color: #ffff; letter-spacing: 2px; text-transform: uppercase;">ZOONA CHILD CARE CLINIC</h2>
+        </div>
+
         <!-- Header -->
-        <div class="header-banner">ZOONA CHILD CARE CLINIC</div>
-
-        <!-- Doctor Info -->
-        <div class="doctor-section">
-            <div class="doctor-left">
-                <h2>Dr. Muhammad Wasif Khan</h2>
-                <p><b>MBBS, FCPS(Paeds)</b></p>
-                <p><b>MRCPCH I (UK)</b></p>
-                <p><b>Consultant Child Specialist</b></p>
-                <p>DHQ Hospital Bahawalnagar</p>
-                <p>Former Assistant Professor Teaching Hospital</p>
-                <p>University of Lahore</p>
-                <p>Former Registrar Children Hospital Lahore</p>
-            </div>
-            <div class="doctor-right">
-                <h2>ڈاکٹر محمد واصف خان</h2>
-                <p>ایم بی بی ایس، ایف سی پی ایس (بچے)</p>
-                <p>ایم آر سی پی سی ایچ 1 (یوکے)</p>
-                <p>مشیرِاطفال، ہسپتال ضلع، بہاولنگر</p>
-                <p>سابقہ اسسٹنٹ پروفیسر ٹیچنگ ہسپتال یونیورسٹی اف لاہور</p>
-                <p>سابقہ رجسٹرار چلڈرن ہسپتال لاہور</p>
-            </div>
-        </div>
-
-        <!-- Patient Line -->
-        <div class="patient-line">
-            <span><b>Patient's Name:</b> <u>{{ patient.name|default:"_______________" }}</u></span>
-            <span><b>Age:</b> <u>{{ patient.age|default:"____" }}</u></span>
-            <span><b>Weight:</b> <u>{{ patient.weight|default:"____" }}</u></span>
-            <span><b>Date:</b> <u>{{ date }}</u></span>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <!-- Left Column: All Sections -->
-            <div class="left-column">
-                <div class="sections-wrapper">
-                    <!-- Presenting Complaints Section -->
-                    <div class="section">
-                        <span class="section-label">Presenting Complaints</span>
-                        <div class="content-area">
-                            {% if template and template.presenting_complaints %}
-                                {{ template.presenting_complaints|linebreaksbr }}
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <span class="section-label">Development</span>
-                        <div class="content-area">
-                            {% if template and template.development %}
-                                {{ template.development|linebreaksbr }}
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <span class="section-label">Vaccination</span>
-                        <div class="content-area">
-                            {% if template and template.vaccination %}
-                                {{ template.vaccination|linebreaksbr }}
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <span class="section-label">Medical Examination Finding</span>
-                        <div class="content-area">
-                            {% if template and template.medical_examination %}
-                                {{ template.medical_examination|linebreaksbr }}
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <span class="section-label">Investigation Advised</span>
-                        <div class="content-area">
-                            {% if template and template.investigation_advised %}
-                                {{ template.investigation_advised|linebreaksbr }}
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <span class="section-label">Provisional Diagnosis</span>
-                        <div class="content-area">
-                            {% if template and template.provisional_diagnosis %}
-                                {{ template.provisional_diagnosis|linebreaksbr }}
-                            {% endif %}
-                        </div>
-                    </div>
+        <div class="header">
+            <div class="header-left">
+                <h1>Dr. Muhammad Wasif Khan</h1>
+                <div class="credentials">
+                    <p><strong>MBBS, FCPS (Paediatrics)</strong></p>
+                    <p>Consultant Child Specialist and Neonatologist DHQ Hospital Bahawalnagar</p>
+                    <p>Former Assistant Professor Teaching Hospital, University of Lahore</p>
+                    <p>Former Registrar Children Hospital Lahore</p>
+                    <p>MRCPCH I (UK)</p>
                 </div>
             </div>
+            <div class="header-right">
+                <h1>ڈاکٹر محمد واصف خان</h1>
+                <div class="credentials">
+                    <p>ایم بی بی ایس، ایف سی پی ایس</p>
+                    <p>ایم آر سی پی سی ایچ (یوکے)</p>
+                    
+                    <p>کنسلٹنٹ چائلڈ سپیشلسٹ اینڈ نیونٹولوجسٹ</p>
+                    <p>ڈی ایچ کیو ہسپتال بہاولنگر</p>
+                </div>
+            </div>
+        </div>
 
-            <!-- Vertical Separator -->
-            <div class="vertical-line"></div>
+        <!-- Separator Line -->
+        <div style="border-bottom: 2px solid #000; margin: 5px 0;"></div>
 
-            <!-- Right Column: Medicines -->
-            <div class="right-column">
-                <div class="medicine-section">
-                    <span class="rx-label">℞</span>
-                    <div class="content-area">
-                        {% if prescriptions %}
-                            <table class="medicine-table">
-                                <thead>
-                                    <tr>
-                                        <th>دوا / Medicine</th>
-                                        <th>صبح<br>Suba</th>
-                                        <th>شام<br>Shaam</th>
-                                        <th>رات<br>Raat</th>
-                                        <th>دن<br>Days</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for rx in prescriptions %}
-                                    <tr>
-                                        <td>{{ rx.medicine.name }}{% if rx.medicine.weight_or_quantity %} ({{ rx.medicine.weight_or_quantity }}){% endif %}</td>
-                                        <td>{% if rx.morning %}✓{% else %}-{% endif %}</td>
-                                        <td>{% if rx.evening %}✓{% else %}-{% endif %}</td>
-                                        <td>{% if rx.night %}✓{% else %}-{% endif %}</td>
-                                        <td>{{ rx.days }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+        <!-- Patient Details Header (Simple) -->
+        <div class="patient-details-header">
+            <div class="patient-main-info">
+                <div>
+                    <div class="patient-name-large">{{ patient.name|default:"_________" }}</div>
+                    <div class="patient-basic">
+                        <span>AGE: {{ patient.age|default:"__" }}</span>
+                        <span>{{ patient.phone|default:"" }}</span>
+                    </div>
+                </div>
+                <span class="patient-ref">{{ patient.ref_no|default:"PAT000000" }}</span>
+            </div>
+        </div>
+
+        <!-- Patient Vitals Row (Modern) -->
+        <div class="patient-vitals">
+            <div class="vital-item">
+                <span class="vital-label">Weight</span>
+                <span class="vital-value">{{ patient.weight|default:"--" }}</span>
+            </div>
+            <div class="vital-item">
+                <span class="vital-label">Height</span>
+                <span class="vital-value">{{ patient.height|default:"--" }}</span>
+            </div>
+            <div class="vital-item">
+                <span class="vital-label">Temp</span>
+                <span class="vital-value">{{ patient.temperature|default:"98" }}</span>
+            </div>
+          
+            <div class="vital-item">
+                <span class="vital-label">Date</span>
+                <span class="vital-value">{{ date }}</span>
+            </div>
+            <div class="vital-item">
+                <span class="vital-label">Total Medicines</span>
+                <span class="vital-value">{{ prescriptions|length }}</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column - Clinical Notes -->
+            <div class="left-column">
+                <div class="clinical-section">
+                    <div class="section-title">Presenting Complaints</div>
+                    <div class="clinical-content">
+                        {% if pc %}
+                            {{ pc|linebreaksbr }}
+                        {% elif template and template.presenting_complaints %}
+                            {{ template.presenting_complaints|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="clinical-section">
+                    <div class="section-title">Development</div>
+                    <div class="clinical-content">
+                        {% if dev %}
+                            {{ dev|linebreaksbr }}
+                        {% elif template and template.development %}
+                            {{ template.development|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="clinical-section">
+                    <div class="section-title">Vaccination</div>
+                    <div class="clinical-content">
+                        {% if vac %}
+                            {{ vac|linebreaksbr }}
+                        {% elif template and template.vaccination %}
+                            {{ template.vaccination|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="clinical-section">
+                    <div class="section-title">Medical Examination</div>
+                    <div class="clinical-content">
+                        {% if me %}
+                            {{ me|linebreaksbr }}
+                        {% elif template and template.medical_examination %}
+                            {{ template.medical_examination|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="clinical-section">
+                    <div class="section-title">Investigation Advised</div>
+                    <div class="clinical-content">
+                        {% if ia %}
+                            {{ ia|linebreaksbr }}
+                        {% elif template and template.investigation_advised %}
+                            {{ template.investigation_advised|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="clinical-section">
+                    <div class="section-title">Provisional Diagnosis</div>
+                    <div class="clinical-content">
+                        {% if pd %}
+                            {{ pd|linebreaksbr }}
+                        {% elif template and template.provisional_diagnosis %}
+                            {{ template.provisional_diagnosis|linebreaksbr }}
                         {% endif %}
                     </div>
                 </div>
             </div>
+
+            <!-- Right Column - Prescriptions -->
+            <div class="right-column">
+                <div class="rx-header">
+                    <span class="rx-symbol">℞</span>
+                    <span class="rx-title">PRESCRIPTION</span>
+                </div>
+
+                {% if prescriptions %}
+                <div class="medicine-list">
+                    {% for rx in prescriptions %}
+                    <div class="medicine-item">
+                        <span class="medicine-number">{{ forloop.counter }}.</span>
+                        <span class="medicine-name">{{ rx.medicine.name }}{% if rx.medicine.weight_or_quantity %} <span class="strength">({{ rx.medicine.weight_or_quantity }})</span>{% endif %}</span>
+                        <div class="medicine-qty">
+                            <span class="qty-value">{{ rx.qty }}</span>
+                            <span class="qty-form">{{ rx.dosage_form }}</span>
+                        </div>
+                        <div class="medicine-frequency">
+                            <span class="freq-code">{{ rx.frequency }}</span>
+                            <span class="freq-urdu">{% if rx.frequency == 'OD' %}روزانہ ایک بار{% elif rx.frequency == 'BD' %}دن میں دو بار{% elif rx.frequency == 'TDS' %}دن میں تین بار{% elif rx.frequency == 'QID' %}دن میں چار بار{% elif rx.frequency == 'HS' %}سوتے وقت{% elif rx.frequency == 'QAM' %}ہر صبح{% elif rx.frequency == 'QPM' %}ہر شام{% elif rx.frequency == 'SOS' %}ضرورت کے وقت{% elif rx.frequency == 'STAT' %}فوراً{% elif rx.frequency == 'QOD' %}ایک دن چھوڑ کر{% elif rx.frequency == 'QW' %}ہفتے میں ایک بار{% elif rx.frequency == 'Q6H' %}ہر 6 گھنٹے{% elif rx.frequency == 'Q8H' %}ہر 8 گھنٹے{% elif rx.frequency == 'AC' %}کھانے سے پہلے{% elif rx.frequency == 'PC' %}کھانے کے بعد{% else %}{{ rx.frequency }}{% endif %}</span>
+                        </div>
+                        <div class="medicine-days">
+                            {{ rx.days }}
+                            <span>Days</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="color: #999; font-style: italic;">No medicines prescribed</p>
+                {% endif %}
+
+                {% if special_note %}
+                <div class="special-instructions">
+                    <h4>SPECIAL NOTE </h4>
+                    <p>{{ special_note|linebreaksbr }}</p>
+                </div>
+                {% endif %}
+
+                {% if template and template.special_instructions %}
+                <div class="special-instructions">
+                    <h4>Special Instructions / خصوصی ہدایات</h4>
+                    <p>{{ template.special_instructions|linebreaksbr }}</p>
+                </div>
+                {% endif %}
+            </div>
         </div>
 
         <!-- Footer -->
-                <div class="footer">
-                    <div class="footer-left">
-                        <div class="address-box">
-                            <strong>Only Sunday</strong>
-                            House No. 470<br>
-                            Street 9, Tulip Block<br>
-                            Park View City<br>
-                            <b>LAHORE</b>
-                        </div>
-                        <div class="address-box">
-                            <strong>Monday To Saturday</strong>
-                            Main Road, Medina Town<br>
-                            Opposite Spirit School<br>
-                            <b>BAHAWALNAGAR</b><br>
-                            <small>Not Valid For Court</small>
-                        </div>
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <div class="address-box">
+                        <div class="box-title">Only Sunday</div>
+                        <strong>House No. 470,</strong> Street 9, Tulip Block<br>
+                        Park View City<br>
+                        <span class="city">LAHORE</span>
                     </div>
-                    <div class="footer-right">
-                        <div class="appointment-info">
-                            <p><em>For Appointment</em></p>
-                            <p>0332-7017995 ☎</p>
-                            <p>063-2505560</p>
-                            <p class="urdu-text">وقت ملاقات صرف پہلے سے طے شدہ اپائنٹمنٹ پر</p>
-                        </div>
-                        <img class="baby-img" src="https://images.pexels.com/photos/1912868/pexels-photo-1912868.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Baby">
+                    <div class="address-box">
+                        <div class="box-title">Monday to Saturday</div>
+                        <strong>Main Road,</strong> Madina Town<br>
+                        Opposite Spirit School<br>
+                        <span class="city">BAHAWALNAGAR</span>
                     </div>
                 </div>
-                
-                <!-- Branding -->
-                <div class="branding">
-                    <strong>Clinic and Hospital Management Software</strong> by Zain Yousaf | Contact: 0307-0022405
-                </div>
+            </div>
+
+            <!-- Appointment Row -->
+            <div class="appointment-row">
+                <span class="title">For Appointment</span>
+                <span class="phone">0332-7017995 </span>
+                <span class="urdu-text">اوقات کار دان 4 سے تا 9 بجے رات آنے سے پہلے ٹائم ضرور لیں.</span>
             </div>
         </div>
     </div>
 
     <script>
-        // Auto-print when page loads (for thermal printer)
         window.onload = function() {
-            // Small delay to ensure page is fully loaded
             setTimeout(function() {
                 window.print();
             }, 500);
         };
-        
-        // Alternative: Print button for manual printing
-        function printPrescription() {
-            window.print();
-        }
     </script>
 </body>
 </html>

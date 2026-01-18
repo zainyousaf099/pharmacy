@@ -50,6 +50,41 @@ def logout_staff(request):
     request.session.flush()
     return redirect("role")
 
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def verify_menu_password(request):
+    """Verify password for sidebar menu access"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'})
+    
+    try:
+        data = json.loads(request.body)
+        password = data.get('password', '')
+        role = data.get('role', '')  # 'doctor', 'reception', 'pharmacy'
+        
+        if not password or not role:
+            return JsonResponse({'success': False, 'error': 'Password and role required'})
+        
+        # Check if any staff with this role has this password
+        staff = StaffID.objects.filter(role=role, password=password).first()
+        
+        if staff:
+            return JsonResponse({
+                'success': True, 
+                'message': 'Access granted',
+                'staff_id': staff.staff_login_id
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Invalid password'})
+            
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
 from django.shortcuts import redirect
 from functools import wraps
 

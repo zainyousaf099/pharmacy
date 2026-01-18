@@ -4,241 +4,170 @@
     <meta charset="utf-8">
     <title>{{ title }}</title>
     <style>
-        @page {
-            size: A4;
-            margin: 1cm;
+        @page { size: A4; margin: 0.5cm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; font-size: 10px; line-height: 1.4; color: #000; }
+        
+        .report-container { padding: 10px; }
+        
+        .header { 
+            text-align: center; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 10px; 
         }
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 10pt;
-            line-height: 1.4;
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 20pt;
-            color: #333;
-        }
-        .header p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .summary-box {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .summary-box h3 {
-            margin: 0 0 10px 0;
-            font-size: 14pt;
-            color: #333;
-        }
-        .summary-grid {
+        .header h1 { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
+        .header p { font-size: 9px; }
+        
+        .summary {
             display: table;
             width: 100%;
+            margin-bottom: 10px;
+            border: 1px solid #000;
         }
         .summary-item {
             display: table-cell;
             width: 25%;
-            padding: 10px;
             text-align: center;
-            border-right: 1px solid #dee2e6;
-        }
-        .summary-item:last-child {
-            border-right: none;
-        }
-        .summary-label {
-            font-size: 9pt;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        .summary-value {
-            font-size: 16pt;
-            font-weight: bold;
-            color: #dc3545;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th {
-            background-color: #343a40;
-            color: white;
             padding: 8px;
-            text-align: left;
-            font-size: 9pt;
+            border-right: 1px solid #000;
         }
-        td {
-            padding: 6px 8px;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 9pt;
+        .summary-item:last-child { border-right: none; }
+        .summary-value { font-size: 12px; font-weight: bold; }
+        .summary-label { font-size: 8px; }
+        
+        .section-title { 
+            font-size: 11px; 
+            font-weight: bold; 
+            padding: 6px 8px; 
+            background: #f0f0f0;
+            border: 1px solid #000;
+            border-bottom: none;
+            margin-top: 10px;
         }
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        .section-title {
-            font-size: 14pt;
-            font-weight: bold;
-            color: #333;
-            margin: 20px 0 10px 0;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #dee2e6;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .text-danger {
-            color: #dc3545;
-        }
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            background-color: #6c757d;
-            color: white;
-            border-radius: 3px;
-            font-size: 8pt;
-        }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 5px 4px; font-size: 9px; }
+        th { background: #f0f0f0; font-weight: bold; text-align: left; }
+        
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
         .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+            margin-top: 15px;
+            padding-top: 8px;
+            border-top: 1px solid #000;
             text-align: center;
-            font-size: 8pt;
-            color: #666;
-            border-top: 1px solid #dee2e6;
-            padding-top: 10px;
+            font-size: 8px;
         }
-        .page-break {
-            page-break-after: always;
-        }
+        .page-break { page-break-after: always; }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>{{ title }}</h1>
-        <p>Period: {{ start_date|date:"F d, Y" }} - {{ end_date|date:"F d, Y" }}</p>
-        <p>Generated on: {{ today|date:"F d, Y h:i A" }}</p>
-    </div>
+    <div class="report-container">
+        <div class="header">
+            <h1>{{ title }}</h1>
+            <p>Period: {{ start_date|date:"d/m/Y" }} - {{ end_date|date:"d/m/Y" }} | Generated: {{ today|date:"d/m/Y h:i A" }}</p>
+        </div>
 
-    <!-- Summary Section -->
-    <div class="summary-box">
-        <h3>Summary</h3>
-        <div class="summary-grid">
+        <div class="summary">
             <div class="summary-item">
-                <div class="summary-label">Total Expenses</div>
                 <div class="summary-value">PKR {{ total_expenses|floatformat:2 }}</div>
+                <div class="summary-label">TOTAL EXPENSES</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Average Expense</div>
                 <div class="summary-value">PKR {{ average_expense|floatformat:2 }}</div>
+                <div class="summary-label">AVERAGE EXPENSE</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Expense Count</div>
                 <div class="summary-value">{{ expense_count }}</div>
+                <div class="summary-label">EXPENSE COUNT</div>
             </div>
             <div class="summary-item">
-                <div class="summary-label">Categories</div>
                 <div class="summary-value">{{ expenses_by_category|length }}</div>
+                <div class="summary-label">CATEGORIES</div>
             </div>
         </div>
-    </div>
 
-    <!-- Expenses by Category -->
-    {% if expenses_by_category %}
-    <div class="section-title">Expenses by Category</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th class="text-right">Amount (PKR)</th>
-                <th class="text-center">Count</th>
-                <th class="text-center">Percentage</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for expense in expenses_by_category %}
-            <tr>
-                <td><span class="badge">{{ expense.category }}</span></td>
-                <td class="text-right text-danger"><strong>{{ expense.total|floatformat:2 }}</strong></td>
-                <td class="text-center">{{ expense.count }}</td>
-                <td class="text-center">{% widthratio expense.total total_expenses 100 %}%</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+        {% if expenses_by_category %}
+        <div class="section-title">Expenses by Category</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th class="text-right">Amount (PKR)</th>
+                    <th class="text-center">Count</th>
+                    <th class="text-center">Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses_by_category %}
+                <tr>
+                    <td>{{ expense.category }}</td>
+                    <td class="text-right">{{ expense.total|floatformat:2 }}</td>
+                    <td class="text-center">{{ expense.count }}</td>
+                    <td class="text-center">{% widthratio expense.total total_expenses 100 %}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
 
-    <!-- Top 10 Highest Expenses -->
-    {% if top_expenses %}
-    <div class="section-title">Top 10 Highest Expenses</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th class="text-right">Amount (PKR)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for expense in top_expenses %}
-            <tr>
-                <td>{{ expense.expense_date|date:"M d, Y" }}</td>
-                <td><strong>{{ expense.title }}</strong></td>
-                <td><span class="badge">{{ expense.get_category_display }}</span></td>
-                <td class="text-right text-danger"><strong>{{ expense.amount|floatformat:2 }}</strong></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+        {% if top_expenses %}
+        <div class="section-title">Top 10 Highest Expenses</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th class="text-right">Amount (PKR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in top_expenses %}
+                <tr>
+                    <td>{{ expense.expense_date|date:"d/m/Y" }}</td>
+                    <td>{{ expense.title }}</td>
+                    <td>{{ expense.get_category_display }}</td>
+                    <td class="text-right">{{ expense.amount|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
 
-    <!-- Page Break before detailed list -->
-    <div class="page-break"></div>
+        <div class="page-break"></div>
 
-    <!-- All Expenses Details -->
-    {% if recent_expenses %}
-    <div class="section-title">All Expenses - Detailed List</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th class="text-right">Amount (PKR)</th>
-                <th>Notes</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for expense in recent_expenses %}
-            <tr>
-                <td>{{ expense.expense_date|date:"M d, Y" }}</td>
-                <td><strong>{{ expense.title }}</strong></td>
-                <td><span class="badge">{{ expense.get_category_display }}</span></td>
-                <td class="text-right text-danger"><strong>{{ expense.amount|floatformat:2 }}</strong></td>
-                <td>{{ expense.notes|default:"—"|truncatewords:10 }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+        {% if recent_expenses %}
+        <div class="section-title">All Expenses - Detailed List</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th class="text-right">Amount (PKR)</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in recent_expenses %}
+                <tr>
+                    <td>{{ expense.expense_date|date:"d/m/Y" }}</td>
+                    <td>{{ expense.title }}</td>
+                    <td>{{ expense.get_category_display }}</td>
+                    <td class="text-right">{{ expense.amount|floatformat:2 }}</td>
+                    <td>{{ expense.notes|default:"—"|truncatewords:10 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>Pharmacy Inventory Management System - Expense Report</p>
-        <p>This is a computer-generated document. No signature is required.</p>
+        <div class="footer">
+            Expense Report | Printed: {{ today|date:"d/m/Y h:i A" }}
+        </div>
     </div>
 </body>
 </html>

@@ -247,6 +247,267 @@
     font-weight: 600;
     border: 1px solid rgba(0, 255, 102, 0.3);
   }
+
+  .patient-name-link {
+    color: #00ff66;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-weight: 500;
+  }
+
+  .patient-name-link:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  /* Patient Detail Modal */
+  .patient-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .patient-modal-overlay.active {
+    display: flex;
+  }
+
+  .patient-modal {
+    background: linear-gradient(135deg, #2a0000 0%, #1a1a1a 100%);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+
+  .patient-modal-header {
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #a00 0%, #600 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .patient-modal-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+  }
+
+  .patient-modal-content {
+    padding: 25px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .patient-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .patient-info-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .patient-info-item label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+
+  .patient-info-item span {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #00ff66;
+  }
+
+  .visits-section {
+    margin-top: 20px;
+  }
+
+  .visits-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .visits-header h3 {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .visit-count-badge {
+    background: #a00;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+  }
+
+  .visit-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+  }
+
+  .visit-card-header {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .visit-card-header:hover {
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .visit-date {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .visit-date i {
+    color: #a00;
+  }
+
+  .visit-time {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+  }
+
+  .visit-medicines-count {
+    background: rgba(0, 255, 102, 0.2);
+    color: #00ff66;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+  }
+
+  .visit-card-body {
+    padding: 15px 18px;
+    display: none;
+  }
+
+  .visit-card.expanded .visit-card-body {
+    display: block;
+  }
+
+  .medicine-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .medicine-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .medicine-list li:last-child {
+    border-bottom: none;
+  }
+
+  .medicine-name {
+    font-weight: 500;
+    color: white;
+  }
+
+  .medicine-details {
+    display: flex;
+    gap: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+
+  .medicine-details span {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 3px 10px;
+    border-radius: 5px;
+  }
+
+  .print-prescription-btn {
+    background: linear-gradient(135deg, #a00 0%, #700 100%);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    margin-left: 10px;
+  }
+
+  .print-prescription-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(160, 0, 0, 0.4);
+  }
+
+  .no-visits {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.7);
+  }
 </style>
 {% endblock style %}
 
@@ -323,7 +584,7 @@
             <tr>
               <td>{{ forloop.counter }}</td>
               <td><span class="date-badge">{{ item.date }}</span></td>
-              <td>{{ item.patient_name }}</td>
+              <td><span class="patient-name-link" onclick="openPatientDetail('{{ item.ref_no }}')">{{ item.patient_name }}</span></td>
               <td>{{ item.ref_no }}</td>
               <td>{{ item.phone|default:"N/A" }}</td>
               <td><span class="prescription-count">{{ item.prescription_count }}</span></td>
@@ -338,6 +599,24 @@
           {% endif %}
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- Patient Detail Modal -->
+<div class="patient-modal-overlay" id="patientModal">
+  <div class="patient-modal">
+    <div class="patient-modal-header">
+      <h2><i class="fas fa-user-injured"></i> <span id="modalPatientName">Patient Details</span></h2>
+      <button class="modal-close" onclick="closePatientModal()">&times;</button>
+    </div>
+    <div class="patient-modal-content">
+      <div id="patientModalBody">
+        <div class="loading-spinner">
+          <i class="fas fa-spinner fa-spin fa-2x"></i>
+          <p>Loading patient details...</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -403,7 +682,7 @@
                 <tr>
                   <td>${index + 1}</td>
                   <td><span class="date-badge">${item.date}</span></td>
-                  <td>${item.patient_name}</td>
+                  <td><span class="patient-name-link" onclick="openPatientDetail('${item.ref_no}')">${item.patient_name}</span></td>
                   <td>${item.ref_no}</td>
                   <td>${item.phone || 'N/A'}</td>
                   <td><span class="prescription-count">${item.prescription_count}</span></td>
@@ -419,6 +698,166 @@
       .catch(error => {
         console.error('Error loading patient stats:', error);
       });
+  }
+
+  // Patient Detail Modal Functions
+  function openPatientDetail(refNo) {
+    const modal = document.getElementById('patientModal');
+    const modalBody = document.getElementById('patientModalBody');
+    
+    modal.classList.add('active');
+    modalBody.innerHTML = `
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+        <p>Loading patient details...</p>
+      </div>
+    `;
+    
+    fetch(`/doctor/api/patient-detail/${refNo}/`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('modalPatientName').textContent = data.patient.name;
+          renderPatientDetail(data.patient, data.visits);
+        } else {
+          modalBody.innerHTML = `<div class="no-visits"><i class="fas fa-exclamation-circle fa-2x"></i><p>${data.error}</p></div>`;
+        }
+      })
+      .catch(error => {
+        modalBody.innerHTML = `<div class="no-visits"><i class="fas fa-exclamation-circle fa-2x"></i><p>Error loading patient details</p></div>`;
+      });
+  }
+
+  function renderPatientDetail(patient, visits) {
+    const modalBody = document.getElementById('patientModalBody');
+    
+    let html = `
+      <!-- Patient Info -->
+      <div class="patient-info-grid">
+        <div class="patient-info-item">
+          <label>Reference No</label>
+          <span>${patient.ref_no}</span>
+        </div>
+        <div class="patient-info-item">
+          <label>Phone</label>
+          <span>${patient.phone}</span>
+        </div>
+        <div class="patient-info-item">
+          <label>Age</label>
+          <span>${patient.age}</span>
+        </div>
+        <div class="patient-info-item">
+          <label>Weight</label>
+          <span>${patient.weight}</span>
+        </div>
+        <div class="patient-info-item">
+          <label>Height</label>
+          <span>${patient.height}</span>
+        </div>
+        <div class="patient-info-item">
+          <label>Temperature</label>
+          <span>${patient.temperature}</span>
+        </div>
+        <div class="patient-info-item">
+          <label>Registered On</label>
+          <span style="font-size: 0.95rem;">${patient.registered}</span>
+        </div>
+      </div>
+      
+      <!-- Visits Section -->
+      <div class="visits-section">
+        <div class="visits-header">
+          <h3><i class="fas fa-history"></i> Prescription History</h3>
+          <span class="visit-count-badge">${patient.total_visits} Visit(s) | ${patient.total_prescriptions} Prescriptions</span>
+        </div>
+    `;
+    
+    if (visits.length > 0) {
+      visits.forEach((visit, index) => {
+        html += `
+          <div class="visit-card ${index === 0 ? 'expanded' : ''}" id="visit-${index}">
+            <div class="visit-card-header" onclick="toggleVisitCard(${index})">
+              <div class="visit-date">
+                <i class="fas fa-calendar-alt"></i>
+                <strong>${visit.date}</strong>
+                <span class="visit-time">${visit.time}</span>
+              </div>
+              <div>
+                <span class="visit-medicines-count">${visit.medicines.length} Medicine(s)</span>
+                ${visit.batch_id ? `<button class="print-prescription-btn" onclick="event.stopPropagation(); printVisitPrescription('${patient.ref_no}', '${visit.batch_id}')"><i class="fas fa-print"></i> Print</button>` : ''}
+              </div>
+            </div>
+            <div class="visit-card-body">
+              <ul class="medicine-list">
+        `;
+        
+        visit.medicines.forEach(med => {
+          html += `
+            <li>
+              <span class="medicine-name"><i class="fas fa-pills" style="color: #a00; margin-right: 8px;"></i>${med.medicine_name}</span>
+              <div class="medicine-details">
+                <span><i class="fas fa-tablets"></i> ${med.qty} ${med.medicine_form || 'tablet'}(s)</span>
+                <span><i class="fas fa-clock"></i> ${getFrequencyLabel(med.frequency)}</span>
+                <span><i class="fas fa-calendar-day"></i> ${med.days} day(s)</span>
+              </div>
+            </li>
+          `;
+        });
+        
+        html += `
+              </ul>
+            </div>
+          </div>
+        `;
+      });
+    } else {
+      html += `<div class="no-visits"><i class="fas fa-clipboard-list fa-2x"></i><p>No prescription history found</p></div>`;
+    }
+    
+    html += `</div>`;
+    modalBody.innerHTML = html;
+  }
+
+  function toggleVisitCard(index) {
+    const card = document.getElementById(`visit-${index}`);
+    card.classList.toggle('expanded');
+  }
+
+  function printVisitPrescription(refNo, batchId) {
+    window.open(`/doctor/print-prescription/${refNo}/?batch_id=${batchId}`, '_blank');
+  }
+
+  function closePatientModal() {
+    document.getElementById('patientModal').classList.remove('active');
+  }
+
+  // Close modal on overlay click
+  document.getElementById('patientModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closePatientModal();
+    }
+  });
+
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closePatientModal();
+    }
+  });
+
+  function getFrequencyLabel(freq) {
+    const labels = {
+      'OD': 'Once Daily',
+      'BD': 'Twice Daily',
+      'TDS': 'Three Times Daily',
+      'QID': 'Four Times Daily',
+      'SOS': 'As Needed',
+      'STAT': 'Immediately',
+      'HS': 'At Bedtime',
+      'AC': 'Before Meals',
+      'PC': 'After Meals'
+    };
+    return labels[freq] || freq;
   }
 
   // Load today's data by default on page load

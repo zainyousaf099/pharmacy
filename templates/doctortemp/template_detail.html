@@ -509,9 +509,10 @@
                 <tr>
                     <th>#</th>
                     <th>Medicine Name</th>
-                    <th>Dosage</th>
-                    <th>Duration</th>
-                    <th>Timing</th>
+                    <th>QTY</th>
+                    <th>Dosage Form</th>
+                    <th>Frequency</th>
+                    <th>Days</th>
                     <th>Notes</th>
                     <th>Actions</th>
                 </tr>
@@ -521,13 +522,10 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td class="medicine-name">{{ med.medicine.name }}</td>
-                    <td>{{ med.medicine.weight_or_quantity|default:"-" }}</td>
+                    <td>{{ med.qty|default:1 }}</td>
+                    <td>{{ med.dosage_form|default:"MG" }}</td>
+                    <td><span class="timing-badge active">{{ med.frequency }}</span></td>
                     <td>{{ med.days }} day{{ med.days|pluralize }}</td>
-                    <td>
-                        <span class="timing-badge {% if med.morning %}active{% endif %}">Morning</span>
-                        <span class="timing-badge {% if med.evening %}active{% endif %}">Evening</span>
-                        <span class="timing-badge {% if med.night %}active{% endif %}">Night</span>
-                    </td>
                     <td>{{ med.notes|default:"-" }}</td>
                     <td>
                         <button class="btn-delete" onclick="deleteMedicine('{{ med.id }}')"><i class="fas fa-trash"></i> Delete</button>
@@ -561,26 +559,51 @@
             </div>
 
             <div class="form-group">
-                <label for="days">Duration (Days) *</label>
-                <input type="number" id="days" name="days" min="1" value="1" required>
+                <label for="qty">Quantity *</label>
+                <input type="number" id="qty" name="qty" min="1" value="1" required>
             </div>
 
             <div class="form-group">
-                <label>Timing</label>
-                <div class="checkbox-group">
-                    <label>
-                        <input type="checkbox" name="morning" id="morning">
-                        Morning
-                    </label>
-                    <label>
-                        <input type="checkbox" name="evening" id="evening">
-                        Evening
-                    </label>
-                    <label>
-                        <input type="checkbox" name="night" id="night">
-                        Night
-                    </label>
-                </div>
+                <label for="dosage_form">Dosage Form *</label>
+                <select id="dosage_form" name="dosage_form" required>
+                    <option value="MG">MG</option>
+                    <option value="CC">CC</option>
+                    <option value="ML">ML</option>
+                    <option value="TABLETS">Tablets</option>
+                    <option value="CAPSULES">Capsules</option>
+                    <option value="DROPS">Drops</option>
+                    <option value="TSP">Teaspoon</option>
+                    <option value="TBSP">Tablespoon</option>
+                    <option value="SACHET">Sachet</option>
+                    <option value="PUFF">Puff</option>
+                    <option value="UNIT">Unit</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="frequency">Frequency *</label>
+                <select id="frequency" name="frequency" required>
+                    <option value="OD">OD</option>
+                    <option value="BD">BD</option>
+                    <option value="TDS">TDS</option>
+                    <option value="QID">QID</option>
+                    <option value="HS">HS</option>
+                    <option value="QAM">QAM</option>
+                    <option value="QPM">QPM</option>
+                    <option value="SOS">SOS</option>
+                    <option value="STAT">STAT</option>
+                    <option value="QOD">QOD</option>
+                    <option value="QW">QW</option>
+                    <option value="Q6H">Q6H</option>
+                    <option value="Q8H">Q8H</option>
+                    <option value="AC">AC</option>
+                    <option value="PC">PC</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="days">Duration (Days) *</label>
+                <input type="number" id="days" name="days" min="1" value="1" required>
             </div>
 
             <div class="form-group">
@@ -709,10 +732,10 @@
         
         const formData = {
             medicine_id: medicineIdInput.value,
+            qty: document.getElementById('qty').value,
+            dosage_form: document.getElementById('dosage_form').value,
+            frequency: document.getElementById('frequency').value,
             days: document.getElementById('days').value,
-            morning: document.getElementById('morning').checked,
-            evening: document.getElementById('evening').checked,
-            night: document.getElementById('night').checked,
             notes: document.getElementById('notes').value
         };
 

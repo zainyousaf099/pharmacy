@@ -202,6 +202,16 @@ def reports(request):
         total_quantity=Sum('quantity_boxes')
     )
     
+    # Returns data
+    returns = InventoryTransaction.objects.filter(
+        transaction_type='RET',
+        created_at__gte=start_date,
+        created_at__lte=end_date
+    ).aggregate(
+        total_returns=Sum(F('quantity_subitems') * F('unit_sale_price')),
+        total_quantity=Sum('quantity_subitems')
+    )
+    
     # Purchase data
     purchases = InventoryTransaction.objects.filter(
         transaction_type='PUR',
@@ -220,11 +230,20 @@ def reports(request):
         total_expenses=Sum('amount')
     )
     
-    # Calculate profit/loss
-    total_sales = sales.get('total_sales') or Decimal('0')
+    # Calculate profit/loss (deduct returns from sales)
+    total_sales_raw = sales.get('total_sales') or Decimal('0')
+    total_returns = returns.get('total_returns') or Decimal('0')
+    total_sales = total_sales_raw - total_returns  # Net sales after returns
     total_purchases = purchases.get('total_purchases') or Decimal('0')
     total_expenses = expenses.get('total_expenses') or Decimal('0')
     profit_loss = total_sales - total_purchases - total_expenses
+    
+    # All returns transactions (for detailed view)
+    all_returns = InventoryTransaction.objects.filter(
+        transaction_type='RET',
+        created_at__gte=start_date,
+        created_at__lte=end_date
+    ).select_related('product').order_by('-created_at')
     
     # Top selling products
     top_products = InventoryTransaction.objects.filter(
@@ -290,6 +309,9 @@ def reports(request):
         'custom_start': custom_start,
         'custom_end': custom_end,
         'total_sales': total_sales,
+        'total_sales_raw': total_sales_raw,
+        'total_returns': total_returns,
+        'returns_quantity': returns.get('total_quantity') or 0,
         'total_purchases': total_purchases,
         'total_expenses': total_expenses,
         'profit_loss': profit_loss,
@@ -300,6 +322,7 @@ def reports(request):
         'recent_purchases': recent_purchases,
         'all_sales': all_sales,
         'all_purchases': all_purchases,
+        'all_returns': all_returns,
         'medicine_movements': medicine_movements,
         'expenses_by_category': expenses_by_category,
     }
@@ -844,6 +867,16 @@ def reports_pdf(request):
         total_quantity=Sum('quantity_boxes')
     )
     
+    # Returns data
+    returns = InventoryTransaction.objects.filter(
+        transaction_type='RET',
+        created_at__gte=start_date,
+        created_at__lte=end_date
+    ).aggregate(
+        total_amount=Sum(F('quantity_subitems') * F('unit_sale_price')),
+        total_quantity=Sum('quantity_subitems')
+    )
+    
     purchases = InventoryTransaction.objects.filter(
         transaction_type='PUR',
         created_at__gte=start_date,
@@ -858,7 +891,9 @@ def reports_pdf(request):
         expense_date__lte=end_date.date()
     ).aggregate(total=Sum('amount'))
     
-    total_sales = sales.get('total_amount') or Decimal('0')
+    total_sales_raw = sales.get('total_amount') or Decimal('0')
+    total_returns = returns.get('total_amount') or Decimal('0')
+    total_sales = total_sales_raw - total_returns  # Net sales
     total_purchases = purchases.get('total_amount') or Decimal('0')
     total_expenses = expenses.get('total') or Decimal('0')
     profit_loss = total_sales - total_purchases - total_expenses
@@ -876,6 +911,12 @@ def reports_pdf(request):
         created_at__lte=end_date
     ).select_related('product').order_by('-created_at')
     
+    all_returns = InventoryTransaction.objects.filter(
+        transaction_type='RET',
+        created_at__gte=start_date,
+        created_at__lte=end_date
+    ).select_related('product').order_by('-created_at')
+    
     all_expenses = Expense.objects.filter(
         expense_date__gte=start_date.date(),
         expense_date__lte=end_date.date()
@@ -886,6 +927,9 @@ def reports_pdf(request):
         'start_date': start_date,
         'end_date': end_date,
         'total_sales': total_sales,
+        'total_sales_raw': total_sales_raw,
+        'total_returns': total_returns,
+        'returns_quantity': returns.get('total_quantity') or 0,
         'total_purchases': total_purchases,
         'total_expenses': total_expenses,
         'profit_loss': profit_loss,
@@ -893,6 +937,7 @@ def reports_pdf(request):
         'purchase_quantity': purchases.get('total_quantity') or 0,
         'all_sales': all_sales,
         'all_purchases': all_purchases,
+        'all_returns': all_returns,
         'all_expenses': all_expenses,
     }
     
@@ -1595,9 +1640,21 @@ def sales_analysis_report(request):
         total_transactions=Count('id')
     )
     
-    total_sales = sales_data.get('total_sales') or Decimal('0')
-    total_items_sold = sales_data.get('total_items') or 0
+    # Get returns data to subtract from sales
+    returns_data = InventoryTransaction.objects.filter(
+        transaction_type='RET',
+        created_at__gte=start_date,
+        created_at__lte=end_date
+    ).aggregate(
+        total_returns=Sum(F('quantity_subitems') * F('unit_sale_price')),
+        total_items_returned=Sum('quantity_subitems'),
+        total_return_transactions=Count('id')
+    )
+    
+    total_sales = (sales_data.get('total_sales') or Decimal('0')) - (returns_data.get('total_returns') or Decimal('0'))
+    total_items_sold = (sales_data.get('total_items') or 0) - (returns_data.get('total_items_returned') or 0)
     total_transactions = sales_data.get('total_transactions') or 0
+    total_return_transactions = returns_data.get('total_return_transactions') or 0
     
     # Calculate days in period
     days_in_period = (end_date - start_date).days or 1
@@ -1660,17 +1717,36 @@ def sales_analysis_report(request):
             'margin': margin
         })
     
+    # Check if viewing today's data
+    today_date = today.date()
+    is_today = (start_date.date() == today_date and end_date.date() == today_date)
+    
+    # Quick date ranges for buttons
+    week_start = today - timedelta(days=today.weekday())  # Monday of this week
+    month_start = today.replace(day=1)  # First day of month
+    
+    # Get gross sales (before returns) for the daily cash balance display
+    total_sales_raw = sales_data.get('total_sales') or Decimal('0')
+    
     context = {
         'start_date': start_date,
         'end_date': end_date,
         'total_sales': total_sales,
+        'total_sales_raw': total_sales_raw,
         'total_items_sold': total_items_sold,
         'total_transactions': total_transactions,
+        'total_return_transactions': total_return_transactions,
+        'total_returns': returns_data.get('total_returns') or Decimal('0'),
+        'total_items_returned': returns_data.get('total_items_returned') or 0,
         'avg_daily_sales': avg_daily_sales,
         'fast_moving': fast_moving,
         'slow_moving': slow_moving,
         'sales_breakdown': sales_breakdown,
         'report_date': today,
+        'today': today,
+        'is_today': is_today,
+        'week_start': week_start,
+        'month_start': month_start,
     }
     return render(request, "inventory/sales_analysis_report.html", context)
 

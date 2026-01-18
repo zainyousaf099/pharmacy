@@ -34,16 +34,64 @@
                         <i class="fas fa-filter me-2"></i>Filter
                     </button>
                 </div>
+                <div class="col-md-4">
+                    <div class="btn-group w-100" role="group">
+                        <a href="?start_date={{ today|date:'Y-m-d' }}&end_date={{ today|date:'Y-m-d' }}" class="btn btn-success {% if is_today %}active{% endif %}">
+                            <i class="fas fa-calendar-day me-1"></i>Today
+                        </a>
+                        <a href="?start_date={{ week_start|date:'Y-m-d' }}&end_date={{ today|date:'Y-m-d' }}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-week me-1"></i>This Week
+                        </a>
+                        <a href="?start_date={{ month_start|date:'Y-m-d' }}&end_date={{ today|date:'Y-m-d' }}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-alt me-1"></i>This Month
+                        </a>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
+
+    <!-- Daily Cash Balance Card (Show prominently when viewing today) -->
+    {% if is_today %}
+    <div class="card border-0 shadow-lg mb-4 bg-dark text-white">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="rounded-circle bg-success p-3">
+                        <i class="fas fa-cash-register fa-3x"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <h4 class="mb-1"><i class="fas fa-calendar-check me-2"></i>Today's Cash Balance - {{ today|date:"d M Y" }}</h4>
+                    <p class="mb-0 opacity-75">End of day cash should match this amount</p>
+                </div>
+                <div class="col-auto text-end">
+                    <div class="d-flex gap-4 align-items-center">
+                        <div class="text-center px-3 border-end border-secondary">
+                            <small class="d-block text-success">Sales</small>
+                            <h4 class="mb-0 text-success">Rs. {{ total_sales_raw|floatformat:0|default:total_sales }}</h4>
+                        </div>
+                        <div class="text-center px-3 border-end border-secondary">
+                            <small class="d-block text-warning">Returns</small>
+                            <h4 class="mb-0 text-warning">- Rs. {{ total_returns|floatformat:0 }}</h4>
+                        </div>
+                        <div class="text-center px-3">
+                            <small class="d-block text-info">Net Cash In Hand</small>
+                            <h2 class="mb-0 text-info fw-bold">Rs. {{ total_sales|floatformat:0 }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Summary Cards -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="card border-0 shadow-sm bg-success text-white">
                 <div class="card-body">
-                    <h6 class="opacity-75">Total Sales</h6>
+                    <h6 class="opacity-75">Net Sales (After Returns)</h6>
                     <h2 class="mb-0">Rs. {{ total_sales|floatformat:0 }}</h2>
                 </div>
             </div>
@@ -51,7 +99,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="card border-0 shadow-sm bg-primary text-white">
                 <div class="card-body">
-                    <h6 class="opacity-75">Items Sold</h6>
+                    <h6 class="opacity-75">Net Items Sold</h6>
                     <h2 class="mb-0">{{ total_items_sold|floatformat:0 }}</h2>
                 </div>
             </div>
@@ -73,6 +121,31 @@
             </div>
         </div>
     </div>
+
+    <!-- Returns Summary -->
+    {% if total_return_transactions > 0 %}
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm border-start border-danger border-4">
+                <div class="card-body py-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-undo-alt fa-2x text-danger"></i>
+                        </div>
+                        <div class="col">
+                            <h6 class="mb-0 text-muted">Returns Summary</h6>
+                            <div class="d-flex gap-4 mt-1">
+                                <span><strong class="text-danger">{{ total_return_transactions }}</strong> Returns</span>
+                                <span><strong class="text-danger">{{ total_items_returned|floatformat:0 }}</strong> Items Returned</span>
+                                <span>Refund Amount: <strong class="text-danger">Rs. {{ total_returns|floatformat:0 }}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="row g-4">
         <!-- Fast Moving Items -->

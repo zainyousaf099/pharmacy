@@ -80,7 +80,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="text-muted mb-1 small">Total Sales</p>
+                            <p class="text-muted mb-1 small">Net Sales (After Returns)</p>
                             <h3 class="mb-0 text-success">PKR {{ total_sales|floatformat:2 }}</h3>
                             <small class="text-muted">{{ sales_quantity }} packs sold</small>
                         </div>
@@ -145,6 +145,31 @@
             </div>
         </div>
     </div>
+
+    <!-- Returns Summary -->
+    {% if total_returns > 0 %}
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm border-start border-warning border-4">
+                <div class="card-body py-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-undo-alt fa-2x text-warning"></i>
+                        </div>
+                        <div class="col">
+                            <h6 class="mb-0 text-muted">Returns Summary</h6>
+                            <div class="d-flex gap-4 mt-1">
+                                <span>Gross Sales: <strong class="text-success">PKR {{ total_sales_raw|floatformat:2 }}</strong></span>
+                                <span>Returns: <strong class="text-warning">PKR {{ total_returns|floatformat:2 }}</strong> ({{ returns_quantity }} items)</span>
+                                <span>Net Sales: <strong class="text-primary">PKR {{ total_sales|floatformat:2 }}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Top Selling Products -->
     <div class="row mb-4">
@@ -395,7 +420,7 @@
                             <tfoot class="table-light">
                                 <tr>
                                     <th colspan="4" class="text-end">Total Sales:</th>
-                                    <th class="text-end text-success">PKR {{ total_sales|floatformat:2 }}</th>
+                                    <th class="text-end text-success">PKR {{ total_sales_raw|floatformat:2 }}</th>
                                 </tr>
                             </tfoot>
                             {% endif %}
@@ -405,6 +430,55 @@
             </div>
         </div>
     </div>
+
+    <!-- All Returns Transactions - Stock In (Refund) -->
+    {% if all_returns %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm border-warning">
+                <div class="card-header bg-warning bg-opacity-10 py-3">
+                    <h5 class="mb-0"><i class="fas fa-undo-alt text-warning me-2"></i>All Returns Transactions (Stock Restored)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Medicine Name</th>
+                                    <th class="text-center">Quantity (Items)</th>
+                                    <th class="text-end">Unit Price</th>
+                                    <th class="text-end">Refund Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for return in all_returns %}
+                                <tr>
+                                    <td>{{ return.created_at|date:"M d, Y h:i A" }}</td>
+                                    <td class="fw-bold">{{ return.product.name }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-warning text-dark">+{{ return.quantity_subitems|floatformat:0 }}</span>
+                                    </td>
+                                    <td class="text-end">PKR {{ return.unit_sale_price|floatformat:2 }}</td>
+                                    <td class="text-end text-warning fw-bold">
+                                        PKR {% widthratio return.quantity_subitems return.unit_sale_price 1 %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="4" class="text-end">Total Returns:</th>
+                                    <th class="text-end text-warning">PKR {{ total_returns|floatformat:2 }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- All Purchase Transactions - Stock In -->
     <div class="row mb-4">

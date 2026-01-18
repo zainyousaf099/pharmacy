@@ -11,6 +11,7 @@ urlpatterns = [
     # Patient Statistics
     path('patients/', views.patient_statistics, name='patient_statistics'),
     path('api/patient-stats/', views.patient_statistics_api, name='patient_statistics_api'),
+    path('api/patient-detail/<str:ref_no>/', views.patient_detail_api, name='patient_detail_api'),
     
     # Patient Queue System
     path('api/patient-queue/', views.get_patient_queue, name='get_patient_queue'),

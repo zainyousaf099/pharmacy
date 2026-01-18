@@ -298,6 +298,170 @@
       font-family: 'Segoe UI', sans-serif;
     }
 
+    /* Patient Details Card Styles */
+    .patient-details-card {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 15px;
+      min-height: 180px;
+    }
+
+    .patient-details-card.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-style: italic;
+    }
+
+    .patient-details-card .patient-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 12px;
+    }
+
+    .patient-details-card .patient-avatar {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #a00 0%, #600 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .patient-details-card .patient-name-section {
+      flex: 1;
+    }
+
+    .patient-details-card .patient-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 3px;
+    }
+
+    .patient-details-card .patient-ref {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .patient-details-card .patient-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .patient-details-card .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .patient-details-card .info-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .patient-details-card .info-item i {
+      width: 20px;
+      text-align: center;
+      color: #ff6b6b;
+      font-size: 0.85rem;
+    }
+
+    .patient-details-card .info-item .info-content {
+      flex: 1;
+    }
+
+    .patient-details-card .info-item .info-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .patient-details-card .info-item .info-value {
+      font-size: 0.9rem;
+      color: white;
+      font-weight: 500;
+    }
+
+    /* Clinical Notes Section */
+    .clinical-notes-section {
+      margin-top: 20px;
+    }
+
+    .clinical-notes-section #toggleClinicalNotesBtn {
+      background: rgba(139, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .clinical-notes-section #toggleClinicalNotesBtn:hover {
+      background: rgba(139, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .clinical-notes-section #toggleClinicalNotesBtn i {
+      transition: transform 0.3s;
+    }
+
+    #clinicalNotesContent {
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #clinicalNotesContent .form-group {
+      margin-bottom: 15px;
+    }
+
+    #clinicalNotesContent .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+    }
+
+    #clinicalNotesContent textarea {
+      min-height: 60px;
+      font-size: 0.9rem;
+    }
+
     /* Prescription Table */
     .prescription-table-wrapper {
       overflow: visible;
@@ -309,6 +473,7 @@
       border-collapse: separate;
       border-spacing: 0;
       position: relative;
+      table-layout: auto;
     }
 
     .prescription-table tbody {
@@ -319,12 +484,13 @@
       background: rgba(0, 0, 0, 0.3);
       color: white;
       font-weight: 600;
-      padding: 12px;
+      padding: 10px 8px;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      white-space: nowrap;
     }
 
     .prescription-table thead th:first-child {
@@ -336,9 +502,10 @@
     }
 
     .prescription-table tbody td {
-      padding: 12px;
+      padding: 10px 8px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       vertical-align: middle;
+      width:77px
     }
 
     .prescription-table tbody tr:hover {
@@ -347,7 +514,7 @@
 
     .medicine-input-cell {
       position: relative;
-      width: 40%;
+      width: 22%;
     }
 
     .medicine-input-wrapper {
@@ -355,13 +522,27 @@
       width: 100%;
     }
 
-    .days-cell {
-      width: 20%;
+    .qty-cell {
+      width: 10%;
     }
 
-    .checkbox-cell {
+    .dosage-form-cell {
       width: 13%;
-      text-align: center;
+    }
+
+    .frequency-cell {
+      width: 12%;
+    }
+
+    .urdu-cell {
+      width: 20%;
+      text-align: right;
+      direction: rtl;
+      font-family: 'Jameel Noori Nastaleeq', 'Alvi Nastaleeq', Arial, sans-serif;
+    }
+
+    .days-cell {
+      width: 10%;
     }
 
     .prescription-table .medicineSearch {
@@ -372,6 +553,54 @@
     .prescription-table select {
       width: 100%;
       margin: 0;
+      padding: 10px 8px;
+      font-size: 0.9rem;
+    }
+
+    .prescription-table input[type="number"] {
+      width: 100%;
+      padding: 10px 6px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .prescription-table input[type="number"]:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .qty-input {
+      width: 100% !important;
+    }
+
+    .dosage-form-select {
+      width: 100%;
+    }
+
+    .frequency-select {
+      width: 100%;
+    }
+
+    .days-select {
+      width: 100%;
+    }
+
+    .urdu-description {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
     }
 
     /* Checkboxes */
@@ -1020,6 +1249,329 @@
     .queue-toggle-btn.has-waiting {
       animation: pulseGreen 2s infinite;
     }
+
+    /* ===== Improved Prescription Form Styles ===== */
+    
+    /* Template Section */
+    .template-section {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .template-section .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .template-section .form-label i {
+      color: #00ff66;
+    }
+
+    .template-selector {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .template-selector select {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px 15px;
+      color: white;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .template-selector select:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .template-selector select:focus {
+      border-color: #00ff66;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 255, 102, 0.15);
+    }
+
+    .btn-template {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-template:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-template.btn-manage {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-template.btn-manage:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Enhanced Prescription Table */
+    .prescription-table thead th {
+      
+    }
+
+    .prescription-table thead th i {
+      margin-right: 6px;
+      opacity: 0.8;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .action-btn i {
+      opacity: 0.9;
+    }
+
+    .btn-add {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-add:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-save {
+      background: rgba(170, 0, 0, 0.6);
+      border-color: rgba(170, 0, 0, 0.8);
+    }
+
+    .btn-save:hover {
+      background: rgba(170, 0, 0, 0.8);
+      border-color: rgba(200, 0, 0, 0.9);
+    }
+
+    .btn-admit {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-admit:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Clinical Notes Section */
+    .clinical-notes-section {
+      margin-top: 25px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+    }
+
+    .clinical-notes-section > button {
+      width: 100%;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+
+    .clinical-notes-section > button:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .clinical-notes-section > button i:first-child {
+      color: #00ff66;
+    }
+
+    #clinicalNotesChevron {
+      transition: transform 0.3s;
+    }
+
+    .clinical-notes-section.expanded #clinicalNotesChevron {
+      transform: rotate(180deg);
+    }
+
+    .clinical-notes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .clinical-notes-grid .form-group {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s;
+    }
+
+    .clinical-notes-grid .form-group:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .clinical-notes-grid .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .clinical-notes-grid .form-label i {
+      color: #00ff66;
+      width: 18px;
+      text-align: center;
+    }
+
+    .clinical-notes-grid textarea {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      font-size: 0.9rem;
+      resize: vertical;
+      transition: all 0.3s;
+    }
+
+    .clinical-notes-grid textarea:focus {
+      border-color: #00ff66;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 255, 102, 0.15);
+    }
+
+    .clinical-notes-grid textarea::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .template-selector {
+        flex-direction: column;
+      }
+
+      .template-selector select,
+      .btn-template {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .clinical-notes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prescription-table-wrapper {
+        margin: 0 -15px;
+        padding: 0 15px;
+      }
+
+      .prescription-table thead th {
+        font-size: 0.75rem;
+        padding: 8px 5px;
+      }
+
+      .prescription-table tbody td {
+        padding: 8px 5px;
+      }
+
+      .urdu-description {
+        font-size: 0.8rem;
+        padding: 6px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .prescription-table {
+        min-width: 650px;
+      }
+
+      .prescription-table thead th {
+        font-size: 0.7rem;
+      }
+    }
   </style>
 {% endblock style %}
 
@@ -1091,19 +1643,17 @@
       
       <!-- Left Section: Prescription Form -->
       <div class="card">
-        <h3 class="card-title">Add Prescription</h3>
+        <h3 class="card-title"><i class="fas fa-prescription"></i> Add Prescription</h3>
         
         <!-- Template Selection -->
-        <div class="template-section" style="margin-bottom: 20px;">
-          <div class="form-group">
-            <label class="form-label"><i class="fas fa-clipboard-list"></i> Load Template (Optional)</label>
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <select id="templateSelect" style="flex: 1;">
-                <option value="">-- Select a template --</option>
-              </select>
-              <button class="btn" id="loadTemplateBtn" style="padding: 12px 20px;">Load</button>
-              <a href="{% url 'template_list' %}" class="btn" style="padding: 12px 20px; text-decoration: none;">Manage</a>
-            </div>
+        <div class="template-section">
+          <label class="form-label"><i class="fas fa-clipboard-list"></i> Load Template (Optional)</label>
+          <div class="template-selector">
+            <select id="templateSelect">
+              <option value="">-- Select a template --</option>
+            </select>
+            <button class="btn btn-template" id="loadTemplateBtn"><i class="fas fa-download"></i> Load</button>
+            <a href="{% url 'template_list' %}" class="btn btn-template btn-manage"><i class="fas fa-cog"></i> Manage</a>
           </div>
         </div>
         
@@ -1111,11 +1661,12 @@
           <table class="prescription-table" id="prescriptionTable">
             <thead>
               <tr>
-                <th>Medicine</th>
-                <th>Duration</th>
-                <th>Morning</th>
-                <th>Evening</th>
-                <th>Night</th>
+                <th><i class="fas fa-pills"></i> Medicine</th>
+                <th>QTY</th>
+                <th>Dosage Form</th>
+                <th>Frequency</th>
+                <th>اردو</th>
+                <th>Days</th>
               </tr>
             </thead>
             <tbody>
@@ -1131,44 +1682,118 @@
                     <input type="hidden" class="medicine-id">
                   </div>
                 </td>
-                <td class="days-cell">
-                  <select class="days-select" title="Select duration">
-                    <option value="1">1 day</option>
-                    <option value="2">2 days</option>
-                    <option value="3">3 days</option>
-                    <option value="4">4 days</option>
-                    <option value="5">5 days</option>
-                    <option value="6">6 days</option>
-                    <option value="7">7 days</option>
-                    <option value="10">10 days</option>
-                    <option value="14">14 days</option>
-                    <option value="30">30 days</option>
+                <td class="qty-cell">
+                  <input type="number" class="qty-input" value="1" min="1" title="Quantity">
+                </td>
+                <td class="dosage-form-cell">
+                  <select class="dosage-form-select" title="Select dosage form">
+                    <option value="MG">MG</option>
+                    <option value="CC">CC</option>
+                    <option value="ML">ML</option>
+                    <option value="TABLETS">Tablets</option>
+                    <option value="CAPSULES">Capsules</option>
+                    <option value="DROPS">Drops</option>
+                    <option value="TSP">Teaspoon</option>
+                    <option value="TBSP">Tablespoon</option>
+                    <option value="SACHET">Sachet</option>
+                    <option value="PUFF">Puff</option>
+                    <option value="UNIT">Unit</option>
                   </select>
                 </td>
-                <td class="checkbox-cell">
-                  <input type="checkbox" class="morning-check" title="Morning dose">
+                <td class="frequency-cell">
+                  <select class="frequency-select" title="Select frequency" onchange="updateUrduDescription(this)">
+                    <option value="OD">OD</option>
+                    <option value="BD">BD</option>
+                    <option value="TDS">TDS</option>
+                    <option value="QID">QID</option>
+                    <option value="HS">HS</option>
+                    <option value="QAM">QAM</option>
+                    <option value="QPM">QPM</option>
+                    <option value="SOS">SOS</option>
+                    <option value="STAT">STAT</option>
+                    <option value="QOD">QOD</option>
+                    <option value="QW">QW</option>
+                    <option value="Q6H">Q6H</option>
+                    <option value="Q8H">Q8H</option>
+                    <option value="AC">AC</option>
+                    <option value="PC">PC</option>
+                  </select>
                 </td>
-                <td class="checkbox-cell">
-                  <input type="checkbox" class="evening-check" title="Evening dose">
+                <td class="urdu-cell">
+                  <div class="urdu-description">روزانہ ایک بار</div>
                 </td>
-                <td class="checkbox-cell">
-                  <input type="checkbox" class="night-check" title="Night dose">
+                <td class="days-cell">
+                  <select class="days-select" title="Select duration">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="10">10</option>
+                    <option value="14">14</option>
+                    <option value="30">30</option>
+                  </select>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         
-        <div class="btn-group">
-          <button class="btn" id="addRowBtn"><i class="fas fa-plus"></i> Add Medicine</button>
-          <button class="btn btn-primary" id="printSaveBtn"><i class="fas fa-save"></i> Save & Print</button>
-          <button class="btn btn-success" id="admitPatientBtn"><i class="fas fa-hospital"></i> Admit Patient</button>
+        <!-- Special Note Field -->
+        <div class="form-group" style="margin-top: 15px;">
+          <label class="form-label"><i class="fas fa-sticky-note"></i> Special Note</label>
+          <input type="text" id="specialNote" placeholder="Enter special instructions for prescription..." style="width: 100%;">
+        </div>
+        
+        <div class="action-buttons">
+          <button class="action-btn btn-add" id="addRowBtn"><i class="fas fa-plus-circle"></i> Add Medicine</button>
+          <button class="action-btn btn-save" id="printSaveBtn"><i class="fas fa-save"></i> Save & Print</button>
+          <button class="action-btn btn-admit" id="admitPatientBtn"><i class="fas fa-hospital-user"></i> Admit Patient</button>
+        </div>
+        
+        <!-- Clinical Notes Section (Collapsible) -->
+        <div class="clinical-notes-section">
+          <button type="button" id="toggleClinicalNotesBtn">
+            <i class="fas fa-notes-medical"></i> Add Clinical Notes <i class="fas fa-chevron-down" id="clinicalNotesChevron"></i>
+          </button>
+          
+          <div id="clinicalNotesContent" style="display: none;">
+            <div class="clinical-notes-grid">
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-comment-medical"></i> Presenting Complaints</label>
+                <textarea id="presentingComplaints" placeholder="Common symptoms for this condition..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-child"></i> Development</label>
+                <textarea id="development" placeholder="Development notes..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-syringe"></i> Vaccination</label>
+                <textarea id="vaccination" placeholder="Vaccination notes..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-stethoscope"></i> Medical Examination</label>
+                <textarea id="medicalExamination" placeholder="Medical examination findings..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-microscope"></i> Investigation Advised</label>
+                <textarea id="investigationAdvised" placeholder="Investigation advised..." rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label"><i class="fas fa-diagnoses"></i> Provisional Diagnosis</label>
+                <textarea id="provisionalDiagnosis" placeholder="Provisional diagnosis..." rows="2"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-        
-
-      <!-- Right Section: Patient Search -->
       <div class="card">
         <h3 class="card-title">Patient Information</h3>
         
@@ -1186,9 +1811,10 @@
         
         <div class="form-group">
           <label class="form-label">Patient Details</label>
-          <textarea id="patientDetailsTextarea" 
-                    placeholder="Patient information will appear here after search..." 
-                    readonly></textarea>
+          <div id="patientDetailsCard" class="patient-details-card empty">
+            <span>Patient information will appear here after search...</span>
+          </div>
+          <input type="hidden" id="patientDetailsData">
         </div>
       </div>
 
@@ -1245,6 +1871,29 @@
   </div>
 
 <!-- Side Menu -->
+<!-- Password Lock Screen for Sidebar -->
+<div id="menuPasswordOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9998; justify-content: center; align-items: center;">
+  <div style="background: #1a1a2e; padding: 30px; border-radius: 15px; text-align: center; max-width: 350px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+    <i class="fas fa-lock" style="font-size: 50px; color: #ffc107; margin-bottom: 20px;"></i>
+    <h3 style="color: white; margin-bottom: 20px;">Menu Locked</h3>
+    <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Enter your staff password to access menu</p>
+    <input type="password" id="menuPasswordInput" placeholder="Enter Password" 
+           style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 8px; background: #0f0f1a; color: white; font-size: 16px; text-align: center; margin-bottom: 15px;"
+           onkeypress="if(event.key === 'Enter') verifyMenuPassword()">
+    <button onclick="verifyMenuPassword()" 
+            style="width: 100%; padding: 12px; background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">
+      <i class="fas fa-unlock"></i> Unlock Menu
+    </button>
+    <button onclick="closePasswordPrompt()" 
+            style="width: 100%; padding: 10px; background: transparent; color: #999; border: 1px solid #444; border-radius: 8px; cursor: pointer;">
+      Cancel
+    </button>
+    <div id="passwordError" style="color: #dc3545; margin-top: 15px; display: none;">
+      <i class="fas fa-exclamation-circle"></i> <span id="passwordErrorText">Invalid password</span>
+    </div>
+  </div>
+</div>
+
 <div class="side-menu" id="sideMenu">
   <span class="close-btn" id="closeMenu">&times;</span>
   <h4><i class="fas fa-stethoscope"></i> Menu</h4>
@@ -1257,6 +1906,32 @@
     <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
     <li><a href="/accounts/login/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
   </ul>
+  
+  <!-- Network Connection Section -->
+  <div style="border-top: 1px solid #eee; margin-top: 20px; padding-top: 15px;">
+    <h4 style="font-size: 14px; color: #666; margin-bottom: 10px;"><i class="fas fa-network-wired"></i> Network</h4>
+    <div id="networkStatus" style="font-size: 12px; margin-bottom: 8px;">
+      <span style="color: #999;">● Checking...</span>
+    </div>
+    <div id="serverIpDisplay" style="font-size: 11px; color: #666; margin-bottom: 10px;"></div>
+    <div id="autoConnectStatus" style="color: #17a2b8; font-size: 11px; margin-bottom: 8px;">
+      <i class="fas fa-sync fa-spin"></i> Auto-searching for server...
+    </div>
+    
+    <div id="connectSection" style="display: none;">
+      <small style="color: #999; display: block; margin-bottom: 5px; font-size: 10px;"><i class="fas fa-exclamation-triangle"></i> Manual (if auto fails):</small>
+      <input type="text" id="serverIpInput" placeholder="Server IP (e.g., 192.168.1.100)" 
+             style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; margin-bottom: 8px;">
+      <button onclick="connectToServer()" 
+              style="width: 100%; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+        <i class="fas fa-plug"></i> Connect
+      </button>
+    </div>
+    
+    <button id="disconnectBtn" onclick="disconnectFromServer()" style="display: none; width: 100%; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+      <i class="fas fa-unlink"></i> Disconnect
+    </button>
+  </div>
 </div>
 
 <!-- Overlay -->
@@ -1267,15 +1942,77 @@
 
 {% block js %}
 <script>
-  // Menu toggle
+  // ========== MENU PASSWORD LOCK FUNCTIONS ==========
+  function showPasswordPrompt() {
+    document.getElementById('menuPasswordOverlay').style.display = 'flex';
+    document.getElementById('menuPasswordInput').value = '';
+    document.getElementById('menuPasswordInput').focus();
+    document.getElementById('passwordError').style.display = 'none';
+  }
+  
+  function closePasswordPrompt() {
+    document.getElementById('menuPasswordOverlay').style.display = 'none';
+  }
+  
+  function verifyMenuPassword() {
+    const password = document.getElementById('menuPasswordInput').value;
+    
+    fetch('/api/verify-menu-password/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password, role: 'doctor' })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        closePasswordPrompt();
+        // Open the menu
+        sideMenu.classList.add("active");
+        overlay.classList.add("active");
+      } else {
+        document.getElementById('passwordError').style.display = 'block';
+        document.getElementById('passwordErrorText').textContent = data.error || 'Invalid password';
+        document.getElementById('menuPasswordInput').value = '';
+        document.getElementById('menuPasswordInput').focus();
+      }
+    })
+    .catch(err => {
+      document.getElementById('passwordError').style.display = 'block';
+      document.getElementById('passwordErrorText').textContent = 'Connection error';
+    });
+  }
+
+  // ========== CLINICAL NOTES HELPER FUNCTIONS ==========
+  // Helper function to get clinical notes data
+  function getClinicalNotesData() {
+    return {
+      presenting_complaints: document.getElementById('presentingComplaints').value.trim(),
+      development: document.getElementById('development').value.trim(),
+      vaccination: document.getElementById('vaccination').value.trim(),
+      medical_examination: document.getElementById('medicalExamination').value.trim(),
+      investigation_advised: document.getElementById('investigationAdvised').value.trim(),
+      provisional_diagnosis: document.getElementById('provisionalDiagnosis').value.trim()
+    };
+  }
+  
+  // Clear clinical notes
+  function clearClinicalNotes() {
+    document.getElementById('presentingComplaints').value = '';
+    document.getElementById('development').value = '';
+    document.getElementById('vaccination').value = '';
+    document.getElementById('medicalExamination').value = '';
+    document.getElementById('investigationAdvised').value = '';
+    document.getElementById('provisionalDiagnosis').value = '';
+  }
+
+  // Menu toggle with password protection
   const hamburger = document.getElementById("hamburger");
   const sideMenu = document.getElementById("sideMenu");
   const overlay = document.getElementById("overlay");
   const closeMenu = document.getElementById("closeMenu");
 
   hamburger.addEventListener("click", () => {
-    sideMenu.classList.add("active");
-    overlay.classList.add("active");
+    showPasswordPrompt();
   });
 
   closeMenu.addEventListener("click", () => {
@@ -1287,6 +2024,33 @@
     sideMenu.classList.remove("active");
     overlay.classList.remove("active");
   });
+
+  // Urdu descriptions for frequencies
+  const frequencyUrdu = {
+    'OD': 'روزانہ ایک بار',
+    'BD': 'دن میں دو بار',
+    'TDS': 'دن میں تین بار',
+    'QID': 'دن میں چار بار',
+    'HS': 'سوتے وقت',
+    'QAM': 'ہر صبح',
+    'QPM': 'ہر شام',
+    'SOS': 'ضرورت کے وقت',
+    'STAT': 'فوراً',
+    'QOD': 'ایک دن چھوڑ کر',
+    'QW': 'ہفتے میں ایک بار',
+    'Q6H': 'ہر 6 گھنٹے',
+    'Q8H': 'ہر 8 گھنٹے',
+    'AC': 'کھانے سے پہلے',
+    'PC': 'کھانے کے بعد'
+  };
+
+  // Function to update Urdu description when frequency changes
+  function updateUrduDescription(selectElement) {
+    const row = selectElement.closest('.prescription-row');
+    const urduDiv = row.querySelector('.urdu-description');
+    const frequency = selectElement.value;
+    urduDiv.textContent = frequencyUrdu[frequency] || frequency;
+  }
 
   // Initialize autocomplete for all medicine search inputs
   function initAutocomplete(searchInput) {
@@ -1336,7 +2100,7 @@
                 }
                 
                 html += `
-                  <div class="autocomplete-item" data-id="${medicine.id}" data-name="${medicine.name}">
+                  <div class="autocomplete-item" data-id="${medicine.id}" data-name="${medicine.name}" data-dosage="${medicine.dosage || ''}" data-form="${medicine.medicine_form || 'tablet'}">
                     <div class="medicine-name">${medicine.name}</div>
                     <div class="medicine-details">
                       ${medicine.category ? medicine.category + ' • ' : ''}${medicine.dosage || 'No dosage info'}
@@ -1363,9 +2127,52 @@
                   e.stopPropagation();
                   const id = this.getAttribute('data-id');
                   const name = this.getAttribute('data-name');
-                  console.log('Clicked medicine:', name, 'ID:', id);
+                  const dosage = this.getAttribute('data-dosage') || '';
+                  const medicineForm = this.getAttribute('data-form') || 'tablet';
+                  
+                  console.log('Clicked medicine:', name, 'ID:', id, 'Dosage:', dosage, 'Form:', medicineForm);
                   searchInput.value = name;
                   hiddenIdInput.value = id;
+                  
+                  // Auto-fill QTY from dosage (extract number from strings like "400mg", "500mg", "250ml")
+                  const row = searchInput.closest('.prescription-row');
+                  if (row) {
+                    // Extract numeric value from dosage
+                    const qtyMatch = dosage.match(/(\d+)/);
+                    if (qtyMatch) {
+                      const qtyInput = row.querySelector('.qty-input');
+                      if (qtyInput) {
+                        qtyInput.value = qtyMatch[1];
+                      }
+                    }
+                    
+                    // Auto-fill dosage form based on medicine form
+                    const dosageFormSelect = row.querySelector('.dosage-form-select');
+                    if (dosageFormSelect) {
+                      // Map medicine_form to dosage_form options
+                      const formMap = {
+                        'tablet': 'TABLETS',
+                        'capsule': 'CAPSULES',
+                        'syrup': 'ML',
+                        'injection': 'ML',
+                        'drops': 'DROPS',
+                        'ointment': 'MG',
+                        'inhaler': 'PUFF',
+                        'suppository': 'UNIT',
+                        'other': 'UNIT'
+                      };
+                      
+                      // Also check dosage string for unit hints
+                      let selectedForm = formMap[medicineForm] || 'MG';
+                      const dosageLower = dosage.toLowerCase();
+                      if (dosageLower.includes('mg')) selectedForm = 'MG';
+                      else if (dosageLower.includes('ml')) selectedForm = 'ML';
+                      else if (dosageLower.includes('cc')) selectedForm = 'CC';
+                      
+                      dosageFormSelect.value = selectedForm;
+                    }
+                  }
+                  
                   resultsDiv.classList.remove('show');
                   resultsDiv.style.display = 'none';
                   resultsDiv.innerHTML = '';
@@ -1403,6 +2210,25 @@
     initAutocomplete(input);
   });
 
+  // Enter key acts like Tab in prescription table
+  document.getElementById('prescriptionTable').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const focusable = Array.from(this.querySelectorAll('input:not([type="hidden"]), select'));
+      const currentIndex = focusable.indexOf(document.activeElement);
+      if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+        focusable[currentIndex + 1].focus();
+      } else if (currentIndex === focusable.length - 1) {
+        // Last field - add new row and focus first input
+        document.getElementById('addRowBtn').click();
+        setTimeout(() => {
+          const newFocusable = Array.from(this.querySelectorAll('input:not([type="hidden"]), select'));
+          newFocusable[newFocusable.length - 6].focus(); // Focus medicine input of new row
+        }, 100);
+      }
+    }
+  });
+
   // Add new row functionality
   document.getElementById("addRowBtn").addEventListener("click", function() {
     const table = document.getElementById("prescriptionTable");
@@ -1422,28 +2248,59 @@
           <input type="hidden" class="medicine-id">
         </div>
       </td>
-      <td class="days-cell">
-        <select class="days-select" title="Select duration">
-          <option value="1">1 day</option>
-          <option value="2">2 days</option>
-          <option value="3">3 days</option>
-          <option value="4">4 days</option>
-          <option value="5">5 days</option>
-          <option value="6">6 days</option>
-          <option value="7">7 days</option>
-          <option value="10">10 days</option>
-          <option value="14">14 days</option>
-          <option value="30">30 days</option>
+      <td class="qty-cell">
+        <input type="number" class="qty-input" value="1" min="1" title="Quantity">
+      </td>
+      <td class="dosage-form-cell">
+        <select class="dosage-form-select" title="Select dosage form">
+          <option value="MG">MG</option>
+          <option value="CC">CC</option>
+          <option value="ML">ML</option>
+          <option value="TABLETS">Tablets</option>
+          <option value="CAPSULES">Capsules</option>
+          <option value="DROPS">Drops</option>
+          <option value="TSP">Teaspoon</option>
+          <option value="TBSP">Tablespoon</option>
+          <option value="SACHET">Sachet</option>
+          <option value="PUFF">Puff</option>
+          <option value="UNIT">Unit</option>
         </select>
       </td>
-      <td class="checkbox-cell">
-        <input type="checkbox" class="morning-check" title="Morning dose">
+      <td class="frequency-cell">
+        <select class="frequency-select" title="Select frequency" onchange="updateUrduDescription(this)">
+          <option value="OD">OD</option>
+          <option value="BD">BD</option>
+          <option value="TDS">TDS</option>
+          <option value="QID">QID</option>
+          <option value="HS">HS</option>
+          <option value="QAM">QAM</option>
+          <option value="QPM">QPM</option>
+          <option value="SOS">SOS</option>
+          <option value="STAT">STAT</option>
+          <option value="QOD">QOD</option>
+          <option value="QW">QW</option>
+          <option value="Q6H">Q6H</option>
+          <option value="Q8H">Q8H</option>
+          <option value="AC">AC</option>
+          <option value="PC">PC</option>
+        </select>
       </td>
-      <td class="checkbox-cell">
-        <input type="checkbox" class="evening-check" title="Evening dose">
+      <td class="urdu-cell">
+        <div class="urdu-description">روزانہ ایک بار</div>
       </td>
-      <td class="checkbox-cell">
-        <input type="checkbox" class="night-check" title="Night dose">
+      <td class="days-cell">
+        <select class="days-select" title="Select duration">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="10">10</option>
+          <option value="14">14</option>
+          <option value="30">30</option>
+        </select>
       </td>
     `;
 
@@ -1452,6 +2309,12 @@
     // Initialize autocomplete for the new row
     const newSearchInput = newRow.querySelector('.medicineSearch');
     initAutocomplete(newSearchInput);
+    
+    // Attach event handler for frequency change
+    const frequencySelect = newRow.querySelector('.frequency-select');
+    frequencySelect.addEventListener('change', function() {
+      updateUrduDescription(this);
+    });
   });
 
   // Print/Save functionality - Collect all prescriptions and save
@@ -1462,19 +2325,19 @@
     rows.forEach(row => {
       const medicineId = row.querySelector('.medicine-id').value;
       const medicineName = row.querySelector('.medicineSearch').value.trim();
+      const qty = row.querySelector('.qty-input').value;
+      const dosageForm = row.querySelector('.dosage-form-select').value;
+      const frequency = row.querySelector('.frequency-select').value;
       const days = row.querySelector('.days-select').value;
-      const morning = row.querySelector('.morning-check').checked;
-      const evening = row.querySelector('.evening-check').checked;
-      const night = row.querySelector('.night-check').checked;
       
       if (medicineId && medicineName) {
         prescriptions.push({
           medicine_id: medicineId,
           medicine_name: medicineName,
-          days: days,
-          morning: morning,
-          evening: evening,
-          night: night
+          qty: qty,
+          dosage_form: dosageForm,
+          frequency: frequency,
+          days: days
         });
       }
     });
@@ -1536,7 +2399,35 @@
         // Open print window with template_id if available
         if (data.print_url) {
           setTimeout(() => {
-            const printUrl = data.print_url + (currentTemplateId ? `&template_id=${currentTemplateId}` : '');
+            let printUrl = data.print_url + (currentTemplateId ? `&template_id=${currentTemplateId}` : '');
+            
+            // Add special note
+            const specialNote = document.getElementById('specialNote').value.trim();
+            if (specialNote) {
+              printUrl += `&special_note=${encodeURIComponent(specialNote)}`;
+            }
+            
+            // Add clinical notes as query parameters if any are filled
+            const clinicalNotes = getClinicalNotesData();
+            if (clinicalNotes.presenting_complaints) {
+              printUrl += `&pc=${encodeURIComponent(clinicalNotes.presenting_complaints)}`;
+            }
+            if (clinicalNotes.development) {
+              printUrl += `&dev=${encodeURIComponent(clinicalNotes.development)}`;
+            }
+            if (clinicalNotes.vaccination) {
+              printUrl += `&vac=${encodeURIComponent(clinicalNotes.vaccination)}`;
+            }
+            if (clinicalNotes.medical_examination) {
+              printUrl += `&me=${encodeURIComponent(clinicalNotes.medical_examination)}`;
+            }
+            if (clinicalNotes.investigation_advised) {
+              printUrl += `&ia=${encodeURIComponent(clinicalNotes.investigation_advised)}`;
+            }
+            if (clinicalNotes.provisional_diagnosis) {
+              printUrl += `&pd=${encodeURIComponent(clinicalNotes.provisional_diagnosis)}`;
+            }
+            
             window.open(printUrl, '_blank');
           }, 500);
         }
@@ -1558,9 +2449,12 @@
           
           // Clear patient search
           patientSearchInput.value = '';
-          patientDetailsTextarea.value = '';
+          clearPatientCard();
           currentPatientRefNo = null;
           currentTemplateId = null; // Reset template
+          
+          // Clear clinical notes
+          clearClinicalNotes();
         }, 2000);
       } else {
         Modal.error('Error saving prescriptions: ' + (data.error || 'Unknown error'), 'Save Failed');
@@ -1576,12 +2470,78 @@
   // Patient Search Functionality
   const searchPatientBtn = document.getElementById('searchPatientBtn');
   const patientSearchInput = document.getElementById('patientSearchInput');
-  const patientDetailsTextarea = document.getElementById('patientDetailsTextarea');
+  const patientDetailsCard = document.getElementById('patientDetailsCard');
   const searchMessage = document.getElementById('searchMessage');
   
   // Store current patient reference number
   let currentPatientRefNo = null;
   let currentTemplateId = null; // Track loaded template
+
+  // Function to render patient details card
+  function renderPatientCard(patient) {
+    return `
+      <div class="patient-header">
+        <div class="patient-avatar">${patient.initials}</div>
+        <div class="patient-name-section">
+          <div class="patient-name">${patient.name}</div>
+          <span class="patient-ref">${patient.ref_no}</span>
+        </div>
+      </div>
+      <div class="patient-info-grid">
+        <div class="info-item">
+          <i class="fas fa-phone"></i>
+          <div class="info-content">
+            <div class="info-label">Phone</div>
+            <div class="info-value">${patient.phone}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-birthday-cake"></i>
+          <div class="info-content">
+            <div class="info-label">Age</div>
+            <div class="info-value">${patient.age}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-weight"></i>
+          <div class="info-content">
+            <div class="info-label">Weight</div>
+            <div class="info-value">${patient.weight}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-ruler-vertical"></i>
+          <div class="info-content">
+            <div class="info-label">Height</div>
+            <div class="info-value">${patient.height}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-thermometer-half"></i>
+          <div class="info-content">
+            <div class="info-label">Temperature</div>
+            <div class="info-value">${patient.temperature}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-calendar-alt"></i>
+          <div class="info-content">
+            <div class="info-label">Registered</div>
+            <div class="info-value">${patient.registered}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Function to clear patient card
+  function clearPatientCard() {
+    patientDetailsCard.innerHTML = '<span>Patient information will appear here after search...</span>';
+    patientDetailsCard.classList.add('empty');
+    // Hide prescription history section
+    const historySection = document.getElementById('prescriptionHistorySection');
+    if (historySection) historySection.style.display = 'none';
+  }
 
   function searchPatient() {
     const query = patientSearchInput.value.trim();
@@ -1602,27 +2562,106 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          patientDetailsTextarea.value = data.patient.details;
+          patientDetailsCard.innerHTML = renderPatientCard(data.patient);
+          patientDetailsCard.classList.remove('empty');
           currentPatientRefNo = data.patient.ref_no;
           searchMessage.textContent = '✓ Patient found!';
           searchMessage.className = 'search-message success';
           setTimeout(() => {
             searchMessage.style.display = 'none';
           }, 3000);
+          
+          // Show prescription history if available
+          if (data.prescription_history && data.prescription_history.length > 0) {
+            showPrescriptionHistory(data.patient, data.prescription_history, data.total_visits);
+          } else {
+            // Hide prescription history section
+            const historySection = document.getElementById('prescriptionHistorySection');
+            if (historySection) historySection.style.display = 'none';
+          }
         } else {
-          patientDetailsTextarea.value = '';
+          clearPatientCard();
           currentPatientRefNo = null;
           searchMessage.textContent = '✗ ' + (data.error || 'Patient not found');
           searchMessage.className = 'search-message error';
+          // Hide prescription history
+          const historySection = document.getElementById('prescriptionHistorySection');
+          if (historySection) historySection.style.display = 'none';
         }
       })
       .catch(error => {
         console.error('Search error:', error);
         searchMessage.textContent = '✗ Error searching patient';
         searchMessage.className = 'search-message error';
-        patientDetailsTextarea.value = '';
+        clearPatientCard();
         currentPatientRefNo = null;
       });
+  }
+  
+  // Function to show prescription history
+  function showPrescriptionHistory(patient, history, totalVisits) {
+    let historySection = document.getElementById('prescriptionHistorySection');
+    
+    if (!historySection) {
+      // Create the section if it doesn't exist
+      historySection = document.createElement('div');
+      historySection.id = 'prescriptionHistorySection';
+      historySection.className = 'card';
+      historySection.style.marginTop = '15px';
+      patientDetailsCard.parentNode.insertBefore(historySection, patientDetailsCard.nextSibling.nextSibling);
+    }
+    
+    historySection.style.display = 'block';
+    
+    let historyHtml = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h4 style="margin: 0; color: #dc3545;"><i class="fas fa-history"></i> Prescription History</h4>
+        <span style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem;">
+          ${totalVisits} Visit${totalVisits > 1 ? 's' : ''}
+        </span>
+      </div>
+      <div style="max-height: 300px; overflow-y: auto;">
+    `;
+    
+    history.forEach((visit, index) => {
+      historyHtml += `
+        <div style="background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-weight: 600; color: #dc3545;"><i class="fas fa-calendar-alt"></i> ${visit.date}</span>
+            ${visit.batch_id ? `<button class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="reprintPrescription('${patient.ref_no}', '${visit.batch_id}')"><i class="fas fa-print"></i> Reprint</button>` : ''}
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+      `;
+      
+      visit.medicines.forEach(med => {
+        const timing = [];
+        if (med.morning) timing.push('M');
+        if (med.evening) timing.push('E');
+        if (med.night) timing.push('N');
+        const timingStr = timing.length > 0 ? timing.join('-') : '';
+        
+        historyHtml += `
+          <span style="background: rgba(255,255,255,0.1); border: 1px solid rgba(220,53,69,0.2); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 5px;">
+            <i class="fas fa-pills" style="color: #dc3545; font-size: 0.7rem;"></i>
+            <strong>${med.name}</strong>
+            <span style="color: #aaa;">| ${med.qty} ${med.dosage_form} | ${med.frequency} | ${med.days}d ${timingStr ? '| ' + timingStr : ''}</span>
+          </span>
+        `;
+      });
+      
+      historyHtml += `
+          </div>
+        </div>
+      `;
+    });
+    
+    historyHtml += '</div>';
+    historySection.innerHTML = historyHtml;
+  }
+  
+  // Function to reprint old prescription
+  function reprintPrescription(refNo, batchId) {
+    window.open(`/doctor/print/${refNo}/?batch_id=${batchId}`, '_blank');
   }
 
   searchPatientBtn.addEventListener('click', searchPatient);
@@ -1689,6 +2728,7 @@
           data.medicines.forEach((medicine, index) => {
             const newRow = document.createElement('tr');
             newRow.className = 'prescription-row';
+            const urduText = frequencyUrdu[medicine.frequency] || medicine.frequency;
             newRow.innerHTML = `
               <td class="medicine-input-cell">
                 <div class="medicine-input-wrapper">
@@ -1702,28 +2742,59 @@
                   <input type="hidden" class="medicine-id" value="${medicine.medicine_id}">
                 </div>
               </td>
-              <td class="days-cell">
-                <select class="days-select" title="Select duration">
-                  <option value="1" ${medicine.days === 1 ? 'selected' : ''}>1 day</option>
-                  <option value="2" ${medicine.days === 2 ? 'selected' : ''}>2 days</option>
-                  <option value="3" ${medicine.days === 3 ? 'selected' : ''}>3 days</option>
-                  <option value="4" ${medicine.days === 4 ? 'selected' : ''}>4 days</option>
-                  <option value="5" ${medicine.days === 5 ? 'selected' : ''}>5 days</option>
-                  <option value="6" ${medicine.days === 6 ? 'selected' : ''}>6 days</option>
-                  <option value="7" ${medicine.days === 7 ? 'selected' : ''}>7 days</option>
-                  <option value="10" ${medicine.days === 10 ? 'selected' : ''}>10 days</option>
-                  <option value="14" ${medicine.days === 14 ? 'selected' : ''}>14 days</option>
-                  <option value="30" ${medicine.days === 30 ? 'selected' : ''}>30 days</option>
+              <td class="qty-cell">
+                <input type="number" class="qty-input" value="${medicine.qty || 1}" min="1" title="Quantity">
+              </td>
+              <td class="dosage-form-cell">
+                <select class="dosage-form-select" title="Select dosage form">
+                  <option value="MG" ${medicine.dosage_form === 'MG' ? 'selected' : ''}>MG</option>
+                  <option value="CC" ${medicine.dosage_form === 'CC' ? 'selected' : ''}>CC</option>
+                  <option value="ML" ${medicine.dosage_form === 'ML' ? 'selected' : ''}>ML</option>
+                  <option value="TABLETS" ${medicine.dosage_form === 'TABLETS' ? 'selected' : ''}>Tablets</option>
+                  <option value="CAPSULES" ${medicine.dosage_form === 'CAPSULES' ? 'selected' : ''}>Capsules</option>
+                  <option value="DROPS" ${medicine.dosage_form === 'DROPS' ? 'selected' : ''}>Drops</option>
+                  <option value="TSP" ${medicine.dosage_form === 'TSP' ? 'selected' : ''}>Teaspoon</option>
+                  <option value="TBSP" ${medicine.dosage_form === 'TBSP' ? 'selected' : ''}>Tablespoon</option>
+                  <option value="SACHET" ${medicine.dosage_form === 'SACHET' ? 'selected' : ''}>Sachet</option>
+                  <option value="PUFF" ${medicine.dosage_form === 'PUFF' ? 'selected' : ''}>Puff</option>
+                  <option value="UNIT" ${medicine.dosage_form === 'UNIT' ? 'selected' : ''}>Unit</option>
                 </select>
               </td>
-              <td class="checkbox-cell">
-                <input type="checkbox" class="morning-check" ${medicine.morning ? 'checked' : ''} title="Morning dose">
+              <td class="frequency-cell">
+                <select class="frequency-select" title="Select frequency" onchange="updateUrduDescription(this)">
+                  <option value="OD" ${medicine.frequency === 'OD' ? 'selected' : ''}>OD</option>
+                  <option value="BD" ${medicine.frequency === 'BD' ? 'selected' : ''}>BD</option>
+                  <option value="TDS" ${medicine.frequency === 'TDS' ? 'selected' : ''}>TDS</option>
+                  <option value="QID" ${medicine.frequency === 'QID' ? 'selected' : ''}>QID</option>
+                  <option value="HS" ${medicine.frequency === 'HS' ? 'selected' : ''}>HS</option>
+                  <option value="QAM" ${medicine.frequency === 'QAM' ? 'selected' : ''}>QAM</option>
+                  <option value="QPM" ${medicine.frequency === 'QPM' ? 'selected' : ''}>QPM</option>
+                  <option value="SOS" ${medicine.frequency === 'SOS' ? 'selected' : ''}>SOS</option>
+                  <option value="STAT" ${medicine.frequency === 'STAT' ? 'selected' : ''}>STAT</option>
+                  <option value="QOD" ${medicine.frequency === 'QOD' ? 'selected' : ''}>QOD</option>
+                  <option value="QW" ${medicine.frequency === 'QW' ? 'selected' : ''}>QW</option>
+                  <option value="Q6H" ${medicine.frequency === 'Q6H' ? 'selected' : ''}>Q6H</option>
+                  <option value="Q8H" ${medicine.frequency === 'Q8H' ? 'selected' : ''}>Q8H</option>
+                  <option value="AC" ${medicine.frequency === 'AC' ? 'selected' : ''}>AC</option>
+                  <option value="PC" ${medicine.frequency === 'PC' ? 'selected' : ''}>PC</option>
+                </select>
               </td>
-              <td class="checkbox-cell">
-                <input type="checkbox" class="evening-check" ${medicine.evening ? 'checked' : ''} title="Evening dose">
+              <td class="urdu-cell">
+                <div class="urdu-description">${urduText}</div>
               </td>
-              <td class="checkbox-cell">
-                <input type="checkbox" class="night-check" ${medicine.night ? 'checked' : ''} title="Night dose">
+              <td class="days-cell">
+                <select class="days-select" title="Select duration">
+                  <option value="1" ${medicine.days === 1 ? 'selected' : ''}>1</option>
+                  <option value="2" ${medicine.days === 2 ? 'selected' : ''}>2</option>
+                  <option value="3" ${medicine.days === 3 ? 'selected' : ''}>3</option>
+                  <option value="4" ${medicine.days === 4 ? 'selected' : ''}>4</option>
+                  <option value="5" ${medicine.days === 5 ? 'selected' : ''}>5</option>
+                  <option value="6" ${medicine.days === 6 ? 'selected' : ''}>6</option>
+                  <option value="7" ${medicine.days === 7 ? 'selected' : ''}>7</option>
+                  <option value="10" ${medicine.days === 10 ? 'selected' : ''}>10</option>
+                  <option value="14" ${medicine.days === 14 ? 'selected' : ''}>14</option>
+                  <option value="30" ${medicine.days === 30 ? 'selected' : ''}>30</option>
+                </select>
               </td>
             `;
             
@@ -1773,7 +2844,8 @@
     
     // Fill in patient details
     document.getElementById('admitPatientRef').value = currentPatientRefNo;
-    document.getElementById('admitPatientName').value = patientDetailsTextarea.value.split('\n')[0].replace('Name: ', '').trim();
+    const patientNameEl = patientDetailsCard.querySelector('.patient-name');
+    document.getElementById('admitPatientName').value = patientNameEl ? patientNameEl.textContent : '';
     
     // Clear previous inputs
     document.getElementById('admitReason').value = '';
@@ -2027,6 +3099,204 @@
     const originalClickHandler = originalPrintSave.onclick;
     // Note: The marking as checked is done in the save prescription success handler below
   }
+  
+  // ========== CLINICAL NOTES TOGGLE ==========
+  const toggleClinicalNotesBtn = document.getElementById('toggleClinicalNotesBtn');
+  const clinicalNotesContent = document.getElementById('clinicalNotesContent');
+  const clinicalNotesSection = document.querySelector('.clinical-notes-section');
+  
+  toggleClinicalNotesBtn.addEventListener('click', function() {
+    if (clinicalNotesContent.style.display === 'none') {
+      clinicalNotesContent.style.display = 'block';
+      clinicalNotesSection.classList.add('expanded');
+    } else {
+      clinicalNotesContent.style.display = 'none';
+      clinicalNotesSection.classList.remove('expanded');
+    }
+  });
+
+  // ========== NETWORK CONNECTION FUNCTIONS ==========
+  function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+  }
+
+  // Auto-discover and connect to Pharmacy server
+  function autoDiscoverServer() {
+    const autoStatus = document.getElementById('autoConnectStatus');
+    
+    // Check if we're already on the server (accessing via IP, not localhost)
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      console.log('Already connected to server:', window.location.hostname);
+      if (autoStatus) {
+        autoStatus.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Connected to server</span>';
+      }
+      return;
+    }
+    
+    // Check current network status
+    fetch('/pharmacy/api/network/status/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.mode === 'server') {
+          // This PC IS the server - no need to search
+          if (autoStatus) {
+            autoStatus.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Running on Server PC</span>';
+          }
+        } else if (data.mode === 'client' && data.server_ip && data.server_ip !== '') {
+          // We have a saved server IP, try to connect
+          checkAndRedirectToServer(data.server_ip);
+        } else {
+          // Standalone mode on localhost - this is the main PC, act as server
+          if (autoStatus) {
+            autoStatus.innerHTML = '<span style="color: #17a2b8;"><i class="fas fa-info-circle"></i> Local mode - same database as Pharmacy</span>';
+          }
+        }
+      })
+      .catch(() => {
+        if (autoStatus) {
+          autoStatus.innerHTML = '<span style="color: #17a2b8;"><i class="fas fa-info-circle"></i> Local mode</span>';
+        }
+      });
+  }
+
+  function checkAndRedirectToServer(serverIp) {
+    const testUrl = `http://${serverIp}:8000/pharmacy/api/network/ping/`;
+    const autoStatus = document.getElementById('autoConnectStatus');
+    
+    fetch(testUrl, { method: 'GET', mode: 'cors' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.is_server) {
+          console.log('Server found at:', serverIp);
+          if (autoStatus) {
+            autoStatus.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Server found! Connecting...</span>';
+          }
+          // Auto redirect to server
+          setTimeout(() => {
+            window.location.href = `http://${serverIp}:8000/doctor/`;
+          }, 500);
+        }
+      })
+      .catch(() => {
+        console.log('Server not reachable at:', serverIp);
+      });
+  }
+
+  function scanForServer() {
+    // Get local IP base and scan common addresses
+    fetch('/pharmacy/api/network/status/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.local_ip) {
+          const parts = data.local_ip.split('.');
+          const base = parts.slice(0, 3).join('.');
+          
+          // Scan first 20 IPs (quick scan)
+          for (let i = 1; i <= 20; i++) {
+            const ip = `${base}.${i}`;
+            if (ip !== data.local_ip) {
+              checkAndRedirectToServer(ip);
+            }
+          }
+        }
+      });
+  }
+
+  function loadNetworkStatus() {
+    fetch('/pharmacy/api/network/status/')
+      .then(response => response.json())
+      .then(data => {
+        const statusEl = document.getElementById('networkStatus');
+        const serverIpEl = document.getElementById('serverIpDisplay');
+        const connectSection = document.getElementById('connectSection');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const autoStatus = document.getElementById('autoConnectStatus');
+        
+        if (data.mode === 'server') {
+          statusEl.innerHTML = '<span style="color: #28a745;">● Server Mode</span>';
+          serverIpEl.textContent = 'This PC: ' + data.local_ip;
+          connectSection.style.display = 'none';
+          disconnectBtn.style.display = 'none';
+          if (autoStatus) autoStatus.style.display = 'none';
+        } else if (data.mode === 'client' && data.connected) {
+          statusEl.innerHTML = '<span style="color: #28a745;">● Connected</span>';
+          serverIpEl.textContent = 'Server: ' + data.server_ip;
+          connectSection.style.display = 'none';
+          disconnectBtn.style.display = 'block';
+          if (autoStatus) autoStatus.style.display = 'none';
+        } else {
+          statusEl.innerHTML = '<span style="color: #dc3545;">● Not Connected</span>';
+          serverIpEl.textContent = 'Local Mode';
+          connectSection.style.display = 'block';
+          disconnectBtn.style.display = 'none';
+        }
+      })
+      .catch(err => {
+        console.error('Network status error:', err);
+      });
+  }
+
+  function connectToServer() {
+    const serverIp = document.getElementById('serverIpInput').value.trim();
+    if (!serverIp) {
+      alert('Please enter server IP address');
+      return;
+    }
+    
+    fetch('/pharmacy/api/network/connect/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify({ server_ip: serverIp, server_port: 8000 })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('✅ Connected to server!\n\nRedirecting to: ' + data.redirect_url);
+        // Redirect to the server's Doctor page
+        window.location.href = data.redirect_url + 'doctor/';
+      } else {
+        alert('❌ Connection failed: ' + data.error);
+      }
+    })
+    .catch(err => {
+      alert('❌ Connection error: ' + err.message);
+    });
+  }
+
+  function disconnectFromServer() {
+    if (!confirm('Disconnect from server? This will switch to local database.')) {
+      return;
+    }
+    
+    fetch('/pharmacy/api/network/disconnect/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Disconnected. Application will reload.');
+        window.location.reload();
+      } else {
+        alert('Error: ' + data.error);
+      }
+    })
+    .catch(err => {
+      alert('Error: ' + err.message);
+    });
+  }
+
+  // Load network status on page load
+  loadNetworkStatus();
+  
+  // Auto-discover server after 2 seconds (gives page time to load)
+  setTimeout(autoDiscoverServer, 2000);
 </script>
 {% endblock js %}
-

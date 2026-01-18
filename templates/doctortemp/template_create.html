@@ -181,9 +181,45 @@
     }
 
     .medicine-table select,
-    .medicine-table input[type="text"] {
+    .medicine-table input[type="text"],
+    .medicine-table input[type="number"] {
       width: 100%;
       margin: 0;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .medicine-table select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+
+    .medicine-table select:focus,
+    .medicine-table input[type="text"]:focus,
+    .medicine-table input[type="number"]:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    .medicine-table select option {
+      background: #2a2a2a;
+      color: white;
+      padding: 8px;
+    }
+
+    .medicine-table input[type="number"] {
+      text-align: center;
     }
 
     input[type="checkbox"] {
@@ -364,10 +400,10 @@
                     <thead>
                         <tr>
                             <th>Medicine</th>
+                            <th>QTY</th>
+                            <th>Form</th>
+                            <th>Frequency</th>
                             <th>Days</th>
-                            <th>Morning</th>
-                            <th>Evening</th>
-                            <th>Night</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -380,27 +416,55 @@
                                 </div>
                             </td>
                             <td>
-                                <select class="days-select">
-                                    <option value="1">1 day</option>
-                                    <option value="2">2 days</option>
-                                    <option value="3">3 days</option>
-                                    <option value="4">4 days</option>
-                                    <option value="5">5 days</option>
-                                    <option value="6">6 days</option>
-                                    <option value="7">7 days</option>
-                                    <option value="10">10 days</option>
-                                    <option value="14">14 days</option>
-                                    <option value="30">30 days</option>
+                                <input type="number" class="qty-input" value="1" min="1" style="width: 60px;">
+                            </td>
+                            <td>
+                                <select class="dosage-form-select">
+                                    <option value="MG">MG</option>
+                                    <option value="CC">CC</option>
+                                    <option value="ML">ML</option>
+                                    <option value="TABLETS">Tablets</option>
+                                    <option value="CAPSULES">Capsules</option>
+                                    <option value="DROPS">Drops</option>
+                                    <option value="TSP">Teaspoon</option>
+                                    <option value="TBSP">Tablespoon</option>
+                                    <option value="SACHET">Sachet</option>
+                                    <option value="PUFF">Puff</option>
+                                    <option value="UNIT">Unit</option>
                                 </select>
                             </td>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="morning-check">
+                            <td>
+                                <select class="frequency-select">
+                                    <option value="OD">OD</option>
+                                    <option value="BD">BD</option>
+                                    <option value="TDS">TDS</option>
+                                    <option value="QID">QID</option>
+                                    <option value="HS">HS</option>
+                                    <option value="QAM">QAM</option>
+                                    <option value="QPM">QPM</option>
+                                    <option value="SOS">SOS</option>
+                                    <option value="STAT">STAT</option>
+                                    <option value="QOD">QOD</option>
+                                    <option value="QW">QW</option>
+                                    <option value="Q6H">Q6H</option>
+                                    <option value="Q8H">Q8H</option>
+                                    <option value="AC">AC</option>
+                                    <option value="PC">PC</option>
+                                </select>
                             </td>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="evening-check">
-                            </td>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="night-check">
+                            <td>
+                                <select class="days-select">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="10">10</option>
+                                    <option value="14">14</option>
+                                    <option value="30">30</option>
+                                </select>
                             </td>
                         </tr>
                     </tbody>
@@ -503,27 +567,55 @@
                 </div>
             </td>
             <td>
-                <select class="days-select">
-                    <option value="1">1 day</option>
-                    <option value="2">2 days</option>
-                    <option value="3">3 days</option>
-                    <option value="4">4 days</option>
-                    <option value="5">5 days</option>
-                    <option value="6">6 days</option>
-                    <option value="7">7 days</option>
-                    <option value="10">10 days</option>
-                    <option value="14">14 days</option>
-                    <option value="30">30 days</option>
+                <input type="number" class="qty-input" value="1" min="1" style="width: 60px;">
+            </td>
+            <td>
+                <select class="dosage-form-select">
+                    <option value="MG">MG</option>
+                    <option value="CC">CC</option>
+                    <option value="ML">ML</option>
+                    <option value="TABLETS">Tablets</option>
+                    <option value="CAPSULES">Capsules</option>
+                    <option value="DROPS">Drops</option>
+                    <option value="TSP">Teaspoon</option>
+                    <option value="TBSP">Tablespoon</option>
+                    <option value="SACHET">Sachet</option>
+                    <option value="PUFF">Puff</option>
+                    <option value="UNIT">Unit</option>
                 </select>
             </td>
-            <td class="checkbox-cell">
-                <input type="checkbox" class="morning-check">
+            <td>
+                <select class="frequency-select">
+                    <option value="OD">OD</option>
+                    <option value="BD">BD</option>
+                    <option value="TDS">TDS</option>
+                    <option value="QID">QID</option>
+                    <option value="HS">HS</option>
+                    <option value="QAM">QAM</option>
+                    <option value="QPM">QPM</option>
+                    <option value="SOS">SOS</option>
+                    <option value="STAT">STAT</option>
+                    <option value="QOD">QOD</option>
+                    <option value="QW">QW</option>
+                    <option value="Q6H">Q6H</option>
+                    <option value="Q8H">Q8H</option>
+                    <option value="AC">AC</option>
+                    <option value="PC">PC</option>
+                </select>
             </td>
-            <td class="checkbox-cell">
-                <input type="checkbox" class="evening-check">
-            </td>
-            <td class="checkbox-cell">
-                <input type="checkbox" class="night-check">
+            <td>
+                <select class="days-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="10">10</option>
+                    <option value="14">14</option>
+                    <option value="30">30</option>
+                </select>
             </td>
         `;
         
@@ -558,17 +650,17 @@
             const medicineName = row.querySelector('.medicineSearch').value.trim();
             
             if (medicineId && medicineName) {
+                const qty = parseInt(row.querySelector('.qty-input').value) || 1;
+                const dosageForm = row.querySelector('.dosage-form-select').value;
+                const frequency = row.querySelector('.frequency-select').value;
                 const days = parseInt(row.querySelector('.days-select').value);
-                const morning = row.querySelector('.morning-check').checked;
-                const evening = row.querySelector('.evening-check').checked;
-                const night = row.querySelector('.night-check').checked;
                 
                 medicines.push({
                     medicine_id: medicineId,
-                    days: days,
-                    morning: morning,
-                    evening: evening,
-                    night: night
+                    qty: qty,
+                    dosage_form: dosageForm,
+                    frequency: frequency,
+                    days: days
                 });
             }
         });

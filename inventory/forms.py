@@ -9,7 +9,7 @@ class ProductForm(forms.ModelForm):
         fields = [
             "name", "category", "medicine_form", "distributor", "products_in_box", "items_per_product", "subitems_per_item",
             "weight_or_quantity", "purchase_price", "distributor_discount_percent", "distributor_discount_pkr",
-            "purchase_margin_percent", "rack_no", "expiry_date", "batch_no" 
+            "sale_price", "rack_no", "expiry_date", "batch_no" 
         ]
         widgets = {
             "name": forms.TextInput(attrs={
@@ -61,10 +61,11 @@ class ProductForm(forms.ModelForm):
                 "step": "0.01",
                 "id": "id_distributor_discount_pkr"
             }),
-            "purchase_margin_percent": forms.NumberInput(attrs={
+            "sale_price": forms.NumberInput(attrs={
                 "class": "form-control",
-                "placeholder": "Profit margin %",
-                "step": "0.01"
+                "placeholder": "Total sale price",
+                "step": "0.01",
+                "id": "id_sale_price"
             }),
             "rack_no": forms.TextInput(attrs={
                 "class": "form-control",
@@ -88,10 +89,10 @@ class ProductForm(forms.ModelForm):
             "items_per_product": "Items per Pack (Strips/Sheets)",
             "subitems_per_item": "Units per Item (Tablets/Capsules)",
             "weight_or_quantity": "Dosage/Strength",
-            "purchase_price": "Gross Purchase Price",
+            "purchase_price": "Purchase Price",
             "distributor_discount_percent": "Distributor Discount (%)",
             "distributor_discount_pkr": "Distributor Discount (PKR)",
-            "purchase_margin_percent": "Profit Margin (%)",
+            "sale_price": "Sale Price",
             "rack_no": "Rack No.",
             "expiry_date": "Expiry Date",
             "batch_no": "Batch No."

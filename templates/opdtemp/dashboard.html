@@ -390,20 +390,119 @@
 
   /* Patient Details Box */
   .patient-details {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 15px;
-    padding: 20px;
+    background: linear-gradient(145deg, rgba(0, 50, 100, 0.4) 0%, rgba(0, 30, 60, 0.5) 100%);
+    border-radius: 16px;
+    padding: 0;
     min-height: 250px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-family: 'Courier New', monospace;
-    font-size: 0.95rem;
-    line-height: 1.8;
-    white-space: pre-wrap;
-    color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(51, 153, 255, 0.3);
+    overflow: hidden;
   }
 
-  .patient-details strong {
+  .patient-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .patient-empty i {
+    font-size: 3rem;
+    color: rgba(51, 153, 255, 0.3);
+    margin-bottom: 15px;
+    display: block;
+  }
+
+  .patient-empty p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .patient-empty small {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .patient-header {
+    background: linear-gradient(135deg, rgba(51, 153, 255, 0.2) 0%, rgba(0, 102, 204, 0.15) 100%);
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid rgba(51, 153, 255, 0.2);
+  }
+
+  .patient-avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3399ff 0%, #0066cc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(51, 153, 255, 0.4);
+  }
+
+  .patient-name-ref h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 4px 0;
+  }
+
+  .patient-name-ref span {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(51, 153, 255, 0.2);
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  .patient-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .patient-info-item {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 12px 14px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .patient-info-item i {
     color: #3399ff;
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  .patient-info-item .info-content {
+    flex: 1;
+  }
+
+  .patient-info-item .info-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .patient-info-item .info-value {
+    font-size: 0.95rem;
+    color: white;
+    font-weight: 500;
+  }
+
+  .patient-info-item.full-width {
+    grid-column: 1 / -1;
   }
 
   /* Popup Modal */
@@ -581,15 +680,88 @@
         Patient Details
       </div>
 
-      <div class="patient-details">{% if selected_patient %}<strong>Ref:</strong> {{ selected_patient.ref_no }}
-<strong>Name:</strong> {{ selected_patient.name }}
-<strong>Phone:</strong> {{ selected_patient.phone }}
-<strong>Age:</strong> {{ selected_patient.age|default:"N/A" }}
-<strong>Temperature:</strong> {{ selected_patient.temperature }}°F
-<strong>Weight:</strong> {{ selected_patient.weight }} kg
-<strong>Height:</strong> {{ selected_patient.height }} cm
-<strong>Registered:</strong> {{ selected_patient.created_at|date:"d M Y, h:i A" }}{% else %}No patient selected.
-Please search for a patient using the search box above.{% endif %}</div>
+      <div class="patient-details">{% if selected_patient %}
+        <div class="patient-header">
+          <div class="patient-avatar">{{ selected_patient.name|slice:":2"|upper }}</div>
+          <div class="patient-name-ref">
+            <h3>{{ selected_patient.name }}</h3>
+            <span>{{ selected_patient.ref_no }}</span>
+          </div>
+        </div>
+        <div class="patient-info-grid">
+          <div class="patient-info-item">
+            <i class="fas fa-phone"></i>
+            <div class="info-content">
+              <div class="info-label">Phone</div>
+              <div class="info-value">{{ selected_patient.phone|default:"N/A" }}</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-birthday-cake"></i>
+            <div class="info-content">
+              <div class="info-label">Age</div>
+              <div class="info-value">{{ selected_patient.age|default:"N/A" }}</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-thermometer-half"></i>
+            <div class="info-content">
+              <div class="info-label">Temperature</div>
+              <div class="info-value">{{ selected_patient.temperature }}°F</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-weight"></i>
+            <div class="info-content">
+              <div class="info-label">Weight</div>
+              <div class="info-value">{{ selected_patient.weight }} kg</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-ruler-vertical"></i>
+            <div class="info-content">
+              <div class="info-label">Height</div>
+              <div class="info-value">{{ selected_patient.height }} cm</div>
+            </div>
+          </div>
+          <div class="patient-info-item">
+            <i class="fas fa-calendar-alt"></i>
+            <div class="info-content">
+              <div class="info-label">Registered</div>
+              <div class="info-value">{{ selected_patient.created_at|date:"d M Y" }}</div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="patient-empty">
+          <i class="fas fa-user-slash"></i>
+          <p>No patient selected</p>
+          <small>Search by Ref No, Name or Phone</small>
+        </div>
+      {% endif %}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Password Lock Screen for Sidebar -->
+<div id="menuPasswordOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9998; justify-content: center; align-items: center;">
+  <div style="background: #1a1a2e; padding: 30px; border-radius: 15px; text-align: center; max-width: 350px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+    <i class="fas fa-lock" style="font-size: 50px; color: #17a2b8; margin-bottom: 20px;"></i>
+    <h3 style="color: white; margin-bottom: 20px;">Menu Locked</h3>
+    <p style="color: #aaa; font-size: 14px; margin-bottom: 20px;">Enter your staff password to access menu</p>
+    <input type="password" id="menuPasswordInput" placeholder="Enter Password" 
+           style="width: 100%; padding: 12px; border: 2px solid #333; border-radius: 8px; background: #0f0f1a; color: white; font-size: 16px; text-align: center; margin-bottom: 15px;"
+           onkeypress="if(event.key === 'Enter') verifyMenuPassword()">
+    <button onclick="verifyMenuPassword()" 
+            style="width: 100%; padding: 12px; background: linear-gradient(135deg, #17a2b8, #20c997); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">
+      <i class="fas fa-unlock"></i> Unlock Menu
+    </button>
+    <button onclick="closePasswordPrompt()" 
+            style="width: 100%; padding: 10px; background: transparent; color: #999; border: 1px solid #444; border-radius: 8px; cursor: pointer;">
+      Cancel
+    </button>
+    <div id="passwordError" style="color: #dc3545; margin-top: 15px; display: none;">
+      <i class="fas fa-exclamation-circle"></i> <span id="passwordErrorText">Invalid password</span>
     </div>
   </div>
 </div>
@@ -604,6 +776,35 @@ Please search for a patient using the search box above.{% endif %}</div>
     <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
     <li><a href="/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
   </ul>
+  
+  <!-- Network Connection Section -->
+  <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 15px; padding-top: 15px;">
+    <h5 style="color: #17a2b8; margin-bottom: 10px; font-size: 0.9rem;"><i class="fas fa-network-wired"></i> Network Status</h5>
+    <div id="networkStatusBox" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; font-size: 0.85rem;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span id="networkStatusIcon" style="color: #ffc107;"><i class="fas fa-circle"></i></span>
+        <span id="networkStatusText">Checking...</span>
+      </div>
+      <div id="networkIPInfo" style="color: #aaa; font-size: 0.8rem;"></div>
+      <div id="autoConnectStatus" style="color: #17a2b8; font-size: 0.75rem; margin-top: 5px;">
+        <i class="fas fa-sync fa-spin"></i> Auto-searching for Pharmacy server...
+      </div>
+    </div>
+    
+    <!-- Manual Connect Section (Emergency) -->
+    <div id="connectSection" style="margin-top: 10px;">
+      <small style="color: #999; display: block; margin-bottom: 5px;"><i class="fas fa-exclamation-triangle"></i> Manual connect (if auto-connect fails):</small>
+      <input type="text" id="serverIPInput" placeholder="Enter Server IP" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #444; background: rgba(0,0,0,0.3); color: white; margin-bottom: 8px;">
+      <button onclick="connectToServer()" style="width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+        <i class="fas fa-plug"></i> Connect to Pharmacy
+      </button>
+    </div>
+    
+    <!-- Disconnect Button -->
+    <button id="btnDisconnect" onclick="disconnectFromServer()" style="width: 100%; margin-top: 10px; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: none;">
+      <i class="fas fa-unlink"></i> Disconnect
+    </button>
+  </div>
 </div>
 
 <!-- Overlay -->
@@ -626,15 +827,54 @@ Please search for a patient using the search box above.{% endif %}</div>
   window.open("{% url 'print_patient_receipt' print_patient_id %}", "_blank", "width=600,height=700");
   {% endif %}
 
-  // Menu toggle functionality
+  // ========== MENU PASSWORD LOCK FUNCTIONS ==========
+  function showPasswordPrompt() {
+    document.getElementById('menuPasswordOverlay').style.display = 'flex';
+    document.getElementById('menuPasswordInput').value = '';
+    document.getElementById('menuPasswordInput').focus();
+    document.getElementById('passwordError').style.display = 'none';
+  }
+  
+  function closePasswordPrompt() {
+    document.getElementById('menuPasswordOverlay').style.display = 'none';
+  }
+  
+  function verifyMenuPassword() {
+    const password = document.getElementById('menuPasswordInput').value;
+    
+    fetch('/api/verify-menu-password/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password, role: 'reception' })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        closePasswordPrompt();
+        // Open the menu
+        sideMenu.classList.add("active");
+        overlay.classList.add("active");
+      } else {
+        document.getElementById('passwordError').style.display = 'block';
+        document.getElementById('passwordErrorText').textContent = data.error || 'Invalid password';
+        document.getElementById('menuPasswordInput').value = '';
+        document.getElementById('menuPasswordInput').focus();
+      }
+    })
+    .catch(err => {
+      document.getElementById('passwordError').style.display = 'block';
+      document.getElementById('passwordErrorText').textContent = 'Connection error';
+    });
+  }
+
+  // Menu toggle functionality with password protection
   const hamburger = document.getElementById("hamburger");
   const sideMenu = document.getElementById("sideMenu");
   const overlay = document.getElementById("overlay");
   const closeMenu = document.getElementById("closeMenu");
 
   hamburger.addEventListener("click", () => {
-    sideMenu.classList.add("active");
-    overlay.classList.add("active");
+    showPasswordPrompt();
   });
 
   closeMenu.addEventListener("click", () => {
@@ -659,5 +899,207 @@ Please search for a patient using the search box above.{% endif %}</div>
       this.parentElement.style.transform = 'scale(1)';
     });
   });
+
+  // Enter key acts like Tab in forms
+  document.querySelectorAll('.form-grid, .search-section').forEach(container => {
+    container.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        const focusable = Array.from(document.querySelectorAll('.form-grid input, .form-grid select, .search-section input, .search-section button'));
+        const currentIndex = focusable.indexOf(e.target);
+        if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+          focusable[currentIndex + 1].focus();
+        } else if (currentIndex === focusable.length - 1) {
+          // Last field - submit form
+          const submitBtn = document.getElementById('printSaveBtn');
+          if (submitBtn) submitBtn.click();
+        }
+      }
+    });
+  });
+
+  // Network connection functions
+  function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+           document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+  }
+
+  // Auto-discover and connect to Pharmacy server
+  function autoDiscoverServer() {
+    const autoStatus = document.getElementById('autoConnectStatus');
+    
+    // Check if we're already on the server (accessing via IP, not localhost)
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      console.log('Already connected to server:', window.location.hostname);
+      if (autoStatus) {
+        autoStatus.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Connected to server</span>';
+      }
+      return;
+    }
+    
+    // Check current network status
+    fetch('/pharmacy/api/network/status/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.mode === 'server') {
+          // This PC IS the server - no need to search
+          if (autoStatus) {
+            autoStatus.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Running on Server PC</span>';
+          }
+        } else if (data.mode === 'client' && data.server_ip && data.server_ip !== '') {
+          // We have a saved server IP, try to connect
+          checkAndRedirectToServer(data.server_ip);
+        } else {
+          // Standalone mode on localhost - this is the main PC, act as server
+          if (autoStatus) {
+            autoStatus.innerHTML = '<span style="color: #17a2b8;"><i class="fas fa-info-circle"></i> Local mode - same database as Pharmacy</span>';
+          }
+        }
+      })
+      .catch(() => {
+        if (autoStatus) {
+          autoStatus.innerHTML = '<span style="color: #17a2b8;"><i class="fas fa-info-circle"></i> Local mode</span>';
+        }
+      });
+  }
+
+  function checkAndRedirectToServer(serverIp) {
+    const testUrl = `http://${serverIp}:8000/pharmacy/api/network/ping/`;
+    const autoStatus = document.getElementById('autoConnectStatus');
+    
+    fetch(testUrl, { method: 'GET', mode: 'cors' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.is_server) {
+          console.log('Server found at:', serverIp);
+          if (autoStatus) {
+            autoStatus.innerHTML = '<span style="color: #28a745;"><i class="fas fa-check-circle"></i> Server found! Connecting...</span>';
+          }
+          // Auto redirect to server
+          setTimeout(() => {
+            window.location.href = `http://${serverIp}:8000/opd/`;
+          }, 500);
+        }
+      })
+      .catch(() => {
+        console.log('Server not reachable at:', serverIp);
+      });
+  }
+
+  function scanForServer() {
+    // Get local IP base and scan common addresses
+    fetch('/pharmacy/api/network/status/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.local_ip) {
+          const parts = data.local_ip.split('.');
+          const base = parts.slice(0, 3).join('.');
+          
+          // Scan first 20 IPs (quick scan)
+          for (let i = 1; i <= 20; i++) {
+            const ip = `${base}.${i}`;
+            if (ip !== data.local_ip) {
+              checkAndRedirectToServer(ip);
+            }
+          }
+        }
+      });
+  }
+
+  function loadNetworkStatus() {
+    fetch('/pharmacy/api/network/status/')
+      .then(response => response.json())
+      .then(data => {
+        const statusEl = document.getElementById('networkStatus');
+        const serverIpEl = document.getElementById('serverIpDisplay');
+        const connectSection = document.getElementById('connectSection');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const autoStatus = document.getElementById('autoConnectStatus');
+        
+        if (data.mode === 'server') {
+          statusEl.innerHTML = '<span style="color: #28a745;">● Server Mode</span>';
+          serverIpEl.textContent = 'This PC: ' + data.local_ip;
+          connectSection.style.display = 'none';
+          disconnectBtn.style.display = 'none';
+          if (autoStatus) autoStatus.style.display = 'none';
+        } else if (data.mode === 'client' && data.connected) {
+          statusEl.innerHTML = '<span style="color: #28a745;">● Connected</span>';
+          serverIpEl.textContent = 'Server: ' + data.server_ip;
+          connectSection.style.display = 'none';
+          disconnectBtn.style.display = 'block';
+          if (autoStatus) autoStatus.style.display = 'none';
+        } else {
+          statusEl.innerHTML = '<span style="color: #dc3545;">● Not Connected</span>';
+          serverIpEl.textContent = 'Local Mode';
+          connectSection.style.display = 'block';
+          disconnectBtn.style.display = 'none';
+        }
+      })
+      .catch(err => {
+        console.error('Network status error:', err);
+      });
+  }
+
+  function connectToServer() {
+    const serverIp = document.getElementById('serverIpInput').value.trim();
+    if (!serverIp) {
+      alert('Please enter server IP address');
+      return;
+    }
+    
+    fetch('/pharmacy/api/network/connect/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify({ server_ip: serverIp, server_port: 8000 })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('✅ Connected to server!\n\nRedirecting to: ' + data.redirect_url);
+        // Redirect to the server's OPD page
+        window.location.href = data.redirect_url + 'opd/';
+      } else {
+        alert('❌ Connection failed: ' + data.error);
+      }
+    })
+    .catch(err => {
+      alert('❌ Connection error: ' + err.message);
+    });
+  }
+
+  function disconnectFromServer() {
+    if (!confirm('Disconnect from server? This will switch to local database.')) {
+      return;
+    }
+    
+    fetch('/pharmacy/api/network/disconnect/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Disconnected. Application will reload.');
+        window.location.reload();
+      } else {
+        alert('Error: ' + data.error);
+      }
+    })
+    .catch(err => {
+      alert('Error: ' + err.message);
+    });
+  }
+
+  // Load network status on page load
+  loadNetworkStatus();
+  
+  // Auto-discover server after 2 seconds (gives page time to load)
+  setTimeout(autoDiscoverServer, 2000);
 </script>
 {% endblock js %}

@@ -33,6 +33,7 @@ def search_medicines_for_pharmacy(request):
             results.append({
                 'id': med.id,
                 'name': med.name,
+                'dosage': med.weight_or_quantity or '',
                 'medicine_form': med.medicine_form or 'tablet',
                 'stock': med.total_items or 0,
                 'sale_price': float(med.sale_price or 0),
@@ -105,18 +106,30 @@ def search_patient_prescription(request):
         # Prepare prescription data
         prescription_data = []
         for rx in prescriptions:
-            # Get timing information
-            timing_parts = []
-            if rx.morning:
-                timing_parts.append('Morning')
-            if rx.evening:
-                timing_parts.append('Evening')
-            if rx.night:
-                timing_parts.append('Night')
-            timing = ', '.join(timing_parts) if timing_parts else 'As directed'
+            # Get frequency and Urdu description
+            frequency = rx.frequency or 'OD'
+            frequency_urdu = {
+                'OD': 'روزانہ ایک بار',
+                'BD': 'دن میں دو بار',
+                'TDS': 'دن میں تین بار',
+                'QID': 'دن میں چار بار',
+                'HS': 'سوتے وقت',
+                'QAM': 'ہر صبح',
+                'QPM': 'ہر شام',
+                'SOS': 'ضرورت کے وقت',
+                'STAT': 'فوراً',
+                'QOD': 'ایک دن چھوڑ کر',
+                'QW': 'ہفتے میں ایک بار',
+                'Q6H': 'ہر 6 گھنٹے',
+                'Q8H': 'ہر 8 گھنٹے',
+                'AC': 'کھانے سے پہلے',
+                'PC': 'کھانے کے بعد'
+            }.get(frequency, frequency)
             
             # Get medicine form to determine pricing logic
             medicine_form = rx.medicine.medicine_form or 'tablet'
+            dosage_form = rx.dosage_form or 'MG'
+            qty = rx.qty or 1
             
             # Liquid forms (syrup, drops, injection) - patient buys bottles, not doses
             # Solid forms (tablet, capsule) - patient buys individual tablets
@@ -124,8 +137,6 @@ def search_patient_prescription(request):
             
             if medicine_form in LIQUID_FORMS:
                 # For liquids: calculate how many bottles needed based on days
-                # Usually 1 bottle = 60-100ml, enough for 5-7 days (3 doses/day, 5ml each)
-                # Simple approach: 1 bottle for up to 7 days, 2 bottles for 8-14 days, etc.
                 bottles_needed = max(1, (rx.days + 6) // 7)  # Round up to weeks
                 
                 # Use item price (per bottle) not subitem price
@@ -137,27 +148,34 @@ def search_patient_prescription(request):
                 total_quantity = bottles_needed
                 quantity_label = f"{bottles_needed} bottle(s)"
             else:
-                # For solids (tablets, capsules): calculate total tablets needed
-                doses_per_day = (1 if rx.morning else 0) + (1 if rx.evening else 0) + (1 if rx.night else 0)
-                if doses_per_day == 0:
-                    doses_per_day = 1
-                total_quantity = doses_per_day * rx.days
+                # For solids (tablets, capsules): calculate based on frequency and days
+                doses_per_day_map = {
+                    'OD': 1, 'BD': 2, 'TDS': 3, 'QID': 4,
+                    'HS': 1, 'QAM': 1, 'QPM': 1, 'SOS': 1, 'STAT': 1,
+                    'QOD': 0.5, 'QW': 0.14,
+                    'Q6H': 4, 'Q8H': 3,
+                    'AC': 3, 'PC': 3
+                }
+                doses_per_day = doses_per_day_map.get(frequency, 1)
+                total_quantity = int(doses_per_day * rx.days)
+                if total_quantity < 1:
+                    total_quantity = 1
                 
                 # Use subitem price (per tablet)
                 price_per_unit = float(rx.medicine.sale_price_per_subitem) if rx.medicine.sale_price_per_subitem else 0.0
                 total_price = total_quantity * price_per_unit
-                quantity_label = f"{total_quantity} tablet(s)"
+                quantity_label = f"{total_quantity} {dosage_form.lower()}"
             
             prescription_data.append({
                 'id': str(rx.id),
                 'medicine_name': rx.medicine.name,
                 'medicine_id': str(rx.medicine.id),
                 'medicine_form': medicine_form,
+                'qty': qty,
+                'dosage_form': dosage_form,
+                'frequency': frequency,
+                'frequency_urdu': frequency_urdu,
                 'days': rx.days,
-                'timing': timing,
-                'morning': rx.morning,
-                'evening': rx.evening,
-                'night': rx.night,
                 'price': total_price,
                 'quantity': total_quantity,
                 'quantity_label': quantity_label,
@@ -207,6 +225,7 @@ def process_pharmacy_order(request):
             discount_amount = Decimal(str(data.get('discount_amount', 0)))
             discount_percentage = Decimal(str(data.get('discount_percentage', 0)))
             is_direct_sale = data.get('is_direct_sale', False)
+            force_sell = data.get('force_sell', False)  # Allow selling with insufficient stock
             
             if not medicines:
                 return JsonResponse({'success': False, 'error': 'No medicines to process'})
@@ -282,13 +301,19 @@ def process_pharmacy_order(request):
                     total_quantity = bottles_needed
                     
                     # Check bottle stock (total_items = bottles)
-                    if product.total_items < total_quantity:
+                    available_stock = int(product.total_items)
+                    if product.total_items < total_quantity and not force_sell:
                         return JsonResponse({
                             'success': False, 
-                            'error': f'Insufficient stock for {product.name}. Available: {int(product.total_items)} bottle(s), Required: {total_quantity}'
+                            'error': f'Insufficient stock for {product.name}. Available: {available_stock} bottle(s), Required: {total_quantity}',
+                            'insufficient_stock': True,
+                            'medicine_name': product.name,
+                            'available': available_stock,
+                            'required': total_quantity,
+                            'unit': 'bottle(s)'
                         })
                     
-                    # Create SALE transaction for bottles
+                    # Create SALE transaction for bottles (may result in negative stock if force_sell)
                     sale_transaction = InventoryTransaction.objects.create(
                         product=product,
                         transaction_type=InventoryTransaction.SALE,
@@ -297,7 +322,7 @@ def process_pharmacy_order(request):
                         quantity_subitems=Decimal(str(total_quantity)),  # Also track as subitems
                         unit_purchase_price=product.purchase_price_per_item,
                         unit_sale_price=product.sale_price_per_item or product.purchase_price_per_item,
-                        notes=f"Dispensed {total_quantity} bottle(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'}) - {days} days"
+                        notes=f"Dispensed {total_quantity} bottle(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'}) - {days} days" + (" [FORCE SELL - Stock was insufficient]" if force_sell and available_stock < total_quantity else "")
                     )
                 else:
                     # For solids: deduct tablets (subitems)
@@ -320,13 +345,19 @@ def process_pharmacy_order(request):
                         total_quantity = days
                     
                     # Check tablet stock
-                    if product.total_subitems < total_quantity:
+                    available_stock = int(product.total_subitems)
+                    if product.total_subitems < total_quantity and not force_sell:
                         return JsonResponse({
                             'success': False, 
-                            'error': f'Insufficient stock for {product.name}. Available: {int(product.total_subitems)} tablet(s), Required: {total_quantity}'
+                            'error': f'Insufficient stock for {product.name}. Available: {available_stock} tablet(s), Required: {total_quantity}',
+                            'insufficient_stock': True,
+                            'medicine_name': product.name,
+                            'available': available_stock,
+                            'required': total_quantity,
+                            'unit': 'tablet(s)'
                         })
                     
-                    # Create SALE transaction for tablets
+                    # Create SALE transaction for tablets (may result in negative stock if force_sell)
                     sale_transaction = InventoryTransaction.objects.create(
                         product=product,
                         transaction_type=InventoryTransaction.SALE,
@@ -335,7 +366,7 @@ def process_pharmacy_order(request):
                         quantity_subitems=Decimal(str(total_quantity)),
                         unit_purchase_price=product.purchase_price_per_subitem,
                         unit_sale_price=product.sale_price_per_subitem or product.purchase_price_per_subitem,
-                        notes=f"Dispensed {total_quantity} tablet(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'}) - {days} days"
+                        notes=f"Dispensed {total_quantity} tablet(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'}) - {days} days" + (" [FORCE SELL - Stock was insufficient]" if force_sell and available_stock < total_quantity else "")
                     )
                 
                 # Mark prescription as dispensed
@@ -355,9 +386,12 @@ def process_pharmacy_order(request):
                 
                 processed_items.append({
                     'medicine': product.name,
+                    'medicine_id': str(product.id),
                     'quantity': total_quantity,
                     'price': float(price),
-                    'new_stock': stock_info
+                    'unit_price': float(price) / total_quantity if total_quantity > 0 else 0,
+                    'new_stock': stock_info,
+                    'medicine_form': medicine_form
                 })
             
             # Mark patient as completed in pharmacy queue after successful dispensing
@@ -365,11 +399,43 @@ def process_pharmacy_order(request):
                 patient.pharmacy_queue_status = 'completed'
                 patient.save()
             
+            # Save the sale record for future returns
+            from .models import PharmacySale, PharmacySaleItem
+            
+            final_amount = Decimal(str(total_amount)) - discount_amount
+            bill_number = PharmacySale.generate_bill_number()
+            
+            pharmacy_sale = PharmacySale.objects.create(
+                bill_number=bill_number,
+                patient_ref_no=patient_ref_no if patient_ref_no and not patient_ref_no.startswith('WALK-IN-') else None,
+                patient_name=patient_name,
+                total_amount=Decimal(str(total_amount)),
+                discount_amount=discount_amount,
+                final_amount=final_amount,
+                is_direct_sale=is_direct_sale,
+                notes=f"{'Direct Sale' if is_direct_sale else 'Prescription'}"
+            )
+            
+            # Save sale items
+            for item in processed_items:
+                PharmacySaleItem.objects.create(
+                    sale=pharmacy_sale,
+                    medicine_id=item.get('medicine_id'),
+                    medicine_name=item['medicine'],
+                    quantity=item['quantity'],
+                    unit_price=Decimal(str(item['unit_price'])),
+                    total_price=Decimal(str(item['price'])),
+                    medicine_form=item.get('medicine_form', 'tablet')
+                )
+            
             return JsonResponse({
                 'success': True,
                 'message': 'Order processed successfully and stock updated',
                 'patient_name': patient_name,
+                'bill_number': bill_number,
                 'total_amount': float(total_amount),
+                'discount_amount': float(discount_amount),
+                'final_amount': float(final_amount),
                 'items_count': len(processed_items),
                 'processed_items': processed_items
             })
@@ -950,4 +1016,404 @@ def pharmacy_queue_complete(request, patient_id):
         })
     except Patient.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Patient not found'})
+
+
+# ============== NETWORK/SERVER API ENDPOINTS ==============
+
+def network_status(request):
+    """Get current network/server status"""
+    try:
+        from core.network_config import get_network_status, load_config
+        status = get_network_status()
+        config = load_config()
+        
+        return JsonResponse({
+            'success': True,
+            **status,
+            'config': config
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+def set_as_server(request):
+    """Set this machine as the main server (Pharmacy)"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'})
+    
+    try:
+        from core.network_config import set_server_mode, get_local_ip
+        
+        if set_server_mode():
+            local_ip = get_local_ip()
+            return JsonResponse({
+                'success': True,
+                'message': f'Server mode activated! Other PCs can connect to: {local_ip}:8000',
+                'server_ip': local_ip,
+                'server_port': 8000
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Failed to save configuration'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+def connect_to_server(request):
+    """Connect to a remote server"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'})
+    
+    try:
+        data = json.loads(request.body)
+        server_ip = data.get('server_ip', '').strip()
+        server_port = int(data.get('server_port', 8000))
+        
+        if not server_ip:
+            return JsonResponse({'success': False, 'error': 'Server IP is required'})
+        
+        from core.network_config import check_server_connection, set_client_mode
+        
+        # Check if server is reachable
+        if not check_server_connection(server_ip, server_port):
+            return JsonResponse({
+                'success': False,
+                'error': f'Cannot connect to server at {server_ip}:{server_port}. Make sure the server is running.'
+            })
+        
+        # Set client mode
+        if set_client_mode(server_ip, server_port):
+            return JsonResponse({
+                'success': True,
+                'message': f'Connected to server at {server_ip}:{server_port}',
+                'server_ip': server_ip,
+                'server_port': server_port,
+                'redirect_url': f'http://{server_ip}:{server_port}/'
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Failed to save configuration'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+def disconnect_from_server(request):
+    """Disconnect from server and use local database"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST required'})
+    
+    try:
+        from core.network_config import set_standalone_mode
+        
+        if set_standalone_mode():
+            return JsonResponse({
+                'success': True,
+                'message': 'Disconnected. Now using local database.'
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Failed to save configuration'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def server_ping(request):
+    """Simple ping endpoint to check if server is alive"""
+    from core.network_config import get_local_ip, get_hostname, is_server
+    
+    return JsonResponse({
+        'success': True,
+        'alive': True,
+        'server_ip': get_local_ip(),
+        'hostname': get_hostname(),
+        'is_server': is_server(),
+        'timestamp': timezone.now().isoformat()
+    })
+
+
+# ============== MEDICINE RETURN SYSTEM ==============
+
+from .models import PharmacySale, PharmacySaleItem, MedicineReturn, MedicineReturnItem
+
+
+def search_bill_for_return(request):
+    """Search for a bill to process return"""
+    bill_number = request.GET.get('bill_number', '').strip()
+    
+    if not bill_number:
+        return JsonResponse({'success': False, 'error': 'Bill number is required'})
+    
+    try:
+        sale = PharmacySale.objects.filter(bill_number__icontains=bill_number).first()
+        
+        if not sale:
+            return JsonResponse({'success': False, 'error': f'Bill not found: {bill_number}'})
+        
+        # Get sale items
+        items = []
+        for item in sale.items.all():
+            # Check how many already returned
+            returned_qty = MedicineReturnItem.objects.filter(
+                return_record__original_sale=sale,
+                medicine_name=item.medicine_name
+            ).aggregate(total=models.Sum('quantity_returned'))['total'] or 0
+            
+            remaining_qty = item.quantity - returned_qty
+            
+            items.append({
+                'id': str(item.id),
+                'medicine_id': str(item.medicine_id) if item.medicine_id else None,
+                'medicine_name': item.medicine_name,
+                'quantity_sold': item.quantity,
+                'quantity_returned': returned_qty,
+                'quantity_remaining': remaining_qty,
+                'unit_price': float(item.unit_price),
+                'total_price': float(item.total_price),
+                'medicine_form': item.medicine_form
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'bill': {
+                'id': str(sale.id),
+                'bill_number': sale.bill_number,
+                'patient_name': sale.patient_name,
+                'patient_ref_no': sale.patient_ref_no or 'N/A',
+                'total_amount': float(sale.total_amount),
+                'discount_amount': float(sale.discount_amount),
+                'final_amount': float(sale.final_amount),
+                'sale_date': sale.sale_date.strftime('%d %b %Y, %I:%M %p'),
+                'is_direct_sale': sale.is_direct_sale
+            },
+            'items': items
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+def process_medicine_return(request):
+    """Process medicine return - restore stock and record return with profit/loss adjustment"""
+    from inventory.models import Product, InventoryTransaction
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST method required'})
+    
+    try:
+        data = json.loads(request.body)
+        customer_name = data.get('customer_name', 'Walk-in Customer')
+        customer_phone = data.get('customer_phone', '')
+        return_reason = data.get('return_reason', 'other')
+        return_reason_detail = data.get('return_reason_detail', '')
+        items_to_return = data.get('items', [])
+        
+        if not items_to_return:
+            return JsonResponse({'success': False, 'error': 'No items to return'})
+        
+        # Create return record
+        return_record = MedicineReturn.objects.create(
+            return_number=MedicineReturn.generate_return_number(),
+            customer_name=customer_name,
+            customer_phone=customer_phone,
+            return_reason=return_reason,
+            return_reason_detail=return_reason_detail,
+            total_refund_amount=Decimal('0')
+        )
+        
+        total_refund = Decimal('0')
+        returned_items = []
+        
+        for item in items_to_return:
+            medicine_id = item.get('medicine_id')
+            medicine_name = item.get('medicine_name', 'Unknown')
+            quantity = int(item.get('quantity', 0))
+            sale_price = Decimal(str(item.get('sale_price', 0)))
+            purchase_price = Decimal(str(item.get('purchase_price', 0)))
+            medicine_form = item.get('medicine_form', 'tablet')
+            
+            if quantity <= 0:
+                continue
+            
+            refund_amount = sale_price * quantity
+            total_refund += refund_amount
+            
+            # Create return item record
+            return_item = MedicineReturnItem.objects.create(
+                return_record=return_record,
+                medicine_id=medicine_id if medicine_id else None,
+                medicine_name=medicine_name,
+                quantity_returned=quantity,
+                unit_price=sale_price,
+                refund_amount=refund_amount,
+                medicine_form=medicine_form,
+                stock_restored=False
+            )
+            
+            # Restore stock and create RETURN transaction
+            if medicine_id:
+                try:
+                    product = Product.objects.get(id=medicine_id)
+                    
+                    # Determine which stock to restore based on medicine form
+                    LIQUID_FORMS = ['syrup', 'drops', 'injection', 'inhaler', 'ointment']
+                    is_liquid = medicine_form in LIQUID_FORMS
+                    
+                    # Create RETURN transaction - this adds stock back AND tracks the return for reports
+                    # Sale price is negative (refund), purchase price stays same (cost)
+                    if is_liquid:
+                        InventoryTransaction.objects.create(
+                            product=product,
+                            transaction_type=InventoryTransaction.RETURN,
+                            quantity_boxes=Decimal('0'),
+                            quantity_items=Decimal(str(quantity)),  # Restore bottles
+                            quantity_subitems=Decimal(str(quantity)),
+                            unit_purchase_price=purchase_price,  # Original cost
+                            unit_sale_price=sale_price,  # Refund amount (for profit adjustment)
+                            notes=f"RETURN: {quantity} bottle(s) - Return #{return_record.return_number} - {return_reason} - Customer: {customer_name}"
+                        )
+                    else:
+                        InventoryTransaction.objects.create(
+                            product=product,
+                            transaction_type=InventoryTransaction.RETURN,
+                            quantity_boxes=Decimal('0'),
+                            quantity_items=Decimal('0'),
+                            quantity_subitems=Decimal(str(quantity)),  # Restore tablets
+                            unit_purchase_price=purchase_price,  # Original cost
+                            unit_sale_price=sale_price,  # Refund amount (for profit adjustment)
+                            notes=f"RETURN: {quantity} tablet(s) - Return #{return_record.return_number} - {return_reason} - Customer: {customer_name}"
+                        )
+                    
+                    return_item.stock_restored = True
+                    return_item.save()
+                    
+                    # Refresh to get updated stock
+                    product.refresh_from_db()
+                    
+                    returned_items.append({
+                        'medicine': medicine_name,
+                        'quantity': quantity,
+                        'refund': float(refund_amount),
+                        'stock_restored': True,
+                        'new_stock': int(product.total_subitems) if not is_liquid else int(product.total_items)
+                    })
+                except Product.DoesNotExist:
+                    returned_items.append({
+                        'medicine': medicine_name,
+                        'quantity': quantity,
+                        'refund': float(refund_amount),
+                        'stock_restored': False,
+                        'note': 'Medicine not found in inventory'
+                    })
+            else:
+                returned_items.append({
+                    'medicine': medicine_name,
+                    'quantity': quantity,
+                    'refund': float(refund_amount),
+                    'stock_restored': False
+                })
+        
+        # Update total refund
+        return_record.total_refund_amount = total_refund
+        return_record.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Return processed successfully',
+            'return_number': return_record.return_number,
+            'total_refund': float(total_refund),
+            'returned_items': returned_items,
+            'return_date': return_record.return_date.strftime('%d %b %Y, %I:%M %p')
+        })
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def get_return_history(request):
+    """Get return history for today or specific date"""
+    date_str = request.GET.get('date')
+    
+    try:
+        if date_str:
+            from datetime import datetime
+            query_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        else:
+            query_date = timezone.now().date()
+        
+        returns = MedicineReturn.objects.filter(
+            return_date__date=query_date
+        ).prefetch_related('items')
+        
+        data = []
+        for ret in returns:
+            items = [{
+                'medicine_name': item.medicine_name,
+                'quantity': item.quantity_returned,
+                'refund': float(item.refund_amount),
+                'stock_restored': item.stock_restored
+            } for item in ret.items.all()]
+            
+            data.append({
+                'return_number': ret.return_number,
+                'original_bill': ret.original_bill_number or 'N/A',
+                'customer_name': ret.customer_name,
+                'return_reason': ret.get_return_reason_display(),
+                'total_refund': float(ret.total_refund_amount),
+                'return_date': ret.return_date.strftime('%d %b %Y, %I:%M %p'),
+                'items': items
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'returns': data,
+            'total_returns': len(data),
+            'total_refund_amount': sum(r['total_refund'] for r in data)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def search_medicine_for_return(request):
+    """Search medicine for return"""
+    query = request.GET.get('q', '').strip()
+    
+    if not query:
+        return JsonResponse({'success': False, 'medicines': []})
+    
+    try:
+        medicines = Product.objects.filter(name__icontains=query)[:15]
+        
+        results = []
+        for med in medicines:
+            # Determine price based on form
+            LIQUID_FORMS = ['syrup', 'drops', 'injection', 'inhaler', 'ointment']
+            if med.medicine_form in LIQUID_FORMS:
+                sale_price = float(med.sale_price_per_item or med.purchase_price_per_item or 0)
+                purchase_price = float(med.purchase_price_per_item or 0)
+                stock = int(med.total_items or 0)
+                unit_label = 'bottle'
+            else:
+                sale_price = float(med.sale_price_per_subitem or med.purchase_price_per_subitem or 0)
+                purchase_price = float(med.purchase_price_per_subitem or 0)
+                stock = int(med.total_subitems or 0)
+                unit_label = 'tablet'
+            
+            results.append({
+                'id': str(med.id),
+                'name': med.name,
+                'medicine_form': med.medicine_form or 'tablet',
+                'unit_price': sale_price,
+                'purchase_price': purchase_price,
+                'stock': stock,
+                'unit_label': unit_label,
+                'category': med.category.name if med.category else 'N/A'
+            })
+        
+        return JsonResponse({'success': True, 'medicines': results})
+    except Exception as e:
+        return JsonResponse({'success': False, 'medicines': [], 'error': str(e)})
 

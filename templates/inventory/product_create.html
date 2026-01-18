@@ -142,13 +142,13 @@
                                 {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label for="{{ form.purchase_margin_percent.id_for_label }}" class="form-label fw-bold">
-                                    {{ form.purchase_margin_percent.label }} <span class="text-danger">*</span>
+                                <label for="{{ form.sale_price.id_for_label }}" class="form-label fw-bold">
+                                    {{ form.sale_price.label }} <span class="text-danger">*</span>
                                 </label>
-                                {{ form.purchase_margin_percent }}
-                                <small class="text-muted d-block">Profit margin percentage</small>
-                                {% if form.purchase_margin_percent.errors %}
-                                    <div class="text-danger small mt-1">{{ form.purchase_margin_percent.errors }}</div>
+                                {{ form.sale_price }}
+                                <small class="text-muted d-block">Total sale price for product</small>
+                                {% if form.sale_price.errors %}
+                                    <div class="text-danger small mt-1">{{ form.sale_price.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const strips = document.getElementById('items_per_product');
     const tablets = document.getElementById('subitems_per_item');
     const purchasePrice = document.getElementById('id_purchase_price');
-    const margin = document.getElementById('id_purchase_margin_percent');
+    const salePrice = document.getElementById('id_sale_price');
     const calculator = document.getElementById('priceCalculator');
     
     // Discount fields
@@ -393,20 +393,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const stripsVal = parseFloat(strips.value) || 1;
         const tabletsVal = parseFloat(tablets.value) || 1;
         const grossPriceVal = parseFloat(purchasePrice.value) || 0;
-        const marginVal = parseFloat(margin.value) || 0;
+        const salePriceVal = parseFloat(salePrice.value) || 0;
         
         // Get net price (after discount)
         const netPriceVal = parseFloat(netPurchasePrice.value) || grossPriceVal;
 
-        if (netPriceVal > 0) {
+        if (netPriceVal > 0 || salePriceVal > 0) {
             const pricePerPack = netPriceVal / packsVal;
             const pricePerStrip = pricePerPack / stripsVal;
             const pricePerTablet = pricePerStrip / tabletsVal;
 
-            const saleMultiplier = 1 + (marginVal / 100);
-            const salePerPack = pricePerPack * saleMultiplier;
-            const salePerStrip = pricePerStrip * saleMultiplier;
-            const salePerTablet = pricePerTablet * saleMultiplier;
+            // Calculate sale prices from direct sale price input
+            const salePerPack = salePriceVal / packsVal;
+            const salePerStrip = salePerPack / stripsVal;
+            const salePerTablet = salePerStrip / tabletsVal;
 
             document.getElementById('purchasePricePerPack').textContent = 'Rs. ' + pricePerPack.toFixed(2);
             document.getElementById('purchasePricePerStrip').textContent = 'Rs. ' + pricePerStrip.toFixed(2);
@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listeners
     medicineForm.addEventListener('change', updateLabels);
-    [packs, strips, tablets, margin].forEach(element => {
+    [packs, strips, tablets, salePrice].forEach(element => {
         element.addEventListener('input', calculatePrices);
     });
     
@@ -499,6 +499,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Discount field listeners
     discountPkr.addEventListener('input', calculateDiscountFromPkr);
     discountPercent.addEventListener('input', calculateDiscountFromPercent);
+
+    // Enter key acts like Tab in form
+    const form = document.getElementById('productForm');
+    form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const focusable = Array.from(form.querySelectorAll('input:not([type="hidden"]):not([readonly]), select, textarea'));
+            const currentIndex = focusable.indexOf(e.target);
+            if (currentIndex > -1 && currentIndex < focusable.length - 1) {
+                focusable[currentIndex + 1].focus();
+            } else if (currentIndex === focusable.length - 1) {
+                // Last field - submit form
+                form.querySelector('button[type="submit"]').click();
+            }
+        }
+    });
 
     // Initialize
     updateLabels();

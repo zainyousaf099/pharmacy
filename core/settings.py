@@ -37,6 +37,18 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']  # Allows all IPs (for local network only)
 # Alternative: ALLOWED_HOSTS = ['192.168.1.*', '192.168.0.*', 'localhost', '127.0.0.1']
 
+# CSRF settings for local network access
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://192.168.1.*:8000',
+    'http://192.168.0.*:8000',
+]
+
+# For simpler local network usage, disable CSRF for API endpoints
+# (only safe for local network usage)
+CSRF_COOKIE_SAMESITE = 'Lax'
+
 
 
 INSTALLED_APPS = [

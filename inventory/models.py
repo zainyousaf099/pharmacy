@@ -363,12 +363,14 @@ class InventoryTransaction(models.Model):
     OUTGOING = 'OUT'
     SALE = 'SALE'
     PURCHASE = 'PUR'
+    RETURN = 'RET'
 
     TRANSACTION_TYPE_CHOICES = [
         (INCOMING, 'Incoming'),
         (OUTGOING, 'Outgoing'),
         (SALE, 'Sale'),
         (PURCHASE, 'Purchase'),
+        (RETURN, 'Return'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -404,7 +406,8 @@ class InventoryTransaction(models.Model):
             self.quantity_items = Decimal('0')
             self.quantity_subitems = Decimal('0')
         else:
-            # incoming/purchase - keep quantities in regular fields, zero out _out fields
+            # incoming/purchase/return - keep quantities in regular fields, zero out _out fields
+            # RETURN adds stock back like INCOMING
             self.quantity_boxes_out = Decimal('0')
             self.quantity_items_out = Decimal('0')
             self.quantity_subitems_out = Decimal('0')

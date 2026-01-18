@@ -159,7 +159,7 @@ function startDjangoServer() {
         if (isDev) {
             // Development mode - use local env
             pythonPath = path.join(__dirname, '..', 'env', 'Scripts', 'python.exe');
-            manageScript = path.join(__dirname, '..', 'manage.py');
+            manageScript = path.join(__dirname, '..', 'start_server.py');
             djangoDir = path.join(__dirname, '..');
         } else {
             // Production mode - packaged app
@@ -175,34 +175,28 @@ function startDjangoServer() {
             
             // Try multiple possible locations for the Django app
             const possiblePaths = [
-                // Option 1: resources/django-app with portable python
-                {
-                    python: path.join(process.resourcesPath, 'django-app', 'python-portable', 'python.exe'),
-                    manage: path.join(process.resourcesPath, 'django-app', 'manage.py'),
-                    dir: path.join(process.resourcesPath, 'django-app')
-                },
-                // Option 2: resources/python-portable (separate folder)
+                // Option 1: resources/python-portable (separate folder) - MOST COMMON
                 {
                     python: path.join(process.resourcesPath, 'python-portable', 'python.exe'),
-                    manage: path.join(process.resourcesPath, 'django-app', 'manage.py'),
+                    manage: path.join(process.resourcesPath, 'django-app', 'start_server.py'),
+                    dir: path.join(process.resourcesPath, 'django-app')
+                },
+                // Option 2: resources/django-app with portable python inside
+                {
+                    python: path.join(process.resourcesPath, 'django-app', 'python-portable', 'python.exe'),
+                    manage: path.join(process.resourcesPath, 'django-app', 'start_server.py'),
                     dir: path.join(process.resourcesPath, 'django-app')
                 },
                 // Option 3: Same directory as exe with portable python
                 {
                     python: path.join(exeDir, 'python-portable', 'python.exe'),
-                    manage: path.join(exeDir, 'manage.py'),
+                    manage: path.join(exeDir, 'start_server.py'),
                     dir: exeDir
                 },
-                // Option 4: resources/django-app with env (fallback for dev)
+                // Option 4: App installation directory (common for NSIS)
                 {
-                    python: path.join(process.resourcesPath, 'django-app', 'env', 'Scripts', 'python.exe'),
-                    manage: path.join(process.resourcesPath, 'django-app', 'manage.py'),
-                    dir: path.join(process.resourcesPath, 'django-app')
-                },
-                // Option 5: App installation directory (common for NSIS)
-                {
-                    python: path.join(exeDir, 'resources', 'django-app', 'python-portable', 'python.exe'),
-                    manage: path.join(exeDir, 'resources', 'django-app', 'manage.py'),
+                    python: path.join(exeDir, 'resources', 'python-portable', 'python.exe'),
+                    manage: path.join(exeDir, 'resources', 'django-app', 'start_server.py'),
                     dir: path.join(exeDir, 'resources', 'django-app')
                 }
             ];

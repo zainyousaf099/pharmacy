@@ -82,7 +82,15 @@
     <h2>Summary</h2>
     <div class="summary">
         <div class="summary-row">
-            <span class="summary-label">Total Sales:</span>
+            <span class="summary-label">Gross Sales:</span>
+            <span>Rs. {{ total_sales_raw|floatformat:2 }}</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Returns:</span>
+            <span>Rs. {{ total_returns|floatformat:2 }} ({{ returns_quantity }} items)</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Net Sales:</span>
             <span>Rs. {{ total_sales|floatformat:2 }}</span>
         </div>
         <div class="summary-row">
@@ -135,6 +143,34 @@
     </table>
     {% else %}
     <p>No sales transactions in this period.</p>
+    {% endif %}
+    
+    {% if all_returns %}
+    <div class="section-divider"></div>
+    
+    <h2>Returns Transactions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Medicine</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Refund Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for return in all_returns %}
+            <tr>
+                <td>{{ return.created_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ return.product.name }}</td>
+                <td>{{ return.quantity_subitems }} items</td>
+                <td>Rs. {{ return.unit_sale_price|floatformat:2 }}</td>
+                <td>Rs. {% widthratio return.quantity_subitems 1 return.unit_sale_price as total %}{{ total|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     {% endif %}
     
     <div class="section-divider"></div>

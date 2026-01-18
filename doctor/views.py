@@ -35,10 +35,10 @@ def doctor_panel(request):
             # Save prescriptions with the same batch_id
             for rx_data in prescriptions_data:
                 medicine_id = rx_data.get('medicine_id')
+                qty = rx_data.get('qty', 1)
+                dosage_form = rx_data.get('dosage_form', 'MG')
+                frequency = rx_data.get('frequency', 'OD')
                 days = rx_data.get('days', 1)
-                morning = rx_data.get('morning', False)
-                evening = rx_data.get('evening', False)
-                night = rx_data.get('night', False)
                 
                 if medicine_id:
                     try:
@@ -47,10 +47,10 @@ def doctor_panel(request):
                             patient=patient,
                             medicine=medicine,
                             batch_id=batch_id,
+                            qty=qty,
+                            dosage_form=dosage_form,
+                            frequency=frequency,
                             days=days,
-                            morning=morning,
-                            evening=evening,
-                            night=night,
                             created_by=request.user if request.user.is_authenticated else None
                         )
                     except Product.DoesNotExist:
@@ -102,6 +102,7 @@ def search_medicines_api(request):
             'name': medicine.name,
             'category': medicine.category.name if medicine.category else '',
             'dosage': medicine.weight_or_quantity or '',
+            'medicine_form': medicine.medicine_form or 'tablet',
             'stock': medicine.total_items
         })
     
@@ -125,22 +126,49 @@ def search_patient(request):
         return JsonResponse({'success': False, 'error': str(e)})
     
     if patient:
-        details = f"""Reference No: {patient.ref_no}
-Name: {patient.name}
-Phone: {patient.phone or 'N/A'}
-Age: {patient.age or 'N/A'}
-Weight: {patient.weight or 'N/A'} kg
-Height: {patient.height or 'N/A'} cm
-Temperature: {patient.temperature or 'N/A'} °C
-Registered: {patient.created_at.strftime('%d %b %Y, %I:%M %p') if patient.created_at else 'N/A'}"""
+        # Get prescription history grouped by batch_id
+        prescriptions = Prescription.objects.filter(patient=patient).order_by('-created_at')
         
+        # Group by batch_id
+        visits = {}
+        for p in prescriptions:
+            batch_key = str(p.batch_id) if p.batch_id else p.created_at.strftime('%Y%m%d%H%M%S')
+            if batch_key not in visits:
+                visits[batch_key] = {
+                    'batch_id': str(p.batch_id) if p.batch_id else None,
+                    'date': p.created_at.strftime('%d %b %Y, %I:%M %p'),
+                    'medicines': []
+                }
+            visits[batch_key]['medicines'].append({
+                'name': p.medicine.name if p.medicine else 'Unknown',
+                'qty': p.qty,
+                'dosage_form': p.dosage_form,
+                'frequency': p.frequency,
+                'days': p.days,
+                'morning': p.morning,
+                'evening': p.evening,
+                'night': p.night
+            })
+        
+        # Convert to list and limit to last 10 visits
+        visit_list = list(visits.values())[:10]
+        
+        # Return structured data for better UI
         return JsonResponse({
             'success': True,
             'patient': {
                 'ref_no': patient.ref_no,
                 'name': patient.name,
-                'details': details
-            }
+                'phone': patient.phone or 'N/A',
+                'age': patient.age or 'N/A',
+                'weight': f"{patient.weight} kg" if patient.weight else 'N/A',
+                'height': f"{patient.height} cm" if patient.height else 'N/A',
+                'temperature': f"{patient.temperature} °C" if patient.temperature else 'N/A',
+                'registered': patient.created_at.strftime('%d %b %Y, %I:%M %p') if patient.created_at else 'N/A',
+                'initials': ''.join([n[0].upper() for n in patient.name.split()[:2]]) if patient.name else 'P'
+            },
+            'prescription_history': visit_list,
+            'total_visits': len(visits)
         })
     else:
         return JsonResponse({'success': False, 'error': 'Patient not found'})
@@ -153,6 +181,16 @@ def print_prescription(request, patient_ref_no):
     # Get batch_id and template_id from query parameters
     batch_id = request.GET.get('batch_id')
     template_id = request.GET.get('template_id')
+    
+    # Get clinical notes from query parameters (for direct input from dashboard)
+    # Use simple keys for Django template compatibility
+    pc = request.GET.get('pc', '')
+    dev = request.GET.get('dev', '')
+    vac = request.GET.get('vac', '')
+    me = request.GET.get('me', '')
+    ia = request.GET.get('ia', '')
+    pd = request.GET.get('pd', '')
+    special_note = request.GET.get('special_note', '')
     
     if batch_id:
         # Show prescriptions from the specified batch
@@ -190,6 +228,13 @@ def print_prescription(request, patient_ref_no):
         'patient': patient,
         'prescriptions': prescriptions,
         'template': template,
+        'pc': pc,
+        'dev': dev,
+        'vac': vac,
+        'me': me,
+        'ia': ia,
+        'pd': pd,
+        'special_note': special_note,
         'date': timezone.now().strftime('%d %b %Y'),
         'time': timezone.now().strftime('%I:%M %p')
     }
@@ -248,10 +293,10 @@ def template_create(request):
                         PrescriptionTemplateMedicine.objects.create(
                             template=template,
                             medicine=medicine,
+                            qty=med_data.get('qty', 1),
+                            dosage_form=med_data.get('dosage_form', 'MG'),
                             days=med_data.get('days', 1),
-                            morning=med_data.get('morning', False),
-                            evening=med_data.get('evening', False),
-                            night=med_data.get('night', False),
+                            frequency=med_data.get('frequency', 'OD'),
                             notes=med_data.get('notes', ''),
                             order=idx + 1
                         )
@@ -311,10 +356,10 @@ def template_add_medicine(request, template_id):
             PrescriptionTemplateMedicine.objects.create(
                 template=template,
                 medicine=medicine,
+                qty=data.get('qty', 1),
+                dosage_form=data.get('dosage_form', 'MG'),
                 days=data.get('days', 1),
-                morning=data.get('morning', False),
-                evening=data.get('evening', False),
-                night=data.get('night', False),
+                frequency=data.get('frequency', 'OD'),
                 notes=data.get('notes', ''),
                 order=max_order + 1
             )
@@ -377,10 +422,10 @@ def get_template_medicines_api(request, template_id):
             results.append({
                 'medicine_id': str(med.medicine.id),
                 'medicine_name': med.medicine.name,
+                'qty': med.qty,
+                'dosage_form': med.dosage_form,
+                'frequency': med.frequency,
                 'days': med.days,
-                'morning': med.morning,
-                'evening': med.evening,
-                'night': med.night,
                 'notes': med.notes,
                 'category': med.medicine.category.name if med.medicine.category else '',
                 'dosage': med.medicine.weight_or_quantity or '',
@@ -578,6 +623,69 @@ def patient_statistics_api(request):
             'patients': patients_list,
         })
         
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def patient_detail_api(request, ref_no):
+    """API endpoint to get full patient details and all prescriptions history"""
+    try:
+        patient = Patient.objects.get(ref_no=ref_no)
+        
+        # Get all prescriptions for this patient grouped by batch_id
+        all_prescriptions = Prescription.objects.filter(
+            patient=patient
+        ).select_related('medicine').order_by('-created_at')
+        
+        # Group prescriptions by batch_id (visit/session)
+        visits = {}
+        for presc in all_prescriptions:
+            batch_key = str(presc.batch_id) if presc.batch_id else f"single_{presc.id}"
+            if batch_key not in visits:
+                visits[batch_key] = {
+                    'batch_id': str(presc.batch_id) if presc.batch_id else None,
+                    'date': presc.created_at.strftime('%d %b %Y'),
+                    'time': presc.created_at.strftime('%I:%M %p'),
+                    'created_at': presc.created_at.isoformat(),
+                    'medicines': []
+                }
+            
+            visits[batch_key]['medicines'].append({
+                'id': str(presc.id),
+                'medicine_name': presc.medicine.name if presc.medicine else 'Unknown',
+                'medicine_form': presc.medicine.medicine_form if presc.medicine else 'tablet',
+                'qty': presc.qty,
+                'dosage_form': presc.dosage_form,
+                'frequency': presc.frequency,
+                'days': presc.days,
+            })
+        
+        # Convert to list and sort by date (newest first)
+        visits_list = list(visits.values())
+        visits_list.sort(key=lambda x: x['created_at'], reverse=True)
+        
+        # Patient details
+        patient_data = {
+            'ref_no': patient.ref_no,
+            'name': patient.name,
+            'phone': patient.phone or 'N/A',
+            'age': patient.age or 'N/A',
+            'weight': f"{patient.weight} kg" if patient.weight else 'N/A',
+            'height': f"{patient.height} cm" if patient.height else 'N/A',
+            'temperature': f"{patient.temperature} °C" if patient.temperature else 'N/A',
+            'registered': patient.created_at.strftime('%d %b %Y, %I:%M %p') if patient.created_at else 'N/A',
+            'total_visits': len(visits_list),
+            'total_prescriptions': all_prescriptions.count(),
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'patient': patient_data,
+            'visits': visits_list,
+        })
+        
+    except Patient.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Patient not found'})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
