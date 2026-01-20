@@ -70,7 +70,7 @@
                                 <select name="distributor_ref" id="id_distributor_ref" class="form-select" onchange="toggleNewDistributor()">
                                     <option value="">-- Select Existing --</option>
                                     {% for dist in distributors %}
-                                    <option value="{{ dist.pk }}">{{ dist.name }}</option>
+                                    <option value="{{ dist.pk }}" {% if product and product.distributor_ref and product.distributor_ref.pk == dist.pk %}selected{% endif %}>{{ dist.name }}</option>
                                     {% endfor %}
                                     <option value="__new__">➕ Add New Distributor...</option>
                                 </select>

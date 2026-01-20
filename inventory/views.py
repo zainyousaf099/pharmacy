@@ -70,8 +70,10 @@ def product_create(request):
         if form.is_valid():
             product = form.save(commit=False)
             
-            # Handle new distributor creation
+            # Handle distributor selection
+            distributor_ref_id = request.POST.get('distributor_ref', '').strip()
             new_distributor_name = request.POST.get('new_distributor', '').strip()
+            
             if new_distributor_name:
                 # Create new distributor if name provided
                 distributor, created = Distributor.objects.get_or_create(
@@ -80,15 +82,27 @@ def product_create(request):
                 )
                 product.distributor_ref = distributor
                 product.distributor = new_distributor_name  # Keep legacy field updated
-            elif product.distributor_ref:
-                # Update legacy distributor field from selected distributor
-                product.distributor = product.distributor_ref.name
+            elif distributor_ref_id and distributor_ref_id != '__new__':
+                # Use selected existing distributor
+                try:
+                    distributor = Distributor.objects.get(pk=distributor_ref_id)
+                    product.distributor_ref = distributor
+                    product.distributor = distributor.name
+                except Distributor.DoesNotExist:
+                    pass
             
             # ensure required numeric defaults
             if product.products_in_box < 1: product.products_in_box = 1
             if product.items_per_product < 1: product.items_per_product = 1
             if product.subitems_per_item < 1: product.subitems_per_item = 1
             product.save()
+            
+            # Update distributor's total_purchases with the initial stock value
+            if product.distributor_ref and product.products_in_box > 0:
+                purchase_amount = product.net_purchase_price * product.products_in_box
+                product.distributor_ref.total_purchases += purchase_amount
+                product.distributor_ref.save(update_fields=['total_purchases'])
+            
             messages.success(request, f"Product '{product.name}' created successfully! Price per Pack: Rs. {float(product.net_purchase_price):.2f}, per Strip: Rs. {float(product.purchase_price_per_item):.2f}, per Tablet: Rs. {float(product.purchase_price_per_subitem):.2f}")
             return redirect("inventory:product_list")
     else:
@@ -953,6 +967,32 @@ def product_update(request, pk):
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
             updated_product = form.save(commit=False)
+            
+            # Handle distributor selection
+            distributor_ref_id = request.POST.get('distributor_ref', '').strip()
+            new_distributor_name = request.POST.get('new_distributor', '').strip()
+            
+            if new_distributor_name:
+                # Create new distributor if name provided
+                distributor, created = Distributor.objects.get_or_create(
+                    name__iexact=new_distributor_name,
+                    defaults={'name': new_distributor_name}
+                )
+                updated_product.distributor_ref = distributor
+                updated_product.distributor = new_distributor_name
+            elif distributor_ref_id and distributor_ref_id != '__new__':
+                # Use selected existing distributor
+                try:
+                    distributor = Distributor.objects.get(pk=distributor_ref_id)
+                    updated_product.distributor_ref = distributor
+                    updated_product.distributor = distributor.name
+                except Distributor.DoesNotExist:
+                    pass
+            elif distributor_ref_id == '':
+                # Clear distributor if none selected
+                updated_product.distributor_ref = None
+                updated_product.distributor = ''
+            
             # ensure required numeric defaults
             if updated_product.products_in_box < 1: updated_product.products_in_box = 1
             if updated_product.items_per_product < 1: updated_product.items_per_product = 1
@@ -963,10 +1003,12 @@ def product_update(request, pk):
     else:
         form = ProductForm(instance=product)
     
+    distributors = Distributor.objects.all()
     context = {
         "form": form,
         "product": product,
         "is_update": True,
+        "distributors": distributors,
     }
     return render(request, "inventory/product_create.html", context)
 

@@ -185,6 +185,35 @@
                             <div class="fw-bold">{{ product.inventory_receipt_date|date:"M d, Y" }}</div>
                         </div>
                     </div>
+                    
+                    <!-- Distributor Info -->
+                    <div class="row mt-3 pt-3 border-top">
+                        <div class="col-md-4">
+                            <label class="text-muted small"><i class="fas fa-truck me-1"></i>Distributor/Supplier</label>
+                            {% if product.distributor_ref %}
+                            <div class="fw-bold">
+                                <a href="{% url 'inventory:distributor_detail' product.distributor_ref.pk %}" class="text-decoration-none">
+                                    {{ product.distributor_ref.name }}
+                                </a>
+                                {% if product.distributor_ref.balance_due > 0 %}
+                                <span class="badge bg-danger ms-2">Due: Rs. {{ product.distributor_ref.balance_due }}</span>
+                                {% endif %}
+                            </div>
+                            {% elif product.distributor %}
+                            <div class="fw-bold">{{ product.distributor }}</div>
+                            {% else %}
+                            <div class="text-muted">Not Assigned</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small"><i class="fas fa-pills me-1"></i>Medicine Form</label>
+                            <div class="fw-bold">{{ product.medicine_form|title|default:"—" }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small"><i class="fas fa-bookmark me-1"></i>Category</label>
+                            <div class="fw-bold">{{ product.category|default:"—" }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
