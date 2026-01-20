@@ -63,7 +63,7 @@
                 </div>
                 <div class="col">
                     <h4 class="mb-1"><i class="fas fa-calendar-check me-2"></i>Today's Cash Balance - {{ today|date:"d M Y" }}</h4>
-                    <p class="mb-0 opacity-75">End of day cash should match this amount</p>
+                    <p class="mb-0 opacity-75">Net Cash = Sales - Returns - Expenses</p>
                 </div>
                 <div class="col-auto text-end">
                     <div class="d-flex gap-4 align-items-center">
@@ -75,9 +75,13 @@
                             <small class="d-block text-warning">Returns</small>
                             <h4 class="mb-0 text-warning">- Rs. {{ total_returns|floatformat:0 }}</h4>
                         </div>
+                        <div class="text-center px-3 border-end border-secondary">
+                            <small class="d-block text-danger">Expenses</small>
+                            <h4 class="mb-0 text-danger">- Rs. {{ total_expenses|floatformat:0 }}</h4>
+                        </div>
                         <div class="text-center px-3">
                             <small class="d-block text-info">Net Cash In Hand</small>
-                            <h2 class="mb-0 text-info fw-bold">Rs. {{ total_sales|floatformat:0 }}</h2>
+                            <h2 class="mb-0 {% if net_cash_in_hand >= 0 %}text-info{% else %}text-danger{% endif %} fw-bold">Rs. {{ net_cash_in_hand|floatformat:0 }}</h2>
                         </div>
                     </div>
                 </div>
@@ -97,18 +101,20 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card border-0 shadow-sm bg-danger text-white">
                 <div class="card-body">
-                    <h6 class="opacity-75">Net Items Sold</h6>
-                    <h2 class="mb-0">{{ total_items_sold|floatformat:0 }}</h2>
+                    <h6 class="opacity-75">Total Expenses</h6>
+                    <h2 class="mb-0">Rs. {{ total_expenses|floatformat:0 }}</h2>
+                    <small class="opacity-75">{{ expense_count }} expense(s)</small>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="card border-0 shadow-sm bg-info text-white">
                 <div class="card-body">
-                    <h6 class="opacity-75">Transactions</h6>
-                    <h2 class="mb-0">{{ total_transactions }}</h2>
+                    <h6 class="opacity-75">Net Cash In Hand</h6>
+                    <h2 class="mb-0">Rs. {{ net_cash_in_hand|floatformat:0 }}</h2>
+                    <small class="opacity-75">Sales - Returns - Expenses</small>
                 </div>
             </div>
         </div>
@@ -122,22 +128,82 @@
         </div>
     </div>
 
-    <!-- Returns Summary -->
-    {% if total_return_transactions > 0 %}
+    <!-- Secondary Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-primary border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Net Items Sold</h6>
+                    <h3 class="text-primary mb-0">{{ total_items_sold|floatformat:0 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-success border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Transactions</h6>
+                    <h3 class="text-success mb-0">{{ total_transactions }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-warning border-4">
+                <div class="card-body">
+                    <h6 class="text-muted">Returns</h6>
+                    <h3 class="text-warning mb-0">{{ total_return_transactions }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expenses Breakdown -->
+    {% if expense_breakdown %}
     <div class="row g-4 mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm border-start border-danger border-4">
                 <div class="card-body py-3">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <i class="fas fa-undo-alt fa-2x text-danger"></i>
+                            <i class="fas fa-receipt fa-2x text-danger"></i>
+                        </div>
+                        <div class="col">
+                            <h6 class="mb-0 text-muted">Expenses Breakdown</h6>
+                            <div class="d-flex flex-wrap gap-3 mt-2">
+                                {% for expense in expense_breakdown %}
+                                <span class="badge bg-light text-dark border px-3 py-2">
+                                    <i class="fas fa-tag me-1 text-danger"></i>{{ expense.category }}: <strong>Rs. {{ expense.total|floatformat:0 }}</strong> ({{ expense.count }})
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <a href="{% url 'inventory:expense_list' %}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-list me-1"></i>View All Expenses
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Returns Summary -->
+    {% if total_return_transactions > 0 %}
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm border-start border-warning border-4">
+                <div class="card-body py-3">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-undo-alt fa-2x text-warning"></i>
                         </div>
                         <div class="col">
                             <h6 class="mb-0 text-muted">Returns Summary</h6>
                             <div class="d-flex gap-4 mt-1">
-                                <span><strong class="text-danger">{{ total_return_transactions }}</strong> Returns</span>
-                                <span><strong class="text-danger">{{ total_items_returned|floatformat:0 }}</strong> Items Returned</span>
-                                <span>Refund Amount: <strong class="text-danger">Rs. {{ total_returns|floatformat:0 }}</strong></span>
+                                <span><strong class="text-warning">{{ total_return_transactions }}</strong> Returns</span>
+                                <span><strong class="text-warning">{{ total_items_returned|floatformat:0 }}</strong> Items Returned</span>
+                                <span>Refund Amount: <strong class="text-warning">Rs. {{ total_returns|floatformat:0 }}</strong></span>
                             </div>
                         </div>
                     </div>
@@ -232,6 +298,53 @@
             </div>
         </div>
     </div>
+
+    <!-- Batch Sales Breakdown -->
+    {% if batch_sales_breakdown %}
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-layer-group me-2"></i>Batch-wise Sales (Top 20)</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Batch No.</th>
+                            <th>Expiry</th>
+                            <th>Qty Sold</th>
+                            <th>Revenue</th>
+                            <th>Profit</th>
+                            <th>Margin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in batch_sales_breakdown %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ item.product_name }}</td>
+                            <td><span class="badge bg-secondary">{{ item.batch_no|default:"N/A" }}</span></td>
+                            <td>{{ item.expiry_date|date:"M Y"|default:"-" }}</td>
+                            <td>{{ item.qty_sold|floatformat:0 }}</td>
+                            <td class="text-success">Rs. {{ item.revenue|floatformat:0 }}</td>
+                            <td class="fw-bold {% if item.profit > 0 %}text-success{% else %}text-danger{% endif %}">
+                                Rs. {{ item.profit|floatformat:0 }}
+                            </td>
+                            <td>
+                                <span class="badge {% if item.margin > 20 %}bg-success{% elif item.margin > 10 %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ item.margin|floatformat:1 }}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Complete Sales Breakdown -->
     <div class="card border-0 shadow-sm mt-4">

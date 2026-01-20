@@ -13,8 +13,8 @@ import csv
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
-from .models import Product, InventoryTransaction, ProductCategory, Expense
-from .forms import ProductForm, PurchaseForm, SaleForm, ExpenseForm
+from .models import Product, InventoryTransaction, ProductCategory, Expense, ProductBatch, Distributor, DistributorPayment, DistributorPurchase
+from .forms import ProductForm, PurchaseForm, SaleForm, ExpenseForm, ProductBatchForm, DistributorForm, DistributorPaymentForm, DistributorPurchaseForm
 
 def dashboard(request):
     """Dashboard showing inventory summary"""
@@ -69,21 +69,45 @@ def product_create(request):
         form = ProductForm(request.POST)
         if form.is_valid():
             product = form.save(commit=False)
+            
+            # Handle new distributor creation
+            new_distributor_name = request.POST.get('new_distributor', '').strip()
+            if new_distributor_name:
+                # Create new distributor if name provided
+                distributor, created = Distributor.objects.get_or_create(
+                    name__iexact=new_distributor_name,
+                    defaults={'name': new_distributor_name}
+                )
+                product.distributor_ref = distributor
+                product.distributor = new_distributor_name  # Keep legacy field updated
+            elif product.distributor_ref:
+                # Update legacy distributor field from selected distributor
+                product.distributor = product.distributor_ref.name
+            
             # ensure required numeric defaults
             if product.products_in_box < 1: product.products_in_box = 1
             if product.items_per_product < 1: product.items_per_product = 1
             if product.subitems_per_item < 1: product.subitems_per_item = 1
             product.save()
-            messages.success(request, f"Product '{product.name}' created successfully! Purchase Price per Pack: Rs. {float(product.purchase_price / product.products_in_box):.2f}, per Item: Rs. {float(product.purchase_price_per_item):.2f}, per Tablet: Rs. {float(product.purchase_price_per_subitem):.2f}")
+            messages.success(request, f"Product '{product.name}' created successfully! Price per Pack: Rs. {float(product.net_purchase_price):.2f}, per Strip: Rs. {float(product.purchase_price_per_item):.2f}, per Tablet: Rs. {float(product.purchase_price_per_subitem):.2f}")
             return redirect("inventory:product_list")
     else:
         form = ProductForm()
-    return render(request, "inventory/product_create.html", {"form": form})
+    
+    distributors = Distributor.objects.all()
+    return render(request, "inventory/product_create.html", {"form": form, "distributors": distributors})
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     transactions = product.transactions.all().order_by('-created_at')[:50]
-    return render(request, "inventory/product_detail.html", {"product": product, "transactions": transactions})
+    batches = product.batches.filter(is_active=True).order_by('expiry_date')
+    all_batches = product.batches.all().order_by('expiry_date')
+    return render(request, "inventory/product_detail.html", {
+        "product": product, 
+        "transactions": transactions,
+        "batches": batches,
+        "all_batches": all_batches
+    })
 
 def add_purchase(request, pk):
     """
@@ -99,15 +123,15 @@ def add_purchase(request, pk):
             txn = form.save(commit=False)
             txn.product = product
             txn.transaction_type = InventoryTransaction.PURCHASE
-            # If user didn't set unit_purchase_price on form, take product.purchase_price as fallback
+            # If user didn't set unit_purchase_price on form, use product's net_purchase_price (per pack)
             if not txn.unit_purchase_price or txn.unit_purchase_price == Decimal('0'):
-                txn.unit_purchase_price = product.purchase_price / product.products_in_box
+                txn.unit_purchase_price = product.net_purchase_price
             txn.save()
             messages.success(request, "Purchase recorded and stock updated successfully!")
             return redirect("inventory:product_detail", pk=product.pk)
     else:
         initial = {
-            "unit_purchase_price": product.purchase_price / product.products_in_box
+            "unit_purchase_price": product.net_purchase_price  # Price is already per pack
         }
         form = PurchaseForm(initial=initial)
 
@@ -122,24 +146,66 @@ def add_purchase(request, pk):
 
 
 def add_sale(request, pk):
-    """Record a sale transaction"""
+    """Record a sale transaction with batch selection (FEFO)"""
     product = get_object_or_404(Product, pk=pk)
+    
+    # Get available batches ordered by expiry (FEFO)
+    available_batches = ProductBatch.objects.filter(
+        product=product,
+        is_active=True,
+        current_subitems__gt=0
+    ).order_by('expiry_date', 'created_at')
 
     if request.method == "POST":
         form = SaleForm(request.POST)
+        batch_id = request.POST.get('batch_id')
+        
         if form.is_valid():
             txn = form.save(commit=False)
             txn.product = product
             txn.transaction_type = InventoryTransaction.SALE
-            # If user didn't set unit_sale_price, use product's sale price
-            if not txn.unit_sale_price or txn.unit_sale_price == Decimal('0'):
-                txn.unit_sale_price = product.sale_price / product.products_in_box if product.sale_price else Decimal('0')
+            
+            # Get selected batch if specified
+            selected_batch = None
+            if batch_id:
+                try:
+                    selected_batch = ProductBatch.objects.get(pk=batch_id, product=product)
+                    txn.batch = selected_batch
+                    # Use batch's sale price if available
+                    if not txn.unit_sale_price or txn.unit_sale_price == Decimal('0'):
+                        txn.unit_sale_price = selected_batch.sale_price_per_pack or product.sale_price or Decimal('0')
+                except ProductBatch.DoesNotExist:
+                    pass
+            else:
+                # Auto-select earliest expiry batch (FEFO)
+                if available_batches.exists():
+                    selected_batch = available_batches.first()
+                    txn.batch = selected_batch
+                    if not txn.unit_sale_price or txn.unit_sale_price == Decimal('0'):
+                        txn.unit_sale_price = selected_batch.sale_price_per_pack or product.sale_price or Decimal('0')
+                elif not txn.unit_sale_price or txn.unit_sale_price == Decimal('0'):
+                    txn.unit_sale_price = product.sale_price if product.sale_price else Decimal('0')
+            
             txn.save()
-            messages.success(request, "Sale recorded successfully!")
+            
+            # Update batch stock if batch was selected
+            if selected_batch:
+                selected_batch.update_stock()
+            
+            batch_info = f" from Batch: {selected_batch.batch_no or 'N/A'}" if selected_batch else ""
+            messages.success(request, f"Sale recorded successfully{batch_info}!")
             return redirect("inventory:product_detail", pk=product.pk)
     else:
+        # Pre-select earliest expiry batch price
+        initial_price = product.sale_price or Decimal('0')
+        suggested_batch = None
+        if available_batches.exists():
+            suggested_batch = available_batches.first()
+            if suggested_batch.sale_price_per_pack:
+                initial_price = suggested_batch.sale_price_per_pack
+        
         initial = {
-            "unit_sale_price": product.sale_price / product.products_in_box if product.sale_price else Decimal('0')
+            "unit_sale_price": initial_price
         }
         form = SaleForm(initial=initial)
 
@@ -148,8 +214,98 @@ def add_sale(request, pk):
         "form": form,
         "items_per_product": product.items_per_product,
         "subitems_per_item": product.subitems_per_item,
+        "available_batches": available_batches,
+        "suggested_batch": available_batches.first() if available_batches.exists() else None,
     }
     return render(request, "inventory/add_sale.html", context)
+
+
+def add_batch(request, pk):
+    """Add a new batch to an existing product"""
+    product = get_object_or_404(Product, pk=pk)
+    
+    if request.method == "POST":
+        form = ProductBatchForm(request.POST)
+        if form.is_valid():
+            batch = form.save(commit=False)
+            batch.product = product
+            
+            # Handle new distributor creation
+            new_distributor_name = request.POST.get('new_distributor', '').strip()
+            if new_distributor_name:
+                distributor, created = Distributor.objects.get_or_create(
+                    name__iexact=new_distributor_name,
+                    defaults={'name': new_distributor_name}
+                )
+                batch.distributor = distributor
+            
+            # Copy sale price from product if not provided
+            if not batch.sale_price_per_pack:
+                batch.sale_price_per_pack = product.sale_price
+            batch.save()
+            
+            # Update distributor's total_purchases
+            if batch.distributor:
+                purchase_amount = batch.net_purchase_price_per_pack * batch.quantity_packs
+                batch.distributor.total_purchases += purchase_amount
+                batch.distributor.save(update_fields=['total_purchases'])
+            
+            messages.success(request, f"New batch added for '{product.name}'! Batch: {batch.batch_no or 'N/A'}, Expiry: {batch.expiry_date or 'N/A'}")
+            return redirect("inventory:product_detail", pk=product.pk)
+    else:
+        # Pre-fill with product's current prices and distributor
+        initial = {
+            "purchase_price_per_pack": product.purchase_price,
+            "sale_price_per_pack": product.sale_price,
+            "received_date": timezone.now().date(),
+            "distributor": product.distributor_ref,  # Default to product's distributor
+        }
+        form = ProductBatchForm(initial=initial)
+    
+    distributors = Distributor.objects.all()
+    context = {
+        "product": product,
+        "form": form,
+        "distributors": distributors,
+    }
+    return render(request, "inventory/add_batch.html", context)
+
+
+def batch_list(request):
+    """List all batches, with filtering options"""
+    batches = ProductBatch.objects.select_related('product').order_by('expiry_date')
+    
+    # Filter by status
+    status = request.GET.get('status', 'active')
+    if status == 'active':
+        batches = batches.filter(is_active=True)
+    elif status == 'expired':
+        batches = batches.filter(expiry_date__lt=timezone.now().date())
+    elif status == 'expiring':
+        three_months = timezone.now().date() + timedelta(days=90)
+        batches = batches.filter(
+            expiry_date__isnull=False,
+            expiry_date__gte=timezone.now().date(),
+            expiry_date__lte=three_months
+        )
+    
+    context = {
+        "batches": batches,
+        "status": status,
+    }
+    return render(request, "inventory/batch_list.html", context)
+
+
+def batch_detail(request, pk):
+    """View batch details and transactions"""
+    batch = get_object_or_404(ProductBatch, pk=pk)
+    transactions = batch.transactions.all().order_by('-created_at')
+    
+    context = {
+        "batch": batch,
+        "transactions": transactions,
+    }
+    return render(request, "inventory/batch_detail.html", context)
 
 
 def reports(request):
@@ -366,14 +522,179 @@ def expense_create(request):
     return render(request, "inventory/expense_create.html", {"form": form})
 
 
+# ==================== DISTRIBUTOR VIEWS ====================
+
+def distributor_list(request):
+    """List all distributors with their balances"""
+    distributors = Distributor.objects.all().order_by('name')
+    
+    # Calculate totals
+    total_purchases = distributors.aggregate(total=Sum('total_purchases'))['total'] or Decimal('0')
+    total_paid = distributors.aggregate(total=Sum('total_paid'))['total'] or Decimal('0')
+    total_due = total_purchases - total_paid
+    
+    # Filter by status
+    status = request.GET.get('status', 'all')
+    if status == 'due':
+        distributors = [d for d in distributors if d.balance_due > 0]
+    elif status == 'paid':
+        distributors = [d for d in distributors if d.balance_due <= 0]
+    
+    context = {
+        'distributors': distributors,
+        'total_purchases': total_purchases,
+        'total_paid': total_paid,
+        'total_due': total_due,
+        'status_filter': status,
+    }
+    return render(request, "inventory/distributor_list.html", context)
+
+
+def distributor_create(request):
+    """Create a new distributor"""
+    if request.method == "POST":
+        form = DistributorForm(request.POST)
+        if form.is_valid():
+            distributor = form.save()
+            messages.success(request, f"Distributor '{distributor.name}' created successfully!")
+            return redirect("inventory:distributor_list")
+    else:
+        form = DistributorForm()
+    
+    return render(request, "inventory/distributor_form.html", {"form": form, "title": "Add New Distributor"})
+
+
+def distributor_detail(request, pk):
+    """View distributor details, purchases, and payments"""
+    distributor = get_object_or_404(Distributor, pk=pk)
+    
+    # Get purchases from this distributor (via batches)
+    batches = ProductBatch.objects.filter(distributor=distributor).select_related('product').order_by('-received_date')
+    
+    # Get payments to this distributor
+    payments = DistributorPayment.objects.filter(distributor=distributor).order_by('-payment_date')
+    
+    # Get purchase invoices
+    purchases = DistributorPurchase.objects.filter(distributor=distributor).order_by('-invoice_date')
+    
+    # Products from this distributor
+    products = Product.objects.filter(distributor_ref=distributor)
+    
+    context = {
+        'distributor': distributor,
+        'batches': batches[:20],
+        'payments': payments[:20],
+        'purchases': purchases[:20],
+        'products': products,
+    }
+    return render(request, "inventory/distributor_detail.html", context)
+
+
+def distributor_edit(request, pk):
+    """Edit a distributor"""
+    distributor = get_object_or_404(Distributor, pk=pk)
+    
+    if request.method == "POST":
+        form = DistributorForm(request.POST, instance=distributor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Distributor '{distributor.name}' updated successfully!")
+            return redirect("inventory:distributor_detail", pk=pk)
+    else:
+        form = DistributorForm(instance=distributor)
+    
+    return render(request, "inventory/distributor_form.html", {"form": form, "title": "Edit Distributor", "distributor": distributor})
+
+
+def distributor_add_payment(request, pk):
+    """Add a payment to a distributor"""
+    distributor = get_object_or_404(Distributor, pk=pk)
+    
+    if request.method == "POST":
+        form = DistributorPaymentForm(request.POST)
+        if form.is_valid():
+            payment = form.save(commit=False)
+            payment.distributor = distributor
+            payment.save()
+            messages.success(request, f"Payment of Rs. {payment.amount} recorded for '{distributor.name}'!")
+            return redirect("inventory:distributor_detail", pk=pk)
+    else:
+        form = DistributorPaymentForm(initial={
+            'distributor': distributor,
+            'payment_date': timezone.now().date()
+        })
+    
+    context = {
+        'form': form,
+        'distributor': distributor,
+    }
+    return render(request, "inventory/distributor_add_payment.html", context)
+
+
+def distributor_add_purchase(request, pk):
+    """Add a purchase invoice from a distributor"""
+    distributor = get_object_or_404(Distributor, pk=pk)
+    
+    if request.method == "POST":
+        form = DistributorPurchaseForm(request.POST)
+        if form.is_valid():
+            purchase = form.save(commit=False)
+            purchase.distributor = distributor
+            purchase.save()
+            messages.success(request, f"Purchase invoice Rs. {purchase.net_amount} recorded for '{distributor.name}'!")
+            return redirect("inventory:distributor_detail", pk=pk)
+    else:
+        form = DistributorPurchaseForm(initial={
+            'distributor': distributor,
+            'invoice_date': timezone.now().date()
+        })
+    
+    context = {
+        'form': form,
+        'distributor': distributor,
+    }
+    return render(request, "inventory/distributor_add_purchase.html", context)
+
+
+def distributor_api(request):
+    """API to get distributors for AJAX"""
+    distributors = Distributor.objects.all().values('id', 'name', 'phone', 'balance_due')
+    return JsonResponse(list(distributors), safe=False)
+
+
+def distributor_dues_report(request):
+    """Report showing all distributor dues"""
+    distributors = Distributor.objects.all().order_by('name')
+    
+    # Get distributors with dues
+    distributors_with_dues = [d for d in distributors if d.balance_due > 0]
+    
+    # Calculate totals
+    total_due = sum(d.balance_due for d in distributors_with_dues)
+    
+    # Recent payments
+    recent_payments = DistributorPayment.objects.all().order_by('-payment_date')[:20]
+    
+    context = {
+        'distributors': distributors_with_dues,
+        'total_due': total_due,
+        'recent_payments': recent_payments,
+    }
+    return render(request, "inventory/distributor_dues_report.html", context)
+
+
 def expense_reports(request):
-    """Expense Reports - Weekly, Monthly, and Yearly"""
+    """Expense Reports - Daily, Weekly, Monthly, and Yearly"""
     # Get date filter from request
-    period = request.GET.get('period', 'month')  # week, month, year
+    period = request.GET.get('period', 'day')  # day, week, month, year
     
     today = timezone.now()
     
-    if period == 'week':
+    if period == 'day':
+        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = today.replace(hour=23, minute=59, second=59)
+        title = "Daily Expense Report"
+    elif period == 'week':
         start_date = today - timedelta(days=today.weekday())  # Start of week (Monday)
         end_date = start_date + timedelta(days=7)
         title = "Weekly Expense Report"
@@ -381,7 +702,7 @@ def expense_reports(request):
         start_date = datetime(today.year, 1, 1)
         end_date = datetime(today.year, 12, 31, 23, 59, 59)
         title = "Yearly Expense Report"
-    else:  # month (default)
+    else:  # month
         start_date = datetime(today.year, today.month, 1)
         last_day = calendar.monthrange(today.year, today.month)[1]
         end_date = datetime(today.year, today.month, last_day, 23, 59, 59)
@@ -434,6 +755,11 @@ def expense_reports(request):
             daily_count=Count('id')
         ).order_by('expense_date')
     
+    # For daily view, get hourly breakdown (by expense entry time)
+    hourly_expenses = []
+    if period == 'day':
+        hourly_expenses = recent_expenses  # Show all today's expenses in detail
+    
     context = {
         'period': period,
         'title': title,
@@ -446,6 +772,8 @@ def expense_reports(request):
         'recent_expenses': recent_expenses,
         'top_expenses': top_expenses,
         'daily_expenses': daily_expenses,
+        'hourly_expenses': hourly_expenses,
+        'today': today,
     }
     
     return render(request, "inventory/expense_reports.html", context)
@@ -1111,7 +1439,7 @@ def medicine_report_pdf(request, pk):
 
 
 def stock_report(request):
-    """Complete stock report - all medicines with stock levels"""
+    """Complete stock report - all medicines with stock levels and batch breakdown"""
     products = Product.objects.all().order_by('name')
     
     # Calculate total stock value
@@ -1127,6 +1455,19 @@ def stock_report(request):
             total_sale_value += Decimal(stock_boxes) * Decimal(product.sale_price or 0)
         else:
             product.stock_value = Decimal('0')
+        
+        # Add batch information
+        product.active_batches = product.batches.filter(is_active=True, current_subitems__gt=0).order_by('expiry_date')
+        product.batch_count = product.active_batches.count()
+    
+    # Get batch-level totals
+    all_batches = ProductBatch.objects.filter(is_active=True).select_related('product')
+    batch_purchase_value = sum(
+        (b.current_packs * b.net_purchase_price_per_pack) for b in all_batches
+    )
+    batch_sale_value = sum(
+        (b.current_packs * (b.sale_price_per_pack or b.product.sale_price or Decimal('0'))) for b in all_batches
+    )
     
     context = {
         'products': products,
@@ -1134,6 +1475,10 @@ def stock_report(request):
         'total_purchase_value': total_purchase_value,
         'total_sale_value': total_sale_value,
         'potential_profit': total_sale_value - total_purchase_value,
+        'batch_purchase_value': batch_purchase_value,
+        'batch_sale_value': batch_sale_value,
+        'batch_potential_profit': batch_sale_value - batch_purchase_value,
+        'total_batches': all_batches.count(),
         'report_date': timezone.now(),
     }
     return render(request, "inventory/stock_report.html", context)
@@ -1221,33 +1566,67 @@ def low_stock_report_pdf(request):
 
 
 def expiry_report(request):
-    """Report for expiring/expired medicines"""
+    """Report for expiring/expired medicines - now includes batch-level tracking"""
     today = timezone.now().date()
     
-    # Expired
+    # === BATCH-BASED EXPIRY TRACKING ===
+    # Expired batches
+    expired_batches = ProductBatch.objects.filter(
+        expiry_date__isnull=False,
+        expiry_date__lt=today,
+        is_active=True
+    ).select_related('product').order_by('expiry_date')
+    
+    # Expiring within 30 days
+    thirty_days = today + timedelta(days=30)
+    expiring_30_batches = ProductBatch.objects.filter(
+        expiry_date__isnull=False,
+        expiry_date__gte=today,
+        expiry_date__lte=thirty_days,
+        is_active=True
+    ).select_related('product').order_by('expiry_date')
+    
+    # Expiring 30-90 days
+    ninety_days = today + timedelta(days=90)
+    expiring_90_batches = ProductBatch.objects.filter(
+        expiry_date__isnull=False,
+        expiry_date__gt=thirty_days,
+        expiry_date__lte=ninety_days,
+        is_active=True
+    ).select_related('product').order_by('expiry_date')
+    
+    # Expiring 90-180 days
+    six_months = today + timedelta(days=180)
+    expiring_180_batches = ProductBatch.objects.filter(
+        expiry_date__isnull=False,
+        expiry_date__gt=ninety_days,
+        expiry_date__lte=six_months,
+        is_active=True
+    ).select_related('product').order_by('expiry_date')
+    
+    # Calculate values at risk
+    expired_value = sum(b.current_packs * b.net_purchase_price_per_pack for b in expired_batches)
+    expiring_30_value = sum(b.current_packs * b.net_purchase_price_per_pack for b in expiring_30_batches)
+    expiring_90_value = sum(b.current_packs * b.net_purchase_price_per_pack for b in expiring_90_batches)
+    
+    # === LEGACY PRODUCT-BASED (for backward compatibility) ===
     expired = Product.objects.filter(
         expiry_date__isnull=False,
         expiry_date__lt=today
     ).order_by('expiry_date')
     
-    # Expiring within 30 days
-    thirty_days = today + timedelta(days=30)
     expiring_30 = Product.objects.filter(
         expiry_date__isnull=False,
         expiry_date__gte=today,
         expiry_date__lte=thirty_days
     ).order_by('expiry_date')
     
-    # Expiring 30-90 days
-    ninety_days = today + timedelta(days=90)
     expiring_90 = Product.objects.filter(
         expiry_date__isnull=False,
         expiry_date__gt=thirty_days,
         expiry_date__lte=ninety_days
     ).order_by('expiry_date')
     
-    # Expiring 90-180 days
-    six_months = today + timedelta(days=180)
     expiring_180 = Product.objects.filter(
         expiry_date__isnull=False,
         expiry_date__gt=ninety_days,
@@ -1255,6 +1634,16 @@ def expiry_report(request):
     ).order_by('expiry_date')
     
     context = {
+        # Batch-based data (recommended)
+        'expired_batches': expired_batches,
+        'expiring_30_batches': expiring_30_batches,
+        'expiring_90_batches': expiring_90_batches,
+        'expiring_180_batches': expiring_180_batches,
+        'expired_value': expired_value,
+        'expiring_30_value': expiring_30_value,
+        'expiring_90_value': expiring_90_value,
+        'total_at_risk': expired_value + expiring_30_value,
+        # Legacy product-based data
         'expired': expired,
         'expiring_30': expiring_30,
         'expiring_90': expiring_90,
@@ -1651,10 +2040,33 @@ def sales_analysis_report(request):
         total_return_transactions=Count('id')
     )
     
+    # Get expenses for the period
+    expenses_data = Expense.objects.filter(
+        expense_date__gte=start_date.date(),
+        expense_date__lte=end_date.date()
+    ).aggregate(
+        total_expenses=Sum('amount'),
+        expense_count=Count('id')
+    )
+    total_expenses = expenses_data.get('total_expenses') or Decimal('0')
+    expense_count = expenses_data.get('expense_count') or 0
+    
+    # Get expense breakdown by category
+    expense_breakdown = Expense.objects.filter(
+        expense_date__gte=start_date.date(),
+        expense_date__lte=end_date.date()
+    ).values('category').annotate(
+        total=Sum('amount'),
+        count=Count('id')
+    ).order_by('-total')
+    
     total_sales = (sales_data.get('total_sales') or Decimal('0')) - (returns_data.get('total_returns') or Decimal('0'))
     total_items_sold = (sales_data.get('total_items') or 0) - (returns_data.get('total_items_returned') or 0)
     total_transactions = sales_data.get('total_transactions') or 0
     total_return_transactions = returns_data.get('total_return_transactions') or 0
+    
+    # Net Cash In Hand = Sales - Returns - Expenses
+    net_cash_in_hand = total_sales - total_expenses
     
     # Calculate days in period
     days_in_period = (end_date - start_date).days or 1
@@ -1717,6 +2129,39 @@ def sales_analysis_report(request):
             'margin': margin
         })
     
+    # Batch-level sales breakdown
+    batch_sales_breakdown = []
+    batch_sales_qs = InventoryTransaction.objects.filter(
+        transaction_type='SALE',
+        created_at__gte=start_date,
+        created_at__lte=end_date,
+        batch__isnull=False  # Only batch-tracked sales
+    ).values(
+        'product__name', 
+        'batch__batch_no', 
+        'batch__expiry_date'
+    ).annotate(
+        qty_sold=Sum('quantity_subitems_out'),
+        revenue=Sum(F('quantity_subitems_out') * F('unit_sale_price')),
+        cost=Sum(F('quantity_subitems_out') * F('unit_purchase_price'))
+    ).order_by('-revenue')[:20]  # Top 20 batches
+    
+    for item in batch_sales_qs:
+        revenue = item['revenue'] or Decimal('0')
+        cost = item['cost'] or Decimal('0')
+        profit = revenue - cost
+        margin = (profit / revenue * 100) if revenue > 0 else 0
+        batch_sales_breakdown.append({
+            'product_name': item['product__name'],
+            'batch_no': item['batch__batch_no'],
+            'expiry_date': item['batch__expiry_date'],
+            'qty_sold': item['qty_sold'],
+            'revenue': revenue,
+            'cost': cost,
+            'profit': profit,
+            'margin': margin
+        })
+    
     # Check if viewing today's data
     today_date = today.date()
     is_today = (start_date.date() == today_date and end_date.date() == today_date)
@@ -1728,6 +2173,17 @@ def sales_analysis_report(request):
     # Get gross sales (before returns) for the daily cash balance display
     total_sales_raw = sales_data.get('total_sales') or Decimal('0')
     
+    # Convert expense category codes to display names
+    expense_category_names = dict(Expense.EXPENSE_CATEGORIES)
+    expense_breakdown_list = [
+        {
+            'category': expense_category_names.get(item['category'], item['category']),
+            'total': item['total'],
+            'count': item['count']
+        }
+        for item in expense_breakdown
+    ]
+    
     context = {
         'start_date': start_date,
         'end_date': end_date,
@@ -1738,10 +2194,15 @@ def sales_analysis_report(request):
         'total_return_transactions': total_return_transactions,
         'total_returns': returns_data.get('total_returns') or Decimal('0'),
         'total_items_returned': returns_data.get('total_items_returned') or 0,
+        'total_expenses': total_expenses,
+        'expense_count': expense_count,
+        'expense_breakdown': expense_breakdown_list,
+        'net_cash_in_hand': net_cash_in_hand,
         'avg_daily_sales': avg_daily_sales,
         'fast_moving': fast_moving,
         'slow_moving': slow_moving,
         'sales_breakdown': sales_breakdown,
+        'batch_sales_breakdown': batch_sales_breakdown,
         'report_date': today,
         'today': today,
         'is_today': is_today,
@@ -1876,7 +2337,7 @@ def sales_analysis_report_pdf(request):
 
 
 def profit_loss_report(request):
-    """Profit/Loss analysis report"""
+    """Profit/Loss analysis report with batch-level tracking"""
     from datetime import datetime
     
     today = timezone.now()
@@ -1898,19 +2359,48 @@ def profit_loss_report(request):
     else:
         end_date = today
     
-    # Sales - use quantity_subitems_out for tablet-level tracking
-    sales = InventoryTransaction.objects.filter(
+    # Sales with batch information
+    sales_transactions = InventoryTransaction.objects.filter(
         transaction_type='SALE',
         created_at__gte=start_date,
         created_at__lte=end_date
-    ).aggregate(
-        total_revenue=Sum(F('quantity_subitems_out') * F('unit_sale_price')),
-        total_cost=Sum(F('quantity_subitems_out') * F('unit_purchase_price')),
-        total_qty=Sum('quantity_subitems_out')
-    )
+    ).select_related('product', 'batch')
     
-    total_revenue = sales.get('total_revenue') or Decimal('0')
-    total_cost = sales.get('total_cost') or Decimal('0')
+    # Calculate totals
+    total_revenue = Decimal('0')
+    total_cost = Decimal('0')
+    batch_sales = []
+    
+    for txn in sales_transactions:
+        qty = txn.quantity_subitems_out or txn.quantity_boxes_out or Decimal('0')
+        sale_price = txn.unit_sale_price or Decimal('0')
+        
+        # Get cost from batch if available, otherwise from product
+        if txn.batch:
+            # Calculate per-tablet cost from batch
+            items_per_pack = txn.product.items_per_product or 1
+            subitems_per_item = txn.product.subitems_per_item or 1
+            subitems_per_pack = items_per_pack * subitems_per_item
+            cost_per_subitem = txn.batch.net_purchase_price_per_pack / Decimal(subitems_per_pack) if subitems_per_pack > 0 else Decimal('0')
+        else:
+            cost_per_subitem = txn.product.purchase_price_per_subitem or Decimal('0')
+        
+        revenue = qty * sale_price
+        cost = qty * cost_per_subitem
+        profit = revenue - cost
+        
+        total_revenue += revenue
+        total_cost += cost
+        
+        batch_sales.append({
+            'transaction': txn,
+            'batch': txn.batch,
+            'quantity': qty,
+            'revenue': revenue,
+            'cost': cost,
+            'profit': profit,
+        })
+    
     medicine_sales = total_revenue
     
     # Expenses grouped by category
@@ -1932,6 +2422,28 @@ def profit_loss_report(request):
     total_cost_and_expenses = total_cost + total_expenses
     net_profit = total_revenue - total_cost - total_expenses
     profit_margin = (net_profit / total_revenue * 100) if total_revenue > 0 else 0
+    
+    # Profit by batch (top performers)
+    batch_profit_summary = {}
+    for sale in batch_sales:
+        if sale['batch']:
+            batch_key = str(sale['batch'].pk)
+            if batch_key not in batch_profit_summary:
+                batch_profit_summary[batch_key] = {
+                    'batch': sale['batch'],
+                    'product_name': sale['transaction'].product.name,
+                    'total_revenue': Decimal('0'),
+                    'total_cost': Decimal('0'),
+                    'total_profit': Decimal('0'),
+                    'qty_sold': Decimal('0'),
+                }
+            batch_profit_summary[batch_key]['total_revenue'] += sale['revenue']
+            batch_profit_summary[batch_key]['total_cost'] += sale['cost']
+            batch_profit_summary[batch_key]['total_profit'] += sale['profit']
+            batch_profit_summary[batch_key]['qty_sold'] += sale['quantity']
+    
+    # Sort by profit (top 10)
+    top_batches = sorted(batch_profit_summary.values(), key=lambda x: x['total_profit'], reverse=True)[:10]
     
     # Daily breakdown (last 7 days)
     daily_breakdown = []
@@ -1976,6 +2488,8 @@ def profit_loss_report(request):
         'net_profit': net_profit,
         'profit_margin': profit_margin,
         'daily_breakdown': daily_breakdown,
+        'top_batches': top_batches,
+        'batch_sales_count': len([s for s in batch_sales if s['batch']]),
         'report_date': today,
     }
     return render(request, "inventory/profit_loss_report.html", context)

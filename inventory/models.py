@@ -26,6 +26,11 @@ class Distributor(models.Model):
     phone = models.CharField(max_length=20, blank=True, null=True, help_text='Phone number')
     email = models.EmailField(blank=True, null=True, help_text='Email address')
     address = models.TextField(blank=True, null=True, help_text='Complete address')
+    
+    # Financial tracking
+    total_purchases = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'), help_text='Total purchase amount from this distributor')
+    total_paid = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'), help_text='Total amount paid to this distributor')
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -34,6 +39,16 @@ class Distributor(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def balance_due(self):
+        """Amount still owed to this distributor"""
+        return self.total_purchases - self.total_paid
+    
+    @property
+    def is_paid(self):
+        """Check if all dues are cleared"""
+        return self.balance_due <= 0
 
 
 class Product(models.Model):
@@ -70,7 +85,8 @@ class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
-    distributor = models.CharField(max_length=255, blank=True, null=True, help_text='Medicine distributor/supplier name')
+    distributor = models.CharField(max_length=255, blank=True, null=True, help_text='Medicine distributor/supplier name (legacy)')
+    distributor_ref = models.ForeignKey('Distributor', on_delete=models.SET_NULL, null=True, blank=True, related_name='products', help_text='Link to distributor')
     medicine_form = models.CharField(max_length=20, choices=MEDICINE_FORM_CHOICES, default='tablet', help_text='Form of medicine (tablet, syrup, injection, etc.)')
 
     # counts
@@ -152,13 +168,10 @@ class Product(models.Model):
 
         # compute purchase price per item and per subitem
         # Use NET purchase price (after discount) for calculations
-        # The purchase_price is for the TOTAL quantity (products_in_box packs)
-        # So if user enters 10 packs and purchase_price = 4000, then price per pack = 4000/10 = 400
-        try:
-            # price per single pack/box (using net price after discount)
-            price_per_pack = Decimal(self.net_purchase_price) / Decimal(self.products_in_box)
-        except Exception:
-            price_per_pack = Decimal('0')
+        # The purchase_price is for ONE pack (not total batch)
+        # So if user enters price = 400 for 1 pack, we use that directly
+        # price_per_pack = net_purchase_price (already the price for one pack)
+        price_per_pack = Decimal(self.net_purchase_price)
 
         # price per item (sheet/strip)
         try:
@@ -175,14 +188,15 @@ class Product(models.Model):
         # compute sale prices if not provided using purchase_margin_percent
         if (self.sale_price is None or self.sale_price == Decimal('0')) and self.purchase_margin_percent:
             margin = Decimal(self.purchase_margin_percent) / Decimal('100')
-            # sale price for total quantity (based on NET purchase price after discount)
+            # sale price for ONE pack (based on NET purchase price which is also per pack)
             self.sale_price = quantize_decimal(Decimal(self.net_purchase_price) * (Decimal('1') + margin), places=6)
 
         # Calculate sale price per item and subitem
+        # sale_price is now the price for ONE pack, not total
         if self.sale_price:
             try:
-                sale_per_pack = Decimal(self.sale_price) / Decimal(self.products_in_box)
-                self.sale_price_per_item = quantize_decimal(sale_per_pack / Decimal(self.items_per_product), places=6)
+                # sale_price is already per pack, so we divide by items_per_product to get per strip
+                self.sale_price_per_item = quantize_decimal(Decimal(self.sale_price) / Decimal(self.items_per_product), places=6)
             except Exception:
                 self.sale_price_per_item = Decimal('0')
             
@@ -211,13 +225,24 @@ class Product(models.Model):
                 quantity_boxes=self.products_in_box,
                 quantity_items=Decimal(self.products_in_box) * Decimal(self.items_per_product),
                 quantity_subitems=Decimal(self.products_in_box) * Decimal(self.items_per_product) * Decimal(self.subitems_per_item),
-                unit_purchase_price=self.purchase_price / Decimal(self.products_in_box) if self.products_in_box else Decimal('0'),
+                unit_purchase_price=self.net_purchase_price,  # price is already per pack
                 notes=f"Initial stock for {self.name}"
             )
 
     # helper methods to compute on-the-fly values
     def price_per_product_unit(self):
-        return quantize_decimal(Decimal(self.purchase_price) / Decimal(self.products_in_box), places=6)
+        # purchase_price is already per pack
+        return quantize_decimal(Decimal(self.net_purchase_price), places=6)
+    
+    def total_purchase_value(self):
+        """Get total purchase value for all packs"""
+        return quantize_decimal(Decimal(self.net_purchase_price) * Decimal(self.products_in_box), places=2)
+    
+    def total_sale_value(self):
+        """Get total sale value for all packs"""
+        if self.sale_price:
+            return quantize_decimal(Decimal(self.sale_price) * Decimal(self.products_in_box), places=2)
+        return Decimal('0')
 
     def compute_sale_price_from_margin(self, percent_margin: Decimal):
         margin = Decimal(percent_margin) / Decimal('100')
@@ -375,6 +400,7 @@ class InventoryTransaction(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='transactions')
+    batch = models.ForeignKey('ProductBatch', on_delete=models.SET_NULL, null=True, blank=True, related_name='transactions', help_text='Specific batch this transaction belongs to')
     transaction_type = models.CharField(max_length=4, choices=TRANSACTION_TYPE_CHOICES)
 
     # quantities (use Decimal in case of fractional boxes/items for special cases)
@@ -509,6 +535,232 @@ class Expense(models.Model):
     
     def __str__(self):
         return f"{self.title} - PKR {self.amount} ({self.expense_date})"
+
+
+class ProductBatch(models.Model):
+    """
+    Tracks individual batches of a product for FEFO (First Expiry First Out) management.
+    Each batch has its own expiry date, batch number, quantity, and purchase price.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='batches')
+    distributor = models.ForeignKey('Distributor', on_delete=models.SET_NULL, null=True, blank=True, related_name='batches', help_text='Distributor for this batch')
+    purchase = models.ForeignKey('DistributorPurchase', on_delete=models.SET_NULL, null=True, blank=True, related_name='batches', help_text='Purchase invoice for this batch')
+    
+    # Batch identification
+    batch_no = models.CharField(max_length=200, blank=True, null=True, help_text='Batch number from manufacturer')
+    expiry_date = models.DateField(null=True, blank=True, help_text='Expiry date of this batch')
+    
+    # Quantities for this batch
+    quantity_packs = models.PositiveIntegerField(default=1, help_text='Number of packs in this batch')
+    quantity_items = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0'), help_text='Total items (strips) in this batch')
+    quantity_subitems = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0'), help_text='Total subitems (tablets) in this batch')
+    
+    # Current stock for this batch
+    current_packs = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0'), help_text='Current packs remaining')
+    current_items = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0'), help_text='Current items remaining')
+    current_subitems = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0'), help_text='Current subitems remaining')
+    
+    # Pricing for this batch (may differ from default product price)
+    purchase_price_per_pack = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0'))
+    sale_price_per_pack = models.DecimalField(max_digits=18, decimal_places=6, null=True, blank=True)
+    
+    # Distributor discount for this batch
+    distributor_discount_percent = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'))
+    distributor_discount_pkr = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'))
+    net_purchase_price_per_pack = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0'))
+    
+    # Timestamps
+    received_date = models.DateField(default=timezone.now, help_text='Date this batch was received')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Status
+    is_active = models.BooleanField(default=True, help_text='Whether this batch is available for sale')
+    
+    class Meta:
+        ordering = ['expiry_date', 'created_at']  # FEFO ordering
+        verbose_name = 'Product Batch'
+        verbose_name_plural = 'Product Batches'
+    
+    def __str__(self):
+        expiry_str = self.expiry_date.strftime('%m/%Y') if self.expiry_date else 'No Expiry'
+        return f"{self.product.name} - Batch: {self.batch_no or 'N/A'} - Exp: {expiry_str}"
+    
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        
+        # Calculate net purchase price
+        if self.distributor_discount_pkr and self.distributor_discount_pkr > 0:
+            self.net_purchase_price_per_pack = self.purchase_price_per_pack - self.distributor_discount_pkr
+            if self.purchase_price_per_pack > 0:
+                self.distributor_discount_percent = quantize_decimal(
+                    (self.distributor_discount_pkr / self.purchase_price_per_pack) * 100, places=2
+                )
+        elif self.distributor_discount_percent and self.distributor_discount_percent > 0:
+            self.distributor_discount_pkr = quantize_decimal(
+                self.purchase_price_per_pack * (self.distributor_discount_percent / 100), places=2
+            )
+            self.net_purchase_price_per_pack = self.purchase_price_per_pack - self.distributor_discount_pkr
+        else:
+            self.net_purchase_price_per_pack = self.purchase_price_per_pack
+        
+        # Calculate initial quantities if new
+        if is_new:
+            items_per_pack = self.product.items_per_product or 1
+            subitems_per_item = self.product.subitems_per_item or 1
+            
+            self.quantity_items = Decimal(self.quantity_packs) * Decimal(items_per_pack)
+            self.quantity_subitems = self.quantity_items * Decimal(subitems_per_item)
+            
+            # Set current stock to initial quantities
+            self.current_packs = Decimal(self.quantity_packs)
+            self.current_items = self.quantity_items
+            self.current_subitems = self.quantity_subitems
+        
+        super().save(*args, **kwargs)
+        
+        # Create inventory transaction for new batch
+        if is_new:
+            InventoryTransaction.objects.create(
+                product=self.product,
+                batch=self,
+                transaction_type='PUR',
+                quantity_boxes=self.quantity_packs,
+                quantity_items=self.quantity_items,
+                quantity_subitems=self.quantity_subitems,
+                unit_purchase_price=self.net_purchase_price_per_pack,
+                notes=f"New batch received: {self.batch_no or 'N/A'}, Expiry: {self.expiry_date or 'N/A'}"
+            )
+    
+    @property
+    def is_expired(self):
+        if not self.expiry_date:
+            return False
+        return self.expiry_date < timezone.now().date()
+    
+    @property
+    def is_expiring_soon(self):
+        """Returns True if batch expires within 90 days"""
+        if not self.expiry_date:
+            return False
+        days_to_expiry = (self.expiry_date - timezone.now().date()).days
+        return 0 < days_to_expiry <= 90
+    
+    @property
+    def days_to_expiry(self):
+        if not self.expiry_date:
+            return None
+        return (self.expiry_date - timezone.now().date()).days
+    
+    def update_stock(self):
+        """Update current stock from transactions"""
+        from django.db.models import Sum
+        
+        transactions = InventoryTransaction.objects.filter(batch=self)
+        
+        in_items = transactions.aggregate(total=Sum('quantity_items'))['total'] or Decimal('0')
+        out_items = transactions.aggregate(total=Sum('quantity_items_out'))['total'] or Decimal('0')
+        in_sub = transactions.aggregate(total=Sum('quantity_subitems'))['total'] or Decimal('0')
+        out_sub = transactions.aggregate(total=Sum('quantity_subitems_out'))['total'] or Decimal('0')
+        in_packs = transactions.aggregate(total=Sum('quantity_boxes'))['total'] or Decimal('0')
+        out_packs = transactions.aggregate(total=Sum('quantity_boxes_out'))['total'] or Decimal('0')
+        
+        self.current_packs = max(Decimal('0'), in_packs - out_packs)
+        self.current_items = max(Decimal('0'), in_items - out_items)
+        self.current_subitems = max(Decimal('0'), in_sub - out_sub)
+        
+        # Mark as inactive if no stock
+        if self.current_subitems <= 0:
+            self.is_active = False
+        
+        ProductBatch.objects.filter(pk=self.pk).update(
+            current_packs=self.current_packs,
+            current_items=self.current_items,
+            current_subitems=self.current_subitems,
+            is_active=self.is_active
+        )
+
+
+class DistributorPayment(models.Model):
+    """
+    Track payments made to distributors.
+    """
+    PAYMENT_METHOD_CHOICES = [
+        ('CASH', 'Cash'),
+        ('BANK', 'Bank Transfer'),
+        ('CHEQUE', 'Cheque'),
+        ('ONLINE', 'Online Payment'),
+        ('OTHER', 'Other'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=18, decimal_places=2, help_text='Payment amount')
+    payment_date = models.DateField(default=timezone.now, help_text='Date of payment')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='CASH')
+    reference_no = models.CharField(max_length=100, blank=True, null=True, help_text='Cheque/Transaction reference number')
+    notes = models.TextField(blank=True, null=True, help_text='Additional notes')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-payment_date', '-created_at']
+        verbose_name = 'Distributor Payment'
+        verbose_name_plural = 'Distributor Payments'
+    
+    def __str__(self):
+        return f"{self.distributor.name} - Rs. {self.amount} on {self.payment_date}"
+    
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        super().save(*args, **kwargs)
+        
+        # Update distributor's total_paid
+        if is_new:
+            self.distributor.total_paid = Distributor.objects.filter(pk=self.distributor.pk).first().payments.aggregate(
+                total=models.Sum('amount')
+            )['total'] or Decimal('0.00')
+            self.distributor.save(update_fields=['total_paid'])
+
+
+class DistributorPurchase(models.Model):
+    """
+    Track individual purchases from distributors (like an invoice).
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    distributor = models.ForeignKey(Distributor, on_delete=models.CASCADE, related_name='purchases')
+    invoice_no = models.CharField(max_length=100, blank=True, null=True, help_text='Distributor invoice number')
+    invoice_date = models.DateField(default=timezone.now)
+    total_amount = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'))
+    discount_amount = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'))
+    net_amount = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'))
+    notes = models.TextField(blank=True, null=True)
+    
+    # Link to batches (one invoice can have multiple batches)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-invoice_date', '-created_at']
+        verbose_name = 'Distributor Purchase'
+        verbose_name_plural = 'Distributor Purchases'
+    
+    def __str__(self):
+        return f"Invoice {self.invoice_no or 'N/A'} - {self.distributor.name} - Rs. {self.net_amount}"
+    
+    def save(self, *args, **kwargs):
+        # Calculate net amount
+        self.net_amount = self.total_amount - self.discount_amount
+        super().save(*args, **kwargs)
+        
+        # Update distributor's total_purchases
+        self.distributor.total_purchases = DistributorPurchase.objects.filter(
+            distributor=self.distributor
+        ).aggregate(total=models.Sum('net_amount'))['total'] or Decimal('0.00')
+        self.distributor.save(update_fields=['total_purchases'])
 
 
 # Notes for integration:

@@ -1,0 +1,87 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Add Purchase - {{ distributor.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-file-invoice text-primary me-2"></i>Add Purchase Invoice
+            </h1>
+            <p class="text-muted">Record purchase from {{ distributor.name }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:distributor_detail' distributor.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Distributor
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i>Invoice Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Invoice Number</label>
+                                {{ form.invoice_no }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Invoice Date *</label>
+                                {{ form.invoice_date }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Total Amount (PKR) *</label>
+                                {{ form.total_amount }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Discount Amount</label>
+                                {{ form.discount_amount }}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label">Notes</label>
+                                {{ form.notes }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Purchase
+                            </button>
+                            <a href="{% url 'inventory:distributor_detail' distributor.pk %}" class="btn btn-outline-secondary btn-lg">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Note</h5>
+                </div>
+                <div class="card-body">
+                    <p>This records the invoice amount for tracking dues.</p>
+                    <p class="mb-0">After adding the invoice, you can add individual medicine batches from the product page and link them to this distributor.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

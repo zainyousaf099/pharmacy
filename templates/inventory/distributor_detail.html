@@ -1,0 +1,233 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}{{ distributor.name }} - Distributor Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-truck text-primary me-2"></i>{{ distributor.name }}
+            </h1>
+            <p class="text-muted">Distributor details, purchases, and payments</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'inventory:distributor_add_payment' distributor.pk %}" class="btn btn-success me-2">
+                <i class="fas fa-money-bill me-1"></i>Add Payment
+            </a>
+            <a href="{% url 'inventory:distributor_add_purchase' distributor.pk %}" class="btn btn-primary me-2">
+                <i class="fas fa-file-invoice me-1"></i>Add Purchase
+            </a>
+            <a href="{% url 'inventory:distributor_edit' distributor.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-edit me-1"></i>Edit
+            </a>
+        </div>
+    </div>
+
+    <!-- Financial Summary -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Purchases</h6>
+                    <h2 class="mb-0">Rs. {{ distributor.total_purchases|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Total Paid</h6>
+                    <h2 class="mb-0">Rs. {{ distributor.total_paid|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm {% if distributor.balance_due > 0 %}bg-danger{% else %}bg-secondary{% endif %} text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Balance Due</h6>
+                    <h2 class="mb-0">Rs. {{ distributor.balance_due|floatformat:0 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm {% if distributor.is_paid %}bg-success{% else %}bg-warning{% endif %} text-white">
+                <div class="card-body">
+                    <h6 class="opacity-75">Status</h6>
+                    <h2 class="mb-0">{% if distributor.is_paid %}Paid{% else %}Due{% endif %}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-address-card me-2"></i>Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <td class="text-muted">Contact Person:</td>
+                            <td class="fw-bold">{{ distributor.contact_person|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Phone:</td>
+                            <td class="fw-bold">
+                                {% if distributor.phone %}
+                                <a href="tel:{{ distributor.phone }}">{{ distributor.phone }}</a>
+                                {% else %}-{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Email:</td>
+                            <td class="fw-bold">
+                                {% if distributor.email %}
+                                <a href="mailto:{{ distributor.email }}">{{ distributor.email }}</a>
+                                {% else %}-{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Address:</td>
+                            <td>{{ distributor.address|default:"-"|linebreaks }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <!-- Products from this Distributor -->
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-pills me-2"></i>Products from this Distributor ({{ products.count }})</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Category</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'inventory:product_detail' product.pk %}">{{ product.name }}</a>
+                                    </td>
+                                    <td>{{ product.category.name|default:"-" }}</td>
+                                    <td>{{ product.total_subitems|floatformat:0 }} units</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-3 text-muted">No products linked yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Batches -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-layer-group me-2"></i>Recent Stock Purchases (Batches)</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Medicine</th>
+                            <th>Batch No.</th>
+                            <th>Qty</th>
+                            <th>Purchase Price</th>
+                            <th>Total</th>
+                            <th>Expiry</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for batch in batches %}
+                        <tr>
+                            <td>{{ batch.received_date|date:"d M Y" }}</td>
+                            <td class="fw-bold">{{ batch.product.name }}</td>
+                            <td><span class="badge bg-secondary">{{ batch.batch_no|default:"N/A" }}</span></td>
+                            <td>{{ batch.quantity_packs }} packs</td>
+                            <td>Rs. {{ batch.net_purchase_price_per_pack|floatformat:2 }}</td>
+                            <td class="fw-bold">Rs. {{ batch.quantity_packs|floatformat:0 }}</td>
+                            <td>
+                                {% if batch.expiry_date %}
+                                <span class="{% if batch.is_expired %}text-danger{% elif batch.is_expiring_soon %}text-warning{% endif %}">
+                                    {{ batch.expiry_date|date:"M Y" }}
+                                </span>
+                                {% else %}-{% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No stock purchases from this distributor</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payments History -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Payment History</h5>
+            <a href="{% url 'inventory:distributor_add_payment' distributor.pk %}" class="btn btn-light btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Payment
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.payment_date|date:"d M Y" }}</td>
+                            <td class="fw-bold text-success">Rs. {{ payment.amount|floatformat:0 }}</td>
+                            <td><span class="badge bg-info">{{ payment.get_payment_method_display }}</span></td>
+                            <td>{{ payment.reference_no|default:"-" }}</td>
+                            <td>{{ payment.notes|default:"-"|truncatewords:10 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="fas fa-money-bill-wave fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-2">No payments recorded yet</p>
+                                <a href="{% url 'inventory:distributor_add_payment' distributor.pk %}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add First Payment
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

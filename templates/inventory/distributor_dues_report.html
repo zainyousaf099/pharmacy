@@ -1,0 +1,133 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Distributor Dues Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="display-5 mb-0">
+                <i class="fas fa-file-invoice-dollar text-danger me-2"></i>Distributor Dues Report
+            </h1>
+            <p class="text-muted">Track pending payments to distributors</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'inventory:distributor_list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Distributors
+            </a>
+        </div>
+    </div>
+
+    <!-- Total Due Card -->
+    <div class="card border-0 shadow-lg mb-4 bg-danger text-white">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="rounded-circle bg-white bg-opacity-25 p-3">
+                        <i class="fas fa-exclamation-triangle fa-3x"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <h4 class="mb-1">Total Amount Due to Distributors</h4>
+                    <p class="mb-0 opacity-75">{{ distributors|length }} distributor(s) with pending dues</p>
+                </div>
+                <div class="col-auto text-end">
+                    <h1 class="display-4 fw-bold mb-0">Rs. {{ total_due|floatformat:0 }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Distributors with Dues -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Distributors with Pending Dues</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Distributor</th>
+                                    <th>Phone</th>
+                                    <th>Purchases</th>
+                                    <th>Paid</th>
+                                    <th>Due</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for distributor in distributors %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td class="fw-bold">
+                                        <a href="{% url 'inventory:distributor_detail' distributor.pk %}">{{ distributor.name }}</a>
+                                    </td>
+                                    <td>
+                                        {% if distributor.phone %}
+                                        <a href="tel:{{ distributor.phone }}">{{ distributor.phone }}</a>
+                                        {% else %}-{% endif %}
+                                    </td>
+                                    <td>Rs. {{ distributor.total_purchases|floatformat:0 }}</td>
+                                    <td class="text-success">Rs. {{ distributor.total_paid|floatformat:0 }}</td>
+                                    <td class="fw-bold text-danger">Rs. {{ distributor.balance_due|floatformat:0 }}</td>
+                                    <td>
+                                        <a href="{% url 'inventory:distributor_add_payment' distributor.pk %}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-money-bill me-1"></i>Pay
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-5">
+                                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                        <p class="text-success fw-bold">All Clear! No pending dues.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Recent Payments -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Payments</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for payment in recent_payments %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ payment.distributor.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ payment.payment_date|date:"d M Y" }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success fs-6">Rs. {{ payment.amount|floatformat:0 }}</span>
+                                    <br>
+                                    <small class="text-muted">{{ payment.get_payment_method_display }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="list-group-item text-center text-muted py-4">
+                            No payments recorded yet
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

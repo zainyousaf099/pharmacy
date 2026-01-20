@@ -10,7 +10,11 @@
             <h1 class="display-5 mb-0">
                 <i class="fas fa-chart-line me-2"></i>{{ title }}
             </h1>
+            {% if period == 'day' %}
+            <p class="text-muted">{{ today|date:"l, M d, Y" }}</p>
+            {% else %}
             <p class="text-muted">{{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}</p>
+            {% endif %}
         </div>
         <div class="col-md-6 text-end">
             <div class="btn-group me-2" role="group">
@@ -22,6 +26,9 @@
                 </a>
             </div>
             <div class="btn-group" role="group">
+                <a href="?period=day" class="btn btn-outline-success {% if period == 'day' %}active{% endif %}">
+                    <i class="fas fa-calendar-day me-1"></i>Today
+                </a>
                 <a href="?period=week" class="btn btn-outline-primary {% if period == 'week' %}active{% endif %}">
                     <i class="fas fa-calendar-week me-1"></i>Week
                 </a>
@@ -34,6 +41,32 @@
             </div>
         </div>
     </div>
+
+    <!-- Today's Summary Banner (Only for Daily View) -->
+    {% if period == 'day' %}
+    <div class="card border-0 shadow-lg mb-4 bg-dark text-white">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="rounded-circle bg-danger p-3">
+                        <i class="fas fa-receipt fa-3x"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <h4 class="mb-1"><i class="fas fa-calendar-check me-2"></i>Today's Expenses - {{ today|date:"d M Y" }}</h4>
+                    <p class="mb-0 opacity-75">All expenses recorded for today</p>
+                </div>
+                <div class="col-auto text-end">
+                    <div class="text-center">
+                        <small class="d-block text-danger">Total Spent Today</small>
+                        <h2 class="mb-0 text-danger fw-bold">Rs. {{ total_expenses|floatformat:0 }}</h2>
+                        <small class="opacity-75">{{ expense_count }} expense(s)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Summary Cards -->
     <div class="row g-4 mb-4">

@@ -390,6 +390,17 @@
                             <i class="fas fa-money-bill-wave me-1"></i>Expenses
                         </a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="distributorDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-truck me-1"></i>Distributors
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_list' %}"><i class="fas fa-list me-2"></i>All Distributors</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_create' %}"><i class="fas fa-plus me-2"></i>Add Distributor</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_dues_report' %}"><i class="fas fa-file-invoice-dollar me-2"></i>Dues Report</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'inventory:product_create' %}">
                             <i class="fas fa-plus me-1"></i>Add Medicine

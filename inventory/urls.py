@@ -12,6 +12,22 @@ urlpatterns = [
     path("product/<uuid:pk>/edit/", views.product_update, name="product_update"),
     path("product/<uuid:pk>/purchase/", views.add_purchase, name="product_purchase"),
     path("product/<uuid:pk>/sale/", views.add_sale, name="product_sale"),
+    path("product/<uuid:pk>/add-batch/", views.add_batch, name="add_batch"),
+    
+    # Batch Management
+    path("batches/", views.batch_list, name="batch_list"),
+    path("batch/<uuid:pk>/", views.batch_detail, name="batch_detail"),
+    
+    # Distributor Management
+    path("distributors/", views.distributor_list, name="distributor_list"),
+    path("distributor/add/", views.distributor_create, name="distributor_create"),
+    path("distributor/<uuid:pk>/", views.distributor_detail, name="distributor_detail"),
+    path("distributor/<uuid:pk>/edit/", views.distributor_edit, name="distributor_edit"),
+    path("distributor/<uuid:pk>/payment/", views.distributor_add_payment, name="distributor_add_payment"),
+    path("distributor/<uuid:pk>/purchase/", views.distributor_add_purchase, name="distributor_add_purchase"),
+    path("distributor-dues/", views.distributor_dues_report, name="distributor_dues_report"),
+    path("api/distributors/", views.distributor_api, name="distributor_api"),
+    
     path("reports/", views.reports, name="reports"),
     path("reports/csv/", views.reports_csv, name="reports_csv"),
     path("reports/pdf/", views.reports_pdf, name="reports_pdf"),

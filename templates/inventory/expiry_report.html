@@ -8,71 +8,63 @@
     <div class="row mb-4">
         <div class="col-md-8">
             <h1 class="display-5"><i class="fas fa-calendar-times text-warning me-2"></i>Expiry Report</h1>
-            <p class="text-muted">Track expired and soon-to-expire medicines</p>
+            <p class="text-muted">Track expired and soon-to-expire batches (FEFO)</p>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{% url 'inventory:expiry_report_pdf' %}?days={{ days_filter }}" class="btn btn-danger btn-lg">
+            <a href="{% url 'inventory:batch_list' %}?status=expiring" class="btn btn-warning btn-lg me-2">
+                <i class="fas fa-layer-group me-2"></i>Expiring Batches
+            </a>
+            <a href="{% url 'inventory:expiry_report_pdf' %}" class="btn btn-danger btn-lg">
                 <i class="fas fa-file-pdf me-2"></i>Download PDF
             </a>
         </div>
     </div>
 
-    <!-- Filter -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">Expiring Within (Days)</label>
-                    <select name="days" class="form-select">
-                        <option value="30" {% if days_filter == 30 %}selected{% endif %}>30 Days</option>
-                        <option value="60" {% if days_filter == 60 %}selected{% endif %}>60 Days</option>
-                        <option value="90" {% if days_filter == 90 %}selected{% endif %}>90 Days</option>
-                        <option value="180" {% if days_filter == 180 %}selected{% endif %}>6 Months</option>
-                        <option value="365" {% if days_filter == 365 %}selected{% endif %}>1 Year</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-filter me-2"></i>Apply
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Summary Cards -->
     <div class="row g-4 mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card border-0 shadow-sm border-start border-danger border-4">
                 <div class="card-body">
-                    <h6 class="text-muted">Already Expired</h6>
-                    <h2 class="text-danger mb-0">{{ expired|length }}</h2>
+                    <h6 class="text-muted">Expired Batches</h6>
+                    <h2 class="text-danger mb-0">{{ expired_batches|length }}</h2>
+                    <small class="text-danger">Value: Rs. {{ expired_value|floatformat:0 }}</small>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card border-0 shadow-sm border-start border-warning border-4">
                 <div class="card-body">
-                    <h6 class="text-muted">Expiring Soon</h6>
-                    <h2 class="text-warning mb-0">{{ expiring_soon|length }}</h2>
+                    <h6 class="text-muted">Expiring in 30 Days</h6>
+                    <h2 class="text-warning mb-0">{{ expiring_30_batches|length }}</h2>
+                    <small class="text-warning">Value: Rs. {{ expiring_30_value|floatformat:0 }}</small>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card border-0 shadow-sm border-start border-info border-4">
                 <div class="card-body">
+                    <h6 class="text-muted">Expiring 30-90 Days</h6>
+                    <h2 class="text-info mb-0">{{ expiring_90_batches|length }}</h2>
+                    <small class="text-muted">Value: Rs. {{ expiring_90_value|floatformat:0 }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm border-start border-dark border-4">
+                <div class="card-body">
                     <h6 class="text-muted">Total at Risk</h6>
-                    <h2 class="text-info mb-0">Rs. {{ total_at_risk|floatformat:0 }}</h2>
+                    <h2 class="text-dark mb-0">Rs. {{ total_at_risk|floatformat:0 }}</h2>
+                    <small class="text-muted">Expired + 30 days</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Expired Products -->
-    {% if expired %}
+    <!-- Expired Batches -->
+    {% if expired_batches %}
     <div class="card border-danger border-0 shadow-sm mb-4">
         <div class="card-header bg-danger text-white">
-            <h5 class="mb-0"><i class="fas fa-skull-crossbones me-2"></i>Expired Products ({{ expired|length }})</h5>
+            <h5 class="mb-0"><i class="fas fa-skull-crossbones me-2"></i>Expired Batches ({{ expired_batches|length }})</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -81,23 +73,29 @@
                         <tr>
                             <th>#</th>
                             <th>Medicine Name</th>
-                            <th>Batch</th>
+                            <th>Batch No.</th>
                             <th>Expiry Date</th>
                             <th>Days Expired</th>
-                            <th>Stock</th>
+                            <th>Stock Remaining</th>
                             <th>Loss Value</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for product in expired %}
+                        {% for batch in expired_batches %}
                         <tr class="table-danger">
                             <td>{{ forloop.counter }}</td>
-                            <td class="fw-bold">{{ product.name }}</td>
-                            <td>{{ product.batch_number|default:"-" }}</td>
-                            <td>{{ product.expiry_date|date:"d M Y" }}</td>
-                            <td><span class="badge bg-danger">{{ product.days_expired }} days</span></td>
-                            <td>{{ product.total_boxes|floatformat:0 }} packs</td>
-                            <td class="text-danger fw-bold">Rs. {{ product.loss_value|floatformat:0 }}</td>
+                            <td class="fw-bold">{{ batch.product.name }}</td>
+                            <td>{{ batch.batch_no|default:"N/A" }}</td>
+                            <td>{{ batch.expiry_date|date:"d M Y" }}</td>
+                            <td><span class="badge bg-danger">{{ batch.days_to_expiry|slice:"1:" }} days ago</span></td>
+                            <td>{{ batch.current_packs|floatformat:0 }} packs ({{ batch.current_subitems|floatformat:0 }} tablets)</td>
+                            <td class="text-danger fw-bold">Rs. {{ batch.current_packs|floatformat:0 }}</td>
+                            <td>
+                                <a href="{% url 'inventory:batch_detail' batch.pk %}" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -107,11 +105,11 @@
     </div>
     {% endif %}
 
-    <!-- Expiring Soon -->
-    {% if expiring_soon %}
-    <div class="card border-warning border-0 shadow-sm">
+    <!-- Expiring in 30 Days -->
+    {% if expiring_30_batches %}
+    <div class="card border-warning border-0 shadow-sm mb-4">
         <div class="card-header bg-warning text-dark">
-            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Expiring Soon ({{ expiring_soon|length }})</h5>
+            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Expiring Within 30 Days ({{ expiring_30_batches|length }}) - SELL FIRST!</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -120,34 +118,129 @@
                         <tr>
                             <th>#</th>
                             <th>Medicine Name</th>
-                            <th>Batch</th>
+                            <th>Batch No.</th>
                             <th>Expiry Date</th>
                             <th>Days Left</th>
                             <th>Stock</th>
-                            <th>Value at Risk</th>
+                            <th>Sale Price</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for product in expiring_soon %}
-                        <tr class="{% if product.days_left < 30 %}table-warning{% endif %}">
+                        {% for batch in expiring_30_batches %}
+                        <tr class="table-warning">
                             <td>{{ forloop.counter }}</td>
-                            <td class="fw-bold">{{ product.name }}</td>
-                            <td>{{ product.batch_number|default:"-" }}</td>
-                            <td>{{ product.expiry_date|date:"d M Y" }}</td>
+                            <td class="fw-bold">{{ batch.product.name }}</td>
+                            <td>{{ batch.batch_no|default:"N/A" }}</td>
+                            <td>{{ batch.expiry_date|date:"d M Y" }}</td>
+                            <td><span class="badge bg-danger">{{ batch.days_to_expiry }} days</span></td>
+                            <td>{{ batch.current_packs|floatformat:0 }} packs</td>
+                            <td>Rs. {{ batch.sale_price_per_pack|default:batch.product.sale_price|floatformat:2 }}</td>
                             <td>
-                                {% if product.days_left < 30 %}
-                                <span class="badge bg-danger">{{ product.days_left }} days</span>
-                                {% else %}
-                                <span class="badge bg-warning text-dark">{{ product.days_left }} days</span>
-                                {% endif %}
+                                <a href="{% url 'inventory:product_sale' batch.product.pk %}" class="btn btn-sm btn-success" title="Sell Now">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </a>
+                                <a href="{% url 'inventory:batch_detail' batch.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                             </td>
-                            <td>{{ product.total_boxes|floatformat:0 }} packs</td>
-                            <td class="text-warning fw-bold">Rs. {{ product.risk_value|floatformat:0 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Expiring in 30-90 Days -->
+    {% if expiring_90_batches %}
+    <div class="card border-info border-0 shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Expiring in 30-90 Days ({{ expiring_90_batches|length }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Batch No.</th>
+                            <th>Expiry Date</th>
+                            <th>Days Left</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for batch in expiring_90_batches %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ batch.product.name }}</td>
+                            <td>{{ batch.batch_no|default:"N/A" }}</td>
+                            <td>{{ batch.expiry_date|date:"d M Y" }}</td>
+                            <td><span class="badge bg-warning text-dark">{{ batch.days_to_expiry }} days</span></td>
+                            <td>{{ batch.current_packs|floatformat:0 }} packs</td>
+                            <td>
+                                <a href="{% url 'inventory:batch_detail' batch.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Expiring in 90-180 Days -->
+    {% if expiring_180_batches %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0"><i class="fas fa-hourglass-half me-2"></i>Expiring in 3-6 Months ({{ expiring_180_batches|length }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Medicine Name</th>
+                            <th>Batch No.</th>
+                            <th>Expiry Date</th>
+                            <th>Days Left</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for batch in expiring_180_batches %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ batch.product.name }}</td>
+                            <td>{{ batch.batch_no|default:"N/A" }}</td>
+                            <td>{{ batch.expiry_date|date:"d M Y" }}</td>
+                            <td><span class="badge bg-success">{{ batch.days_to_expiry }} days</span></td>
+                            <td>{{ batch.current_packs|floatformat:0 }} packs</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not expired_batches and not expiring_30_batches and not expiring_90_batches and not expiring_180_batches %}
+    <div class="alert alert-success">
+        <i class="fas fa-check-circle me-2"></i>
+        <strong>All Clear!</strong> No batches are expiring within the next 6 months.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
         </div>
     </div>
     {% endif %}

@@ -1,0 +1,266 @@
+{% extends "inventory/base.html" %}
+{% load static %}
+
+{% block title %}Batch Details - {{ batch.product.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Batch Info Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-{% if batch.is_expired %}danger{% elif batch.is_expiring_soon %}warning{% else %}success{% endif %} text-{% if batch.is_expiring_soon %}dark{% else %}white{% endif %} py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-box me-2"></i>
+                            {{ batch.product.name }}
+                        </h4>
+                        <span class="badge bg-{% if batch.is_expired %}dark{% elif batch.is_expiring_soon %}dark{% else %}light text-dark{% endif %}">
+                            Batch: {{ batch.batch_no|default:"N/A" }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Expiry Information -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 h-100 {% if batch.is_expired %}border-danger{% elif batch.is_expiring_soon %}border-warning{% endif %}">
+                                <small class="text-muted d-block mb-1">Expiry Date</small>
+                                <h5 class="mb-0 {% if batch.is_expired %}text-danger{% elif batch.is_expiring_soon %}text-warning{% endif %}">
+                                    {% if batch.expiry_date %}
+                                        {{ batch.expiry_date|date:"M d, Y" }}
+                                    {% else %}
+                                        No Expiry
+                                    {% endif %}
+                                </h5>
+                                {% if batch.days_to_expiry is not None %}
+                                    <small class="{% if batch.days_to_expiry < 0 %}text-danger{% elif batch.days_to_expiry <= 30 %}text-danger{% elif batch.days_to_expiry <= 90 %}text-warning{% else %}text-success{% endif %}">
+                                        {% if batch.days_to_expiry < 0 %}
+                                            Expired {{ batch.days_to_expiry|slice:"1:" }} days ago
+                                        {% else %}
+                                            {{ batch.days_to_expiry }} days remaining
+                                        {% endif %}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Received Date -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 h-100">
+                                <small class="text-muted d-block mb-1">Received Date</small>
+                                <h5 class="mb-0">{{ batch.received_date|date:"M d, Y" }}</h5>
+                            </div>
+                        </div>
+                        
+                        <!-- Status -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 h-100">
+                                <small class="text-muted d-block mb-1">Status</small>
+                                <h5 class="mb-0">
+                                    {% if not batch.is_active %}
+                                        <span class="badge bg-secondary">Inactive / Sold Out</span>
+                                    {% elif batch.is_expired %}
+                                        <span class="badge bg-danger">Expired</span>
+                                    {% elif batch.is_expiring_soon %}
+                                        <span class="badge bg-warning text-dark">Expiring Soon</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Stock Information -->
+                    <h5 class="mb-3"><i class="fas fa-cubes me-2"></i>Stock Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="bg-light rounded p-3 text-center">
+                                <small class="text-muted">Initial Packs</small>
+                                <h4 class="mb-0 text-primary">{{ batch.quantity_packs }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light rounded p-3 text-center">
+                                <small class="text-muted">Current Packs</small>
+                                <h4 class="mb-0 text-{% if batch.current_packs > 0 %}success{% else %}danger{% endif %}">
+                                    {{ batch.current_packs|floatformat:0 }}
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bg-light rounded p-3 text-center">
+                                <small class="text-muted">Sold</small>
+                                <h4 class="mb-0 text-info">
+                                    {{ batch.quantity_packs|add:"-"|add:batch.current_packs|floatformat:0 }}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <small class="text-muted">Current Items (Strips)</small>
+                                <h5 class="mb-0">{{ batch.current_items|floatformat:0 }}</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <small class="text-muted">Current Subitems (Tablets)</small>
+                                <h5 class="mb-0">{{ batch.current_subitems|floatformat:0 }}</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Pricing Information -->
+                    <h5 class="mb-3"><i class="fas fa-dollar-sign me-2"></i>Pricing Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <small class="text-muted">Purchase Price/Pack</small>
+                                <h5 class="mb-0">Rs. {{ batch.purchase_price_per_pack|floatformat:2 }}</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <small class="text-muted">Discount</small>
+                                <h5 class="mb-0 text-danger">
+                                    {% if batch.distributor_discount_pkr %}
+                                        Rs. {{ batch.distributor_discount_pkr|floatformat:2 }} ({{ batch.distributor_discount_percent|floatformat:1 }}%)
+                                    {% else %}
+                                        No Discount
+                                    {% endif %}
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 bg-success text-white">
+                                <small>Net Price/Pack</small>
+                                <h5 class="mb-0">Rs. {{ batch.net_purchase_price_per_pack|floatformat:2 }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <small class="text-muted">Sale Price/Pack</small>
+                                <h5 class="mb-0 text-success">
+                                    {% if batch.sale_price_per_pack %}
+                                        Rs. {{ batch.sale_price_per_pack|floatformat:2 }}
+                                    {% else %}
+                                        Not Set
+                                    {% endif %}
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3">
+                                <small class="text-muted">Total Batch Value</small>
+                                <h5 class="mb-0 text-primary">
+                                    Rs. {{ batch.quantity_packs|add:0|floatformat:0 }}
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Batch Transactions</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for txn in transactions %}
+                                <tr>
+                                    <td>{{ txn.created_at|date:"M d, Y H:i" }}</td>
+                                    <td>
+                                        {% if txn.transaction_type == 'PUR' %}
+                                            <span class="badge bg-success">Purchase</span>
+                                        {% elif txn.transaction_type == 'SALE' %}
+                                            <span class="badge bg-info">Sale</span>
+                                        {% elif txn.transaction_type == 'RET' %}
+                                            <span class="badge bg-warning">Return</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ txn.transaction_type }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if txn.transaction_type == 'SALE' %}
+                                            <span class="text-danger">-{{ txn.quantity_boxes_out|floatformat:0 }}</span> packs
+                                        {% else %}
+                                            <span class="text-success">+{{ txn.quantity_boxes|floatformat:0 }}</span> packs
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if txn.unit_purchase_price %}
+                                            Rs. {{ txn.unit_purchase_price|floatformat:2 }}
+                                        {% elif txn.unit_sale_price %}
+                                            Rs. {{ txn.unit_sale_price|floatformat:2 }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ txn.notes|default:"-"|truncatewords:10 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">
+                                        No transactions recorded
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 1rem;">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'inventory:product_detail' batch.product.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-pills me-2"></i>View Medicine
+                        </a>
+                        <a href="{% url 'inventory:batch_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>All Batches
+                        </a>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="text-muted small">
+                        <p class="mb-1"><strong>Created:</strong> {{ batch.created_at|date:"M d, Y H:i" }}</p>
+                        <p class="mb-0"><strong>Updated:</strong> {{ batch.updated_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
