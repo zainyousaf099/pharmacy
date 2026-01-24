@@ -70,17 +70,17 @@
                                 <select name="distributor_ref" id="id_distributor_ref" class="form-select" onchange="toggleNewDistributor()">
                                     <option value="">-- Select Existing --</option>
                                     {% for dist in distributors %}
-                                    <option value="{{ dist.pk }}" {% if product and product.distributor_ref and product.distributor_ref.pk == dist.pk %}selected{% endif %}>{{ dist.name }}</option>
+                                    <option value="{{ dist.pk }}" {% if product and product.distributor_ref and product.distributor_ref.pk == dist.pk %}selected{% elif selected_distributor_id == dist.pk|stringformat:"s" %}selected{% endif %}>{{ dist.name }}</option>
                                     {% endfor %}
-                                    <option value="__new__">➕ Add New Distributor...</option>
+                                    <option value="__new__" {% if selected_distributor_id == '__new__' %}selected{% endif %}>➕ Add New Distributor...</option>
                                 </select>
                                 <small class="text-muted d-block">Select existing or add new</small>
                             </div>
-                            <div class="col-md-4" id="new_distributor_div" style="display: none;">
+                            <div class="col-md-4" id="new_distributor_div" style="{% if selected_distributor_id == '__new__' or new_distributor_name %}display: block;{% else %}display: none;{% endif %}">
                                 <label class="form-label fw-bold">
                                     New Distributor Name
                                 </label>
-                                <input type="text" name="new_distributor" id="new_distributor" class="form-control" placeholder="Type new distributor name">
+                                <input type="text" name="new_distributor" id="new_distributor" class="form-control" placeholder="Type new distributor name" value="{{ new_distributor_name|default:'' }}">
                                 <small class="text-muted d-block">Will be created automatically</small>
                             </div>
                             <div class="col-md-4" id="dosage_div">
@@ -488,12 +488,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const percentVal = (actualDiscount / grossPrice) * 100;
             discountPercent.value = percentVal.toFixed(2);
             netPurchasePrice.value = Math.max(0, grossPrice - actualDiscount).toFixed(2);
-        } else if (discountPkrVal === 0) {
-            discountPercent.value = '';
-            netPurchasePrice.value = grossPrice.toFixed(2);
         } else {
-            // No gross price yet, just set net to 0
-            netPurchasePrice.value = '0.00';
+            // No discount provided, net price equals gross price
+            discountPercent.value = '0';
+            netPurchasePrice.value = grossPrice.toFixed(2);
         }
         
         calculatePrices();
@@ -517,11 +515,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const pkrVal = (grossPrice * discountPercentVal) / 100;
             discountPkr.value = pkrVal.toFixed(2);
             netPurchasePrice.value = Math.max(0, grossPrice - pkrVal).toFixed(2);
-        } else if (discountPercentVal === 0) {
-            discountPkr.value = '';
-            netPurchasePrice.value = grossPrice.toFixed(2);
         } else {
-            netPurchasePrice.value = '0.00';
+            // No discount provided, net price equals gross price
+            discountPkr.value = '0';
+            netPurchasePrice.value = grossPrice.toFixed(2);
         }
         
         calculatePrices();
@@ -545,6 +542,7 @@ document.addEventListener('DOMContentLoaded', function() {
             discountPkr.value = pkrVal.toFixed(2);
             netPurchasePrice.value = (grossPrice - pkrVal).toFixed(2);
         } else {
+            // No discount, net price equals gross price
             netPurchasePrice.value = grossPrice.toFixed(2);
         }
         

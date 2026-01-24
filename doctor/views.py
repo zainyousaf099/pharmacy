@@ -20,6 +20,16 @@ def doctor_panel(request):
             prescriptions_data = data.get('prescriptions', [])
             patient_ref_no = data.get('patient_ref_no')
             
+            # Get clinical notes from the request
+            clinical_notes = data.get('clinical_notes', {})
+            presenting_complaints = clinical_notes.get('pc', '')
+            development = clinical_notes.get('dev', '')
+            vaccination = clinical_notes.get('vac', '')
+            medical_examination = clinical_notes.get('me', '')
+            investigation_advised = clinical_notes.get('ia', '')
+            provisional_diagnosis = clinical_notes.get('pd', '')
+            special_note = data.get('special_note', '')
+            
             if not patient_ref_no:
                 return JsonResponse({'success': False, 'error': 'Patient reference number is required'})
             
@@ -51,6 +61,13 @@ def doctor_panel(request):
                             dosage_form=dosage_form,
                             frequency=frequency,
                             days=days,
+                            presenting_complaints=presenting_complaints,
+                            development=development,
+                            vaccination=vaccination,
+                            medical_examination=medical_examination,
+                            investigation_advised=investigation_advised,
+                            provisional_diagnosis=provisional_diagnosis,
+                            notes=special_note,
                             created_by=request.user if request.user.is_authenticated else None
                         )
                     except Product.DoesNotExist:
@@ -110,24 +127,68 @@ def search_medicines_api(request):
 
 
 def search_patient(request):
-    """API endpoint for patient search"""
+    """API endpoint for patient search - supports ref_no, name, and phone"""
     query = request.GET.get('q', '').strip()
+    patient_id = request.GET.get('id', '').strip()  # For selecting specific patient from results
     
-    if not query:
+    if not query and not patient_id:
         return JsonResponse({'success': False, 'error': 'Search query is required'})
     
-    # Try to find patient by ref_no first, then by name
     patient = None
+    multiple_results = []
+    
     try:
-        patient = Patient.objects.filter(ref_no__iexact=query).first()
-        if not patient:
-            patient = Patient.objects.filter(name__icontains=query).first()
+        # If specific patient ID is provided, get that patient directly
+        if patient_id:
+            patient = Patient.objects.filter(id=patient_id).first()
+        else:
+            # Try to find patient by ref_no first (exact match)
+            patient = Patient.objects.filter(ref_no__iexact=query).first()
+            
+            if not patient:
+                # Search by name or phone - may return multiple results
+                from django.db.models import Q
+                matching_patients = Patient.objects.filter(
+                    Q(name__icontains=query) | Q(phone__icontains=query)
+                ).order_by('-created_at')[:20]
+                
+                if matching_patients.count() == 1:
+                    # Only one match, use it directly
+                    patient = matching_patients.first()
+                elif matching_patients.count() > 1:
+                    # Multiple matches, return list for user to choose
+                    for p in matching_patients:
+                        multiple_results.append({
+                            'id': str(p.id),
+                            'ref_no': p.ref_no,
+                            'name': p.name,
+                            'phone': p.phone or 'N/A',
+                            'age': p.age or 'N/A',
+                            'registered': p.created_at.strftime('%d %b %Y') if p.created_at else 'N/A',
+                            'initials': ''.join([n[0].upper() for n in p.name.split()[:2]]) if p.name else 'P'
+                        })
+                    return JsonResponse({
+                        'success': True,
+                        'multiple_results': True,
+                        'patients': multiple_results,
+                        'count': len(multiple_results)
+                    })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
     
     if patient:
-        # Get prescription history grouped by batch_id
-        prescriptions = Prescription.objects.filter(patient=patient).order_by('-created_at')
+        # Find ALL patients with the same name OR phone number to combine their history
+        # This handles cases where the same person was registered multiple times
+        from django.db.models import Q
+        related_patients = Patient.objects.filter(
+            Q(name__iexact=patient.name) | 
+            (Q(phone=patient.phone) & ~Q(phone='') & ~Q(phone__isnull=True))
+        ).values_list('id', flat=True)
+        
+        # Get prescription history from ALL related patients, grouped by batch_id
+        prescriptions = Prescription.objects.filter(
+            patient_id__in=related_patients
+        ).select_related('medicine', 'patient').order_by('-created_at')
         
         # Group by batch_id
         visits = {}
@@ -137,11 +198,12 @@ def search_patient(request):
                 visits[batch_key] = {
                     'batch_id': str(p.batch_id) if p.batch_id else None,
                     'date': p.created_at.strftime('%d %b %Y, %I:%M %p'),
+                    'patient_ref': p.patient.ref_no,  # Show which PAT number this was under
                     'medicines': []
                 }
             visits[batch_key]['medicines'].append({
                 'name': p.medicine.name if p.medicine else 'Unknown',
-                'qty': p.qty,
+                'qty': float(p.qty) if p.qty else 1,
                 'dosage_form': p.dosage_form,
                 'frequency': p.frequency,
                 'days': p.days,
@@ -152,6 +214,9 @@ def search_patient(request):
         
         # Convert to list and limit to last 10 visits
         visit_list = list(visits.values())[:10]
+        
+        # Count unique related patients for info
+        related_count = len(set(related_patients))
         
         # Return structured data for better UI
         return JsonResponse({
@@ -168,7 +233,8 @@ def search_patient(request):
                 'initials': ''.join([n[0].upper() for n in patient.name.split()[:2]]) if patient.name else 'P'
             },
             'prescription_history': visit_list,
-            'total_visits': len(visits)
+            'total_visits': len(visits),
+            'related_patients_count': related_count  # How many PAT records found for this person
         })
     else:
         return JsonResponse({'success': False, 'error': 'Patient not found'})
@@ -199,6 +265,24 @@ def print_prescription(request, patient_ref_no):
                 patient=patient, 
                 batch_id=batch_id
             ).order_by('-created_at')
+            
+            # If reprinting and no clinical notes in URL, get them from the saved prescription
+            if prescriptions.exists():
+                first_rx = prescriptions.first()
+                if not pc and first_rx.presenting_complaints:
+                    pc = first_rx.presenting_complaints
+                if not dev and first_rx.development:
+                    dev = first_rx.development
+                if not vac and first_rx.vaccination:
+                    vac = first_rx.vaccination
+                if not me and first_rx.medical_examination:
+                    me = first_rx.medical_examination
+                if not ia and first_rx.investigation_advised:
+                    ia = first_rx.investigation_advised
+                if not pd and first_rx.provisional_diagnosis:
+                    pd = first_rx.provisional_diagnosis
+                if not special_note and first_rx.notes:
+                    special_note = first_rx.notes
         except Exception:
             # If batch_id is invalid, get the latest batch
             prescriptions = Prescription.objects.filter(patient=patient).order_by('-created_at')[:20]
@@ -212,6 +296,22 @@ def print_prescription(request, patient_ref_no):
                 patient=patient,
                 batch_id=latest_prescription.batch_id
             ).order_by('-created_at')
+            
+            # Get clinical notes from saved prescription if not in URL
+            if not pc and latest_prescription.presenting_complaints:
+                pc = latest_prescription.presenting_complaints
+            if not dev and latest_prescription.development:
+                dev = latest_prescription.development
+            if not vac and latest_prescription.vaccination:
+                vac = latest_prescription.vaccination
+            if not me and latest_prescription.medical_examination:
+                me = latest_prescription.medical_examination
+            if not ia and latest_prescription.investigation_advised:
+                ia = latest_prescription.investigation_advised
+            if not pd and latest_prescription.provisional_diagnosis:
+                pd = latest_prescription.provisional_diagnosis
+            if not special_note and latest_prescription.notes:
+                special_note = latest_prescription.notes
         else:
             # Fallback: show latest prescriptions (for backward compatibility with old data)
             prescriptions = Prescription.objects.filter(patient=patient).order_by('-created_at')[:20]
@@ -422,7 +522,7 @@ def get_template_medicines_api(request, template_id):
             results.append({
                 'medicine_id': str(med.medicine.id),
                 'medicine_name': med.medicine.name,
-                'qty': med.qty,
+                'qty': float(med.qty) if med.qty else 1,
                 'dosage_form': med.dosage_form,
                 'frequency': med.frequency,
                 'days': med.days,
@@ -432,7 +532,19 @@ def get_template_medicines_api(request, template_id):
                 'stock': med.medicine.total_items
             })
         
-        return JsonResponse({'success': True, 'medicines': results})
+        # Include clinical notes from the template
+        return JsonResponse({
+            'success': True, 
+            'medicines': results,
+            'clinical_notes': {
+                'presenting_complaints': template.presenting_complaints or '',
+                'development': template.development or '',
+                'vaccination': template.vaccination or '',
+                'medical_examination': template.medical_examination or '',
+                'investigation_advised': template.investigation_advised or '',
+                'provisional_diagnosis': template.provisional_diagnosis or ''
+            }
+        })
         
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
@@ -654,7 +766,7 @@ def patient_detail_api(request, ref_no):
                 'id': str(presc.id),
                 'medicine_name': presc.medicine.name if presc.medicine else 'Unknown',
                 'medicine_form': presc.medicine.medicine_form if presc.medicine else 'tablet',
-                'qty': presc.qty,
+                'qty': float(presc.qty) if presc.qty else 1,
                 'dosage_form': presc.dosage_form,
                 'frequency': presc.frequency,
                 'days': presc.days,

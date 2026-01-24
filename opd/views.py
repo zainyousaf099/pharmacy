@@ -97,7 +97,29 @@ def print_patient_receipt(request, patient_id):
     return render(request, "opdtemp/print_receipt.html", context)
 
 
-
+def get_patients_list(request):
+    """API endpoint to get list of all patients for Previous Patients feature"""
+    try:
+        # Get last 100 patients ordered by creation date (most recent first)
+        patients = Patient.objects.all().order_by('-created_at')[:100]
+        
+        patients_data = []
+        for patient in patients:
+            patients_data.append({
+                'id': patient.id,
+                'ref_no': patient.ref_no,
+                'name': patient.name,
+                'phone': patient.phone,
+                'age': patient.age,
+                'temperature': str(patient.temperature) if patient.temperature else None,
+                'weight': str(patient.weight) if patient.weight else None,
+                'height': str(patient.height) if patient.height else None,
+                'created_at': patient.created_at.strftime('%d %b %Y %H:%M'),
+            })
+        
+        return JsonResponse({'success': True, 'patients': patients_data})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 
 def patient_detail(request, ref_no):

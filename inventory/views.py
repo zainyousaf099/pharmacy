@@ -65,14 +65,18 @@ def product_list(request):
     return render(request, "inventory/product_list.html", {"products": products})
 
 def product_create(request):
+    new_distributor_name = ''
+    selected_distributor_id = ''
+    
     if request.method == "POST":
         form = ProductForm(request.POST)
+        
+        # Get distributor values from POST to preserve them on form errors
+        selected_distributor_id = request.POST.get('distributor_ref', '').strip()
+        new_distributor_name = request.POST.get('new_distributor', '').strip()
+        
         if form.is_valid():
             product = form.save(commit=False)
-            
-            # Handle distributor selection
-            distributor_ref_id = request.POST.get('distributor_ref', '').strip()
-            new_distributor_name = request.POST.get('new_distributor', '').strip()
             
             if new_distributor_name:
                 # Create new distributor if name provided
@@ -82,10 +86,10 @@ def product_create(request):
                 )
                 product.distributor_ref = distributor
                 product.distributor = new_distributor_name  # Keep legacy field updated
-            elif distributor_ref_id and distributor_ref_id != '__new__':
+            elif selected_distributor_id and selected_distributor_id != '__new__':
                 # Use selected existing distributor
                 try:
-                    distributor = Distributor.objects.get(pk=distributor_ref_id)
+                    distributor = Distributor.objects.get(pk=selected_distributor_id)
                     product.distributor_ref = distributor
                     product.distributor = distributor.name
                 except Distributor.DoesNotExist:
@@ -95,6 +99,13 @@ def product_create(request):
             if product.products_in_box < 1: product.products_in_box = 1
             if product.items_per_product < 1: product.items_per_product = 1
             if product.subitems_per_item < 1: product.subitems_per_item = 1
+            
+            # Handle empty discount fields - set to 0 if not provided
+            if product.distributor_discount_pkr is None:
+                product.distributor_discount_pkr = Decimal('0.00')
+            if product.distributor_discount_percent is None:
+                product.distributor_discount_percent = Decimal('0.00')
+            
             product.save()
             
             # Update distributor's total_purchases with the initial stock value
@@ -109,7 +120,12 @@ def product_create(request):
         form = ProductForm()
     
     distributors = Distributor.objects.all()
-    return render(request, "inventory/product_create.html", {"form": form, "distributors": distributors})
+    return render(request, "inventory/product_create.html", {
+        "form": form, 
+        "distributors": distributors,
+        "new_distributor_name": new_distributor_name,
+        "selected_distributor_id": selected_distributor_id,
+    })
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -962,15 +978,18 @@ def expense_reports_pdf(request):
 def product_update(request, pk):
     """Update product details and prices"""
     product = get_object_or_404(Product, pk=pk)
+    new_distributor_name = ''
+    selected_distributor_id = ''
     
     if request.method == "POST":
         form = ProductForm(request.POST, instance=product)
+        
+        # Get distributor values from POST to preserve them on form errors
+        selected_distributor_id = request.POST.get('distributor_ref', '').strip()
+        new_distributor_name = request.POST.get('new_distributor', '').strip()
+        
         if form.is_valid():
             updated_product = form.save(commit=False)
-            
-            # Handle distributor selection
-            distributor_ref_id = request.POST.get('distributor_ref', '').strip()
-            new_distributor_name = request.POST.get('new_distributor', '').strip()
             
             if new_distributor_name:
                 # Create new distributor if name provided
@@ -980,15 +999,15 @@ def product_update(request, pk):
                 )
                 updated_product.distributor_ref = distributor
                 updated_product.distributor = new_distributor_name
-            elif distributor_ref_id and distributor_ref_id != '__new__':
+            elif selected_distributor_id and selected_distributor_id != '__new__':
                 # Use selected existing distributor
                 try:
-                    distributor = Distributor.objects.get(pk=distributor_ref_id)
+                    distributor = Distributor.objects.get(pk=selected_distributor_id)
                     updated_product.distributor_ref = distributor
                     updated_product.distributor = distributor.name
                 except Distributor.DoesNotExist:
                     pass
-            elif distributor_ref_id == '':
+            elif selected_distributor_id == '':
                 # Clear distributor if none selected
                 updated_product.distributor_ref = None
                 updated_product.distributor = ''
@@ -997,6 +1016,13 @@ def product_update(request, pk):
             if updated_product.products_in_box < 1: updated_product.products_in_box = 1
             if updated_product.items_per_product < 1: updated_product.items_per_product = 1
             if updated_product.subitems_per_item < 1: updated_product.subitems_per_item = 1
+            
+            # Handle empty discount fields - set to 0 if not provided
+            if updated_product.distributor_discount_pkr is None:
+                updated_product.distributor_discount_pkr = Decimal('0.00')
+            if updated_product.distributor_discount_percent is None:
+                updated_product.distributor_discount_percent = Decimal('0.00')
+            
             updated_product.save()
             messages.success(request, f"Product '{updated_product.name}' updated successfully!")
             return redirect("inventory:product_detail", pk=product.pk)
@@ -1009,6 +1035,8 @@ def product_update(request, pk):
         "product": product,
         "is_update": True,
         "distributors": distributors,
+        "new_distributor_name": new_distributor_name,
+        "selected_distributor_id": selected_distributor_id,
     }
     return render(request, "inventory/product_create.html", context)
 

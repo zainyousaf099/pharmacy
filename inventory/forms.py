@@ -13,10 +13,40 @@ class ProductForm(forms.ModelForm):
         })
     )
     
+    # Override distributor_ref to handle __new__ value and make it optional
+    distributor_ref = forms.CharField(
+        required=False,
+        widget=forms.Select(attrs={
+            "class": "form-select",
+            "id": "id_distributor_ref"
+        })
+    )
+    
+    # Override discount fields to make them explicitly not required
+    distributor_discount_pkr = forms.DecimalField(
+        required=False,
+        widget=forms.NumberInput(attrs={
+            "class": "form-control",
+            "placeholder": "Discount in PKR",
+            "step": "0.01",
+            "id": "id_distributor_discount_pkr"
+        })
+    )
+    
+    distributor_discount_percent = forms.DecimalField(
+        required=False,
+        widget=forms.NumberInput(attrs={
+            "class": "form-control",
+            "placeholder": "Discount %",
+            "step": "0.01",
+            "id": "id_distributor_discount_percent"
+        })
+    )
+    
     class Meta:
         model = Product
         fields = [
-            "name", "category", "medicine_form", "distributor_ref", "products_in_box", "items_per_product", "subitems_per_item",
+            "name", "category", "medicine_form", "products_in_box", "items_per_product", "subitems_per_item",
             "weight_or_quantity", "purchase_price", "distributor_discount_percent", "distributor_discount_pkr",
             "sale_price", "rack_no", "expiry_date", "batch_no" 
         ]
@@ -27,10 +57,6 @@ class ProductForm(forms.ModelForm):
             }),
             "category": forms.Select(attrs={"class": "form-select"}),
             "medicine_form": forms.Select(attrs={"class": "form-select", "id": "medicine_form"}),
-            "distributor_ref": forms.Select(attrs={
-                "class": "form-select",
-                "id": "id_distributor_ref"
-            }),
             "products_in_box": forms.NumberInput(attrs={
                 "class": "form-control",
                 "placeholder": "How many packs/boxes purchased?",
@@ -57,18 +83,6 @@ class ProductForm(forms.ModelForm):
                 "placeholder": "Price per pack (before discount)",
                 "step": "0.01",
                 "id": "id_purchase_price"
-            }),
-            "distributor_discount_percent": forms.NumberInput(attrs={
-                "class": "form-control",
-                "placeholder": "Discount %",
-                "step": "0.01",
-                "id": "id_distributor_discount_percent"
-            }),
-            "distributor_discount_pkr": forms.NumberInput(attrs={
-                "class": "form-control",
-                "placeholder": "Discount in PKR",
-                "step": "0.01",
-                "id": "id_distributor_discount_pkr"
             }),
             "sale_price": forms.NumberInput(attrs={
                 "class": "form-control",
@@ -366,9 +380,8 @@ class DistributorPaymentForm(forms.ModelForm):
     """Form for recording payments to distributors"""
     class Meta:
         model = DistributorPayment
-        fields = ['distributor', 'amount', 'payment_date', 'payment_method', 'reference_no', 'notes']
+        fields = ['amount', 'payment_date', 'payment_method', 'reference_no', 'notes']
         widgets = {
-            'distributor': forms.Select(attrs={'class': 'form-select'}),
             'amount': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Payment amount',
@@ -396,9 +409,8 @@ class DistributorPurchaseForm(forms.ModelForm):
     """Form for recording purchases from distributors"""
     class Meta:
         model = DistributorPurchase
-        fields = ['distributor', 'invoice_no', 'invoice_date', 'total_amount', 'discount_amount', 'notes']
+        fields = ['invoice_no', 'invoice_date', 'total_amount', 'discount_amount', 'notes']
         widgets = {
-            'distributor': forms.Select(attrs={'class': 'form-select'}),
             'invoice_no': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Distributor invoice number'

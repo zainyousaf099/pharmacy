@@ -49,15 +49,53 @@ def search_medicines_for_pharmacy(request):
 def search_patient_prescription(request):
     """API endpoint to search patient and get their prescriptions"""
     query = request.GET.get('q', '').strip()
+    patient_id = request.GET.get('id', '').strip()  # For selecting specific patient from multiple results
     
-    if not query:
+    if not query and not patient_id:
         return JsonResponse({'success': False, 'error': 'Search query is required'})
     
     try:
-        # Search by reference number or name
-        patient = Patient.objects.filter(ref_no__iexact=query).first()
-        if not patient:
-            patient = Patient.objects.filter(name__icontains=query).first()
+        patient = None
+        
+        # If specific patient ID is provided, get that patient directly
+        if patient_id:
+            patient = Patient.objects.filter(id=patient_id).first()
+        else:
+            # Search by reference number first (exact match)
+            patient = Patient.objects.filter(ref_no__iexact=query).first()
+            
+            if not patient:
+                # Search by name or phone - may return multiple results
+                from django.db.models import Q
+                matching_patients = Patient.objects.filter(
+                    Q(name__icontains=query) | Q(phone__icontains=query)
+                ).order_by('-created_at')[:20]
+                
+                if matching_patients.count() == 1:
+                    # Only one match, use it directly
+                    patient = matching_patients.first()
+                elif matching_patients.count() > 1:
+                    # Multiple matches, return list for user to choose
+                    multiple_results = []
+                    for p in matching_patients:
+                        # Check if patient has prescriptions
+                        has_prescriptions = Prescription.objects.filter(patient=p, is_dispensed=False).exists()
+                        multiple_results.append({
+                            'id': str(p.id),
+                            'ref_no': p.ref_no,
+                            'name': p.name,
+                            'phone': p.phone or 'N/A',
+                            'age': p.age or 'N/A',
+                            'registered': p.created_at.strftime('%d %b %Y') if p.created_at else 'N/A',
+                            'initials': ''.join([n[0].upper() for n in p.name.split()[:2]]) if p.name else 'P',
+                            'has_prescriptions': has_prescriptions
+                        })
+                    return JsonResponse({
+                        'success': True,
+                        'multiple_results': True,
+                        'patients': multiple_results,
+                        'count': len(multiple_results)
+                    })
         
         if not patient:
             return JsonResponse({'success': False, 'error': 'Patient not found'})
@@ -129,7 +167,7 @@ def search_patient_prescription(request):
             # Get medicine form to determine pricing logic
             medicine_form = rx.medicine.medicine_form or 'tablet'
             dosage_form = rx.dosage_form or 'MG'
-            qty = rx.qty or 1
+            qty = float(rx.qty) if rx.qty else 1
             
             # Liquid forms (syrup, drops, injection) - patient buys bottles, not doses
             # Solid forms (tablet, capsule) - patient buys individual tablets
@@ -166,6 +204,10 @@ def search_patient_prescription(request):
                 total_price = total_quantity * price_per_unit
                 quantity_label = f"{total_quantity} {dosage_form.lower()}"
             
+            # Get pricing for dynamic recalculation in frontend
+            sale_price = float(rx.medicine.sale_price_per_item or rx.medicine.sale_price or 0)
+            subitem_price = float(rx.medicine.sale_price_per_subitem or 0)
+            
             prescription_data.append({
                 'id': str(rx.id),
                 'medicine_name': rx.medicine.name,
@@ -177,6 +219,8 @@ def search_patient_prescription(request):
                 'frequency_urdu': frequency_urdu,
                 'days': rx.days,
                 'price': total_price,
+                'sale_price': sale_price,
+                'subitem_price': subitem_price,
                 'quantity': total_quantity,
                 'quantity_label': quantity_label,
                 'category': rx.medicine.category.name if rx.medicine.category else 'N/A',
@@ -256,16 +300,31 @@ def process_pharmacy_order(request):
             for med in medicines:
                 medicine_id = med.get('medicine_id')
                 medicine_name = med.get('medicine_name', '')
-                days = int(med.get('days', 1))
+                days = int(med.get('days', 0))
+                qty = int(med.get('qty', 1))  # Direct quantity for direct sale mode
+                frequency = med.get('frequency', 'OD')  # Frequency for calculating doses
+                medicine_form_from_frontend = med.get('medicine_form', 'tablet')
                 price = Decimal(str(med.get('price', 0)))
                 
+                # Frequency to doses per day mapping
+                frequency_doses_map = {
+                    'OD': 1, 'BD': 2, 'TDS': 3, 'QID': 4,
+                    'HS': 1, 'QAM': 1, 'QPM': 1, 'SOS': 1, 'STAT': 1,
+                    'QOD': 0.5, 'QW': 0.14,
+                    'Q6H': 4, 'Q8H': 3,
+                    'AC': 3, 'PC': 3
+                }
+                doses_per_day = frequency_doses_map.get(frequency, 1)
+                
                 if not medicine_id:
-                    # For direct sale without medicine_id, skip stock deduction
+                    # For direct sale without medicine_id, skip stock deduction but record sale
                     processed_items.append({
                         'medicine': medicine_name,
-                        'quantity': days,
+                        'quantity': qty if is_direct_sale else days,
                         'price': float(price),
-                        'new_stock': 'N/A'
+                        'unit_price': float(price) / qty if qty > 0 else float(price),
+                        'new_stock': 'N/A',
+                        'medicine_form': 'unknown'
                     })
                     continue
                 
@@ -296,9 +355,13 @@ def process_pharmacy_order(request):
                 
                 if medicine_form in LIQUID_FORMS:
                     # For liquids: deduct bottles (items), not ml/doses
-                    # 1 bottle for up to 7 days, 2 for 8-14 days, etc.
-                    bottles_needed = max(1, (days + 6) // 7)
-                    total_quantity = bottles_needed
+                    if is_direct_sale:
+                        # Direct sale: use qty directly as number of bottles/items
+                        total_quantity = qty
+                    else:
+                        # Prescription: 1 bottle for up to 7 days, 2 for 8-14 days, etc.
+                        bottles_needed = max(1, (days + 6) // 7)
+                        total_quantity = bottles_needed
                     
                     # Check bottle stock (total_items = bottles)
                     available_stock = int(product.total_items)
@@ -322,27 +385,19 @@ def process_pharmacy_order(request):
                         quantity_subitems=Decimal(str(total_quantity)),  # Also track as subitems
                         unit_purchase_price=product.purchase_price_per_item,
                         unit_sale_price=product.sale_price_per_item or product.purchase_price_per_item,
-                        notes=f"Dispensed {total_quantity} bottle(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'}) - {days} days" + (" [FORCE SELL - Stock was insufficient]" if force_sell and available_stock < total_quantity else "")
+                        notes=f"{'Direct Sale' if is_direct_sale else 'Prescription'}: Dispensed {total_quantity} bottle(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'})" + (f" - {days} days" if days > 0 else "") + (" [FORCE SELL]" if force_sell and available_stock < total_quantity else "")
                     )
                 else:
                     # For solids: deduct tablets (subitems)
-                    # Get quantity from the passed data or calculate based on timing
-                    qty_label = med.get('qty_label', '')
-                    if qty_label and 'tablet' in qty_label.lower():
-                        # Extract number from qty_label like "6 tablet(s)"
-                        try:
-                            total_quantity = int(''.join(filter(str.isdigit, qty_label.split()[0])))
-                        except:
-                            total_quantity = days
-                    elif prescription:
-                        doses_per_day = (1 if prescription.morning else 0) + \
-                                       (1 if prescription.evening else 0) + \
-                                       (1 if prescription.night else 0)
-                        if doses_per_day == 0:
-                            doses_per_day = 1
-                        total_quantity = doses_per_day * days
+                    if is_direct_sale:
+                        # Direct sale: use qty directly as number of tablets/units
+                        total_quantity = qty
                     else:
-                        total_quantity = days
+                        # Prescription mode: calculate total tablets = doses_per_day * days
+                        # This matches the frontend calculation exactly
+                        total_quantity = int(doses_per_day * days)
+                        if total_quantity < 1:
+                            total_quantity = 1
                     
                     # Check tablet stock
                     available_stock = int(product.total_subitems)
@@ -366,7 +421,7 @@ def process_pharmacy_order(request):
                         quantity_subitems=Decimal(str(total_quantity)),
                         unit_purchase_price=product.purchase_price_per_subitem,
                         unit_sale_price=product.sale_price_per_subitem or product.purchase_price_per_subitem,
-                        notes=f"Dispensed {total_quantity} tablet(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'}) - {days} days" + (" [FORCE SELL - Stock was insufficient]" if force_sell and available_stock < total_quantity else "")
+                        notes=f"{'Direct Sale' if is_direct_sale else 'Prescription'}: Dispensed {total_quantity} tablet(s) to {patient_name} (Ref: {patient_ref_no or 'Direct Sale'})" + (f" - {days} days" if days > 0 else "") + (" [FORCE SELL]" if force_sell and available_stock < total_quantity else "")
                     )
                 
                 # Mark prescription as dispensed

@@ -578,6 +578,298 @@
       font-size: 1.2rem;
     }
   }
+
+  /* Previous Patients Modal Styles */
+  .patients-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+  }
+
+  .patients-modal-overlay.active {
+    display: flex;
+  }
+
+  .patients-modal {
+    background: linear-gradient(145deg, #001a4d 0%, #000a1a 100%);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(51, 153, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .patients-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    background: rgba(51, 153, 255, 0.15);
+    border-bottom: 1px solid rgba(51, 153, 255, 0.3);
+  }
+
+  .patients-modal-header h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  .patients-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+    line-height: 1;
+  }
+
+  .patients-modal-close:hover {
+    transform: rotate(90deg);
+    color: #3399ff;
+  }
+
+  .patients-search-section {
+    padding: 15px 25px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: 10px;
+  }
+
+  .patients-search-section input {
+    flex: 1;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(51, 153, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+  }
+
+  .patients-search-section input:focus {
+    outline: none;
+    border-color: #3399ff;
+  }
+
+  .patients-search-section input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .patients-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+  }
+
+  .patient-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+  }
+
+  .patient-card:hover {
+    background: rgba(51, 153, 255, 0.15);
+    border-color: rgba(51, 153, 255, 0.4);
+    transform: translateX(5px);
+  }
+
+  .patient-card-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .patient-card-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3399ff 0%, #0066cc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  .patient-card-details h4 {
+    margin: 0 0 5px 0;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .patient-card-details p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+  }
+
+  .patient-card-meta {
+    text-align: right;
+  }
+
+  .patient-card-meta .ref-no {
+    background: rgba(51, 153, 255, 0.2);
+    color: #3399ff;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .patient-card-meta .date {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    margin-top: 5px;
+  }
+
+  .patients-loading {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .patients-loading i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+    color: #3399ff;
+  }
+
+  .no-patients {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .no-patients i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+    color: rgba(51, 153, 255, 0.3);
+  }
+
+  /* Patient Detail View */
+  .patient-detail-view {
+    display: none;
+  }
+
+  .patient-detail-view.active {
+    display: block;
+  }
+
+  .patient-detail-header {
+    background: linear-gradient(135deg, rgba(51, 153, 255, 0.2) 0%, rgba(0, 102, 204, 0.15) 100%);
+    padding: 25px;
+    text-align: center;
+    border-bottom: 1px solid rgba(51, 153, 255, 0.2);
+  }
+
+  .patient-detail-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3399ff 0%, #0066cc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 auto 15px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 25px rgba(51, 153, 255, 0.4);
+  }
+
+  .patient-detail-name {
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 0 5px 0;
+  }
+
+  .patient-detail-ref {
+    background: rgba(51, 153, 255, 0.2);
+    color: #3399ff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-block;
+  }
+
+  .patient-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .patient-detail-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .patient-detail-item i {
+    color: #3399ff;
+    font-size: 1.2rem;
+    width: 25px;
+    text-align: center;
+  }
+
+  .patient-detail-item .detail-content {
+    flex: 1;
+  }
+
+  .patient-detail-item .detail-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+  }
+
+  .patient-detail-item .detail-value {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .patient-detail-back {
+    background: rgba(51, 153, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin: 15px;
+    transition: background 0.3s;
+  }
+
+  .patient-detail-back:hover {
+    background: rgba(51, 153, 255, 0.4);
+  }
 </style>
 {% endblock style %}
 
@@ -631,6 +923,8 @@
             <span class="age-label">Years</span>
             {{ form.age_months }}
             <span class="age-label">Months</span>
+            {{ form.age_days }}
+            <span class="age-label">Days</span>
           </div>
         </div>
 
@@ -772,6 +1066,7 @@
   <h4><i class="fas fa-clipboard-list"></i> Menu</h4>
   <ul>
     <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+    <li><a href="#" onclick="openPreviousPatients(); return false;"><i class="fas fa-users"></i> Previous Patients</a></li>
     <li><a href="/admin/" target="_blank"><i class="fas fa-cog"></i> Admin Panel</a></li>
     <li><a href="#"><i class="fas fa-sliders-h"></i> Settings</a></li>
     <li><a href="/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -809,6 +1104,44 @@
 
 <!-- Overlay -->
 <div class="overlay" id="overlay"></div>
+
+<!-- Previous Patients Modal -->
+<div class="patients-modal-overlay" id="patientsModal">
+  <div class="patients-modal">
+    <div class="patients-modal-header">
+      <h3><i class="fas fa-users"></i> Previous Patients</h3>
+      <button class="patients-modal-close" onclick="closePreviousPatients()">&times;</button>
+    </div>
+    
+    <!-- List View -->
+    <div id="patientsListView">
+      <div class="patients-search-section">
+        <input type="text" id="patientsSearchInput" placeholder="Search by name, phone, or ref no..." oninput="filterPatients()">
+      </div>
+      <div class="patients-list" id="patientsList">
+        <div class="patients-loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading patients...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detail View -->
+    <div id="patientDetailView" class="patient-detail-view">
+      <button class="patient-detail-back" onclick="showPatientsList()">
+        <i class="fas fa-arrow-left"></i> Back to List
+      </button>
+      <div class="patient-detail-header">
+        <div class="patient-detail-avatar" id="detailAvatar">PA</div>
+        <h2 class="patient-detail-name" id="detailName">Patient Name</h2>
+        <span class="patient-detail-ref" id="detailRef">PAT000001</span>
+      </div>
+      <div class="patient-detail-grid" id="detailGrid">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Popup Modal -->
 <div class="popup-overlay" id="popup">
@@ -1101,5 +1434,184 @@
   
   // Auto-discover server after 2 seconds (gives page time to load)
   setTimeout(autoDiscoverServer, 2000);
+
+  // ========== PREVIOUS PATIENTS FUNCTIONS ==========
+  let allPatients = [];
+
+  function openPreviousPatients() {
+    // Close side menu first
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+    
+    // Open modal
+    document.getElementById('patientsModal').classList.add('active');
+    document.getElementById('patientsListView').style.display = 'block';
+    document.getElementById('patientDetailView').classList.remove('active');
+    
+    // Load patients
+    loadPreviousPatients();
+  }
+
+  function closePreviousPatients() {
+    document.getElementById('patientsModal').classList.remove('active');
+  }
+
+  function loadPreviousPatients() {
+    const listEl = document.getElementById('patientsList');
+    listEl.innerHTML = `
+      <div class="patients-loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading patients...</p>
+      </div>
+    `;
+
+    fetch('/opd/api/patients/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.patients.length > 0) {
+          allPatients = data.patients;
+          renderPatientsList(allPatients);
+        } else {
+          listEl.innerHTML = `
+            <div class="no-patients">
+              <i class="fas fa-user-slash"></i>
+              <p>No patients found</p>
+            </div>
+          `;
+        }
+      })
+      .catch(err => {
+        console.error('Error loading patients:', err);
+        listEl.innerHTML = `
+          <div class="no-patients">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Error loading patients</p>
+          </div>
+        `;
+      });
+  }
+
+  function renderPatientsList(patients) {
+    const listEl = document.getElementById('patientsList');
+    
+    if (patients.length === 0) {
+      listEl.innerHTML = `
+        <div class="no-patients">
+          <i class="fas fa-search"></i>
+          <p>No matching patients found</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    patients.forEach(patient => {
+      const initials = patient.name.substring(0, 2).toUpperCase();
+      html += `
+        <div class="patient-card" onclick="showPatientDetail('${patient.id}')">
+          <div class="patient-card-info">
+            <div class="patient-card-avatar">${initials}</div>
+            <div class="patient-card-details">
+              <h4>${patient.name}</h4>
+              <p><i class="fas fa-phone"></i> ${patient.phone || 'N/A'} &nbsp;|&nbsp; <i class="fas fa-birthday-cake"></i> ${patient.age || 'N/A'}</p>
+            </div>
+          </div>
+          <div class="patient-card-meta">
+            <div class="ref-no">${patient.ref_no}</div>
+            <div class="date">${patient.created_at}</div>
+          </div>
+        </div>
+      `;
+    });
+    listEl.innerHTML = html;
+  }
+
+  function filterPatients() {
+    const query = document.getElementById('patientsSearchInput').value.toLowerCase().trim();
+    
+    if (!query) {
+      renderPatientsList(allPatients);
+      return;
+    }
+
+    const filtered = allPatients.filter(p => 
+      p.name.toLowerCase().includes(query) ||
+      (p.phone && p.phone.includes(query)) ||
+      p.ref_no.toLowerCase().includes(query)
+    );
+    
+    renderPatientsList(filtered);
+  }
+
+  function showPatientDetail(patientId) {
+    const patient = allPatients.find(p => p.id == patientId);
+    if (!patient) return;
+
+    document.getElementById('patientsListView').style.display = 'none';
+    document.getElementById('patientDetailView').classList.add('active');
+
+    // Populate details
+    document.getElementById('detailAvatar').textContent = patient.name.substring(0, 2).toUpperCase();
+    document.getElementById('detailName').textContent = patient.name;
+    document.getElementById('detailRef').textContent = patient.ref_no;
+
+    const gridEl = document.getElementById('detailGrid');
+    gridEl.innerHTML = `
+      <div class="patient-detail-item">
+        <i class="fas fa-phone"></i>
+        <div class="detail-content">
+          <div class="detail-label">Phone</div>
+          <div class="detail-value">${patient.phone || 'N/A'}</div>
+        </div>
+      </div>
+      <div class="patient-detail-item">
+        <i class="fas fa-birthday-cake"></i>
+        <div class="detail-content">
+          <div class="detail-label">Age</div>
+          <div class="detail-value">${patient.age || 'N/A'}</div>
+        </div>
+      </div>
+      <div class="patient-detail-item">
+        <i class="fas fa-thermometer-half"></i>
+        <div class="detail-content">
+          <div class="detail-label">Temperature</div>
+          <div class="detail-value">${patient.temperature ? patient.temperature + '°F' : 'N/A'}</div>
+        </div>
+      </div>
+      <div class="patient-detail-item">
+        <i class="fas fa-weight"></i>
+        <div class="detail-content">
+          <div class="detail-label">Weight</div>
+          <div class="detail-value">${patient.weight ? patient.weight + ' kg' : 'N/A'}</div>
+        </div>
+      </div>
+      <div class="patient-detail-item">
+        <i class="fas fa-ruler-vertical"></i>
+        <div class="detail-content">
+          <div class="detail-label">Height</div>
+          <div class="detail-value">${patient.height ? patient.height + ' cm' : 'N/A'}</div>
+        </div>
+      </div>
+      <div class="patient-detail-item">
+        <i class="fas fa-calendar-alt"></i>
+        <div class="detail-content">
+          <div class="detail-label">Registered</div>
+          <div class="detail-value">${patient.created_at}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function showPatientsList() {
+    document.getElementById('patientsListView').style.display = 'block';
+    document.getElementById('patientDetailView').classList.remove('active');
+  }
+
+  // Close modal on outside click
+  document.getElementById('patientsModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closePreviousPatients();
+    }
+  });
 </script>
 {% endblock js %}

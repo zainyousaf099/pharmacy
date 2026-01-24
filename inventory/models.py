@@ -112,8 +112,8 @@ class Product(models.Model):
     discount_percent = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'), help_text='Discount percent to apply at sale time (informational)')
     
     # Distributor discount fields
-    distributor_discount_percent = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'), help_text='Discount percentage provided by distributor on purchase')
-    distributor_discount_pkr = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'), help_text='Discount amount in PKR provided by distributor')
+    distributor_discount_percent = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'), blank=True, help_text='Discount percentage provided by distributor on purchase')
+    distributor_discount_pkr = models.DecimalField(max_digits=18, decimal_places=2, default=Decimal('0.00'), blank=True, help_text='Discount amount in PKR provided by distributor')
     net_purchase_price = models.DecimalField(max_digits=18, decimal_places=6, default=Decimal('0.00'), help_text='Purchase price after distributor discount')
 
     # inventory & logistics

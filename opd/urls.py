@@ -10,4 +10,5 @@ urlpatterns = [
     path('patient/<str:ref_no>/', views.patient_detail, name='patient_detail'),
     path('admit_patient/', views.admit_patient ,name='admit_patient'),
     path('print-receipt/<int:patient_id>/', views.print_patient_receipt, name='print_patient_receipt'),
+    path('api/patients/', views.get_patients_list, name='get_patients_list'),
 ]

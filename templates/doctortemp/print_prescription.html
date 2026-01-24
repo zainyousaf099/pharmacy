@@ -838,7 +838,7 @@
                     {% for rx in prescriptions %}
                     <div class="medicine-item">
                         <span class="medicine-number">{{ forloop.counter }}.</span>
-                        <span class="medicine-name">{{ rx.medicine.name }}{% if rx.medicine.weight_or_quantity %} <span class="strength">({{ rx.medicine.weight_or_quantity }})</span>{% endif %}</span>
+                        <span class="medicine-name">{{ rx.medicine.name }}</span>
                         <div class="medicine-qty">
                             <span class="qty-value">{{ rx.qty }}</span>
                             <span class="qty-form">{{ rx.dosage_form }}</span>

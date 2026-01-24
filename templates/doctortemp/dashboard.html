@@ -876,9 +876,15 @@
       transition: all 0.2s;
     }
     
-    .autocomplete-item:hover {
+    .autocomplete-item:hover,
+    .autocomplete-item.highlighted {
       background: rgba(160, 0, 0, 0.4);
       padding-left: 18px;
+    }
+    
+    .autocomplete-item.highlighted {
+      background: rgba(160, 0, 0, 0.6);
+      border-left: 3px solid #ff4444;
     }
     
     .autocomplete-item:last-child {
@@ -1683,7 +1689,7 @@
                   </div>
                 </td>
                 <td class="qty-cell">
-                  <input type="number" class="qty-input" value="1" min="1" title="Quantity">
+                  <input type="number" class="qty-input" value="1" min="0.1" step="0.1" title="Quantity (can be decimal like 2.5)">
                 </td>
                 <td class="dosage-form-cell">
                   <select class="dosage-form-select" title="Select dosage form">
@@ -1802,12 +1808,23 @@
             <label class="form-label">Search Patient</label>
             <input type="text" 
                    id="patientSearchInput" 
-                   placeholder="Enter reference no. or patient name...">
+                   placeholder="Enter PAT number, name or phone...">
           </div>
           <button class="btn" id="searchPatientBtn"><i class="fas fa-search"></i> Search</button>
         </div>
         
         <div id="searchMessage" class="search-message"></div>
+        
+        <!-- Multiple Patient Results Container -->
+        <div id="multipleResultsContainer" style="display: none; margin-bottom: 15px;">
+          <div style="background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(255, 107, 107, 0.1)); border: 1px solid rgba(220, 53, 69, 0.3); border-radius: 12px; padding: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="margin: 0; color: #dc3545;"><i class="fas fa-users"></i> Multiple Patients Found</h4>
+              <span id="resultCountBadge" style="background: #dc3545; color: white; padding: 3px 10px; border-radius: 15px; font-size: 0.8rem;"></span>
+            </div>
+            <div id="patientResultsList" style="max-height: 250px; overflow-y: auto;"></div>
+          </div>
+        </div>
         
         <div class="form-group">
           <label class="form-label">Patient Details</label>
@@ -2058,9 +2075,127 @@
     const resultsDiv = wrapper.querySelector('.autocomplete-results');
     const hiddenIdInput = wrapper.querySelector('.medicine-id');
     let searchTimeout;
+    let selectedIndex = -1; // Track selected item index for keyboard navigation
+
+    // Function to select a medicine item
+    function selectMedicine(item) {
+      const id = item.getAttribute('data-id');
+      const name = item.getAttribute('data-name');
+      const dosage = item.getAttribute('data-dosage') || '';
+      const medicineForm = item.getAttribute('data-form') || 'tablet';
+      
+      console.log('Selected medicine:', name, 'ID:', id, 'Dosage:', dosage, 'Form:', medicineForm);
+      searchInput.value = name;
+      hiddenIdInput.value = id;
+      
+      // Auto-fill QTY from dosage
+      const row = searchInput.closest('.prescription-row');
+      if (row) {
+        const qtyMatch = dosage.match(/(\d+)/);
+        if (qtyMatch) {
+          const qtyInput = row.querySelector('.qty-input');
+          if (qtyInput) {
+            qtyInput.value = qtyMatch[1];
+          }
+        }
+        
+        // Auto-fill dosage form based on medicine form
+        const dosageFormSelect = row.querySelector('.dosage-form-select');
+        if (dosageFormSelect) {
+          const formMap = {
+            'tablet': 'TABLETS',
+            'capsule': 'CAPSULES',
+            'syrup': 'ML',
+            'injection': 'ML',
+            'drops': 'DROPS',
+            'ointment': 'MG',
+            'inhaler': 'PUFF',
+            'suppository': 'UNIT',
+            'other': 'UNIT'
+          };
+          
+          let selectedForm = formMap[medicineForm] || 'MG';
+          const dosageLower = dosage.toLowerCase();
+          if (dosageLower.includes('mg')) selectedForm = 'MG';
+          else if (dosageLower.includes('ml')) selectedForm = 'ML';
+          else if (dosageLower.includes('cc')) selectedForm = 'CC';
+          
+          dosageFormSelect.value = selectedForm;
+        }
+        
+        // Move to next field (QTY input)
+        const qtyInput = row.querySelector('.qty-input');
+        if (qtyInput) {
+          setTimeout(() => qtyInput.focus(), 50);
+        }
+      }
+      
+      resultsDiv.classList.remove('show');
+      resultsDiv.style.display = 'none';
+      resultsDiv.innerHTML = '';
+      selectedIndex = -1;
+    }
+
+    // Function to highlight item at given index
+    function highlightItem(index) {
+      const items = resultsDiv.querySelectorAll('.autocomplete-item:not(.empty)');
+      if (items.length === 0) return;
+      
+      // Remove highlight from all items
+      items.forEach(item => item.classList.remove('highlighted'));
+      
+      // Clamp index to valid range (no wrapping)
+      if (index < 0) index = 0;
+      if (index >= items.length) index = items.length - 1;
+      
+      selectedIndex = index;
+      
+      // Highlight selected item
+      items[selectedIndex].classList.add('highlighted');
+      
+      // Scroll item into view if needed
+      items[selectedIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', function(e) {
+      const items = resultsDiv.querySelectorAll('.autocomplete-item:not(.empty)');
+      const isDropdownVisible = resultsDiv.classList.contains('show') && items.length > 0;
+      
+      if (e.key === 'ArrowDown') {
+        if (isDropdownVisible) {
+          e.preventDefault();
+          e.stopPropagation();
+          highlightItem(Math.min(selectedIndex + 1, items.length - 1));
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (isDropdownVisible) {
+          e.preventDefault();
+          e.stopPropagation();
+          highlightItem(Math.max(selectedIndex - 1, 0));
+        }
+      } else if (e.key === 'Enter') {
+        if (isDropdownVisible && selectedIndex >= 0 && items[selectedIndex]) {
+          e.preventDefault();
+          e.stopPropagation();
+          selectMedicine(items[selectedIndex]);
+        }
+      } else if (e.key === 'Escape') {
+        resultsDiv.classList.remove('show');
+        resultsDiv.style.display = 'none';
+        selectedIndex = -1;
+      } else if (e.key === 'Tab') {
+        // If dropdown is open and item is highlighted, select it
+        if (isDropdownVisible && selectedIndex >= 0 && items[selectedIndex]) {
+          e.preventDefault();
+          selectMedicine(items[selectedIndex]);
+        }
+      }
+    });
 
     searchInput.addEventListener('input', function() {
       const query = this.value.trim();
+      selectedIndex = -1; // Reset selection on new input
       
       console.log('Searching for:', query);
       
@@ -2115,68 +2250,25 @@
               resultsDiv.style.zIndex = '9999';
               resultsDiv.style.backgroundColor = 'rgb(20, 20, 20)';
               resultsDiv.classList.add('show');
-              console.log('Dropdown should now be visible. Classes:', resultsDiv.className);
-              console.log('Dropdown display:', window.getComputedStyle(resultsDiv).display);
-              console.log('Dropdown position:', window.getComputedStyle(resultsDiv).position);
-              console.log('Dropdown zIndex:', window.getComputedStyle(resultsDiv).zIndex);
+              selectedIndex = -1; // Reset selection
+              
+              // Auto-highlight first item
+              highlightItem(0);
               
               // Add click handlers
               resultsDiv.querySelectorAll('.autocomplete-item').forEach(item => {
                 item.addEventListener('click', function(e) {
                   e.preventDefault();
                   e.stopPropagation();
-                  const id = this.getAttribute('data-id');
-                  const name = this.getAttribute('data-name');
-                  const dosage = this.getAttribute('data-dosage') || '';
-                  const medicineForm = this.getAttribute('data-form') || 'tablet';
-                  
-                  console.log('Clicked medicine:', name, 'ID:', id, 'Dosage:', dosage, 'Form:', medicineForm);
-                  searchInput.value = name;
-                  hiddenIdInput.value = id;
-                  
-                  // Auto-fill QTY from dosage (extract number from strings like "400mg", "500mg", "250ml")
-                  const row = searchInput.closest('.prescription-row');
-                  if (row) {
-                    // Extract numeric value from dosage
-                    const qtyMatch = dosage.match(/(\d+)/);
-                    if (qtyMatch) {
-                      const qtyInput = row.querySelector('.qty-input');
-                      if (qtyInput) {
-                        qtyInput.value = qtyMatch[1];
-                      }
-                    }
-                    
-                    // Auto-fill dosage form based on medicine form
-                    const dosageFormSelect = row.querySelector('.dosage-form-select');
-                    if (dosageFormSelect) {
-                      // Map medicine_form to dosage_form options
-                      const formMap = {
-                        'tablet': 'TABLETS',
-                        'capsule': 'CAPSULES',
-                        'syrup': 'ML',
-                        'injection': 'ML',
-                        'drops': 'DROPS',
-                        'ointment': 'MG',
-                        'inhaler': 'PUFF',
-                        'suppository': 'UNIT',
-                        'other': 'UNIT'
-                      };
-                      
-                      // Also check dosage string for unit hints
-                      let selectedForm = formMap[medicineForm] || 'MG';
-                      const dosageLower = dosage.toLowerCase();
-                      if (dosageLower.includes('mg')) selectedForm = 'MG';
-                      else if (dosageLower.includes('ml')) selectedForm = 'ML';
-                      else if (dosageLower.includes('cc')) selectedForm = 'CC';
-                      
-                      dosageFormSelect.value = selectedForm;
-                    }
-                  }
-                  
-                  resultsDiv.classList.remove('show');
-                  resultsDiv.style.display = 'none';
-                  resultsDiv.innerHTML = '';
-                  console.log('Medicine selected and dropdown closed');
+                  selectMedicine(this);
+                });
+                
+                // Highlight on mouse hover
+                item.addEventListener('mouseenter', function() {
+                  const items = Array.from(resultsDiv.querySelectorAll('.autocomplete-item:not(.empty)'));
+                  selectedIndex = items.indexOf(this);
+                  items.forEach(i => i.classList.remove('highlighted'));
+                  this.classList.add('highlighted');
                 });
               });
             } else {
@@ -2200,6 +2292,29 @@
     });
   }
 
+  // Function to auto-open select dropdowns on focus
+  function initSelectAutoOpen(selectElement) {
+    selectElement.addEventListener('focus', function() {
+      // Simulate click to open dropdown
+      this.click();
+      // For better cross-browser support, also try showPicker if available
+      if (typeof this.showPicker === 'function') {
+        try {
+          this.showPicker();
+        } catch (e) {
+          // showPicker may throw in some contexts, ignore
+        }
+      }
+    });
+    
+    // Also open on mousedown for better responsiveness
+    selectElement.addEventListener('mousedown', function(e) {
+      if (document.activeElement !== this) {
+        // Will be focused, dropdown will open via focus handler
+      }
+    });
+  }
+
   // Initialize autocomplete for existing rows
   document.querySelectorAll('.medicineSearch').forEach(input => {
     console.log('Initializing autocomplete for input:', input);
@@ -2208,6 +2323,11 @@
     console.log('Found wrapper:', wrapper);
     console.log('Found resultsDiv:', resultsDiv);
     initAutocomplete(input);
+  });
+
+  // Initialize auto-open for existing select dropdowns
+  document.querySelectorAll('.dosage-form-select, .frequency-select, .days-select').forEach(select => {
+    initSelectAutoOpen(select);
   });
 
   // Enter key acts like Tab in prescription table
@@ -2249,7 +2369,7 @@
         </div>
       </td>
       <td class="qty-cell">
-        <input type="number" class="qty-input" value="1" min="1" title="Quantity">
+        <input type="number" class="qty-input" value="1" min="0.1" step="0.1" title="Quantity (can be decimal like 2.5)">
       </td>
       <td class="dosage-form-cell">
         <select class="dosage-form-select" title="Select dosage form">
@@ -2310,6 +2430,11 @@
     const newSearchInput = newRow.querySelector('.medicineSearch');
     initAutocomplete(newSearchInput);
     
+    // Initialize auto-open for new row's select dropdowns
+    newRow.querySelectorAll('.dosage-form-select, .frequency-select, .days-select').forEach(select => {
+      initSelectAutoOpen(select);
+    });
+    
     // Attach event handler for frequency change
     const frequencySelect = newRow.querySelector('.frequency-select');
     frequencySelect.addEventListener('change', function() {
@@ -2353,6 +2478,10 @@
       return;
     }
     
+    // Get clinical notes data
+    const clinicalNotes = getClinicalNotesData();
+    const specialNote = document.getElementById('specialNote').value.trim();
+    
     // Show loading
     Modal.loading('Saving prescription...', 'Please Wait');
     
@@ -2365,7 +2494,16 @@
       },
       body: JSON.stringify({ 
         prescriptions: prescriptions,
-        patient_ref_no: currentPatientRefNo 
+        patient_ref_no: currentPatientRefNo,
+        clinical_notes: {
+          pc: clinicalNotes.presenting_complaints || '',
+          dev: clinicalNotes.development || '',
+          vac: clinicalNotes.vaccination || '',
+          me: clinicalNotes.medical_examination || '',
+          ia: clinicalNotes.investigation_advised || '',
+          pd: clinicalNotes.provisional_diagnosis || ''
+        },
+        special_note: specialNote
       })
     })
     .then(response => response.json())
@@ -2439,9 +2577,13 @@
               row.querySelector('.medicineSearch').value = '';
               row.querySelector('.medicine-id').value = '';
               row.querySelector('.days-select').value = '1';
-              row.querySelector('.morning-check').checked = false;
-              row.querySelector('.evening-check').checked = false;
-              row.querySelector('.night-check').checked = false;
+              // Safely reset checkboxes if they exist
+              const morningCheck = row.querySelector('.morning-check');
+              const eveningCheck = row.querySelector('.evening-check');
+              const nightCheck = row.querySelector('.night-check');
+              if (morningCheck) morningCheck.checked = false;
+              if (eveningCheck) eveningCheck.checked = false;
+              if (nightCheck) nightCheck.checked = false;
             } else {
               row.remove();
             }
@@ -2543,11 +2685,18 @@
     if (historySection) historySection.style.display = 'none';
   }
 
-  function searchPatient() {
-    const query = patientSearchInput.value.trim();
+  function searchPatient(patientId = null) {
+    // Handle case where patientId is actually an event object (from button click)
+    // Check for Event, PointerEvent, or any object that's not a string/number
+    if (patientId && (patientId instanceof Event || typeof patientId !== 'string')) {
+      patientId = null;
+    }
     
-    if (!query) {
-      searchMessage.textContent = 'Please enter reference number or patient name';
+    const query = patientSearchInput.value.trim();
+    const multipleResultsContainer = document.getElementById('multipleResultsContainer');
+    
+    if (!query && !patientId) {
+      searchMessage.textContent = 'Please enter PAT number, name or phone';
       searchMessage.style.display = 'block';
       searchMessage.className = 'search-message error';
       currentPatientRefNo = null;
@@ -2558,28 +2707,76 @@
     searchMessage.style.display = 'block';
     searchMessage.className = 'search-message warning';
     
-    fetch(`/doctor/api/search-patient/?q=${encodeURIComponent(query)}`)
+    // Build URL with optional patient ID for direct selection
+    let url = `/doctor/api/search-patient/?q=${encodeURIComponent(query)}`;
+    if (patientId) {
+      url += `&id=${encodeURIComponent(patientId)}`;
+    }
+    
+    fetch(url)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          patientDetailsCard.innerHTML = renderPatientCard(data.patient);
-          patientDetailsCard.classList.remove('empty');
-          currentPatientRefNo = data.patient.ref_no;
-          searchMessage.textContent = '✓ Patient found!';
-          searchMessage.className = 'search-message success';
-          setTimeout(() => {
-            searchMessage.style.display = 'none';
-          }, 3000);
-          
-          // Show prescription history if available
-          if (data.prescription_history && data.prescription_history.length > 0) {
-            showPrescriptionHistory(data.patient, data.prescription_history, data.total_visits);
-          } else {
-            // Hide prescription history section
+          // Check if multiple results were returned
+          if (data.multiple_results) {
+            // Show patient selection list
+            multipleResultsContainer.style.display = 'block';
+            document.getElementById('resultCountBadge').textContent = `${data.count} results`;
+            
+            let listHtml = '';
+            data.patients.forEach(p => {
+              listHtml += `
+                <div onclick="selectPatientFromList('${p.id}')" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(220,53,69,0.2); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease;" 
+                     onmouseover="this.style.background='rgba(220,53,69,0.2)'; this.style.borderColor='#dc3545';" 
+                     onmouseout="this.style.background='rgba(0,0,0,0.2)'; this.style.borderColor='rgba(220,53,69,0.2)';">
+                  <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #dc3545, #c82333); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">
+                    ${p.initials}
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="font-weight: 600; color: white;">${p.name}</div>
+                    <div style="font-size: 0.8rem; color: #aaa;">
+                      <span style="margin-right: 12px;"><i class="fas fa-id-card"></i> ${p.ref_no}</span>
+                      <span style="margin-right: 12px;"><i class="fas fa-phone"></i> ${p.phone}</span>
+                      <span><i class="fas fa-birthday-cake"></i> ${p.age}</span>
+                    </div>
+                  </div>
+                  <div style="color: #888; font-size: 0.75rem;">${p.registered}</div>
+                </div>
+              `;
+            });
+            document.getElementById('patientResultsList').innerHTML = listHtml;
+            
+            searchMessage.textContent = `Found ${data.count} patients matching "${query}"`;
+            searchMessage.className = 'search-message warning';
+            
+            // Clear patient details
+            clearPatientCard();
+            currentPatientRefNo = null;
             const historySection = document.getElementById('prescriptionHistorySection');
             if (historySection) historySection.style.display = 'none';
+          } else {
+            // Single patient found - show details
+            multipleResultsContainer.style.display = 'none';
+            patientDetailsCard.innerHTML = renderPatientCard(data.patient);
+            patientDetailsCard.classList.remove('empty');
+            currentPatientRefNo = data.patient.ref_no;
+            searchMessage.textContent = '✓ Patient found!';
+            searchMessage.className = 'search-message success';
+            setTimeout(() => {
+              searchMessage.style.display = 'none';
+            }, 3000);
+            
+            // Show prescription history if available
+            if (data.prescription_history && data.prescription_history.length > 0) {
+              showPrescriptionHistory(data.patient, data.prescription_history, data.total_visits);
+            } else {
+              // Hide prescription history section
+              const historySection = document.getElementById('prescriptionHistorySection');
+              if (historySection) historySection.style.display = 'none';
+            }
           }
         } else {
+          multipleResultsContainer.style.display = 'none';
           clearPatientCard();
           currentPatientRefNo = null;
           searchMessage.textContent = '✗ ' + (data.error || 'Patient not found');
@@ -2593,9 +2790,15 @@
         console.error('Search error:', error);
         searchMessage.textContent = '✗ Error searching patient';
         searchMessage.className = 'search-message error';
+        multipleResultsContainer.style.display = 'none';
         clearPatientCard();
         currentPatientRefNo = null;
       });
+  }
+  
+  // Function to select a patient from multiple results
+  function selectPatientFromList(patientId) {
+    searchPatient(patientId);
   }
   
   // Function to show prescription history
@@ -2624,11 +2827,16 @@
     `;
     
     history.forEach((visit, index) => {
+      // Show PAT reference if it's different from current patient (merged history)
+      const patRefBadge = visit.patient_ref && visit.patient_ref !== patient.ref_no 
+        ? `<span style="background: rgba(255,193,7,0.3); color: #ffc107; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; margin-left: 8px;">${visit.patient_ref}</span>` 
+        : '';
+      
       historyHtml += `
         <div style="background: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 10px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-weight: 600; color: #dc3545;"><i class="fas fa-calendar-alt"></i> ${visit.date}</span>
-            ${visit.batch_id ? `<button class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="reprintPrescription('${patient.ref_no}', '${visit.batch_id}')"><i class="fas fa-print"></i> Reprint</button>` : ''}
+            <span style="font-weight: 600; color: #dc3545;"><i class="fas fa-calendar-alt"></i> ${visit.date}${patRefBadge}</span>
+            ${visit.batch_id ? `<button class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="reprintPrescription('${visit.patient_ref || patient.ref_no}', '${visit.batch_id}')"><i class="fas fa-print"></i> Reprint</button>` : ''}
           </div>
           <div style="display: flex; flex-wrap: wrap; gap: 6px;">
       `;
@@ -2661,7 +2869,7 @@
   
   // Function to reprint old prescription
   function reprintPrescription(refNo, batchId) {
-    window.open(`/doctor/print/${refNo}/?batch_id=${batchId}`, '_blank');
+    window.open(`/doctor/print-prescription/${refNo}/?batch_id=${batchId}`, '_blank');
   }
 
   searchPatientBtn.addEventListener('click', searchPatient);
@@ -2743,7 +2951,7 @@
                 </div>
               </td>
               <td class="qty-cell">
-                <input type="number" class="qty-input" value="${medicine.qty || 1}" min="1" title="Quantity">
+                <input type="number" class="qty-input" value="${medicine.qty || 1}" min="0.1" step="0.1" title="Quantity (can be decimal like 2.5)">
               </td>
               <td class="dosage-form-cell">
                 <select class="dosage-form-select" title="Select dosage form">
@@ -2803,7 +3011,22 @@
             // Initialize autocomplete for the new row
             const searchInput = newRow.querySelector('.medicineSearch');
             initAutocomplete(searchInput);
+            
+            // Initialize auto-open for template row's select dropdowns
+            newRow.querySelectorAll('.dosage-form-select, .frequency-select, .days-select').forEach(select => {
+              initSelectAutoOpen(select);
+            });
           });
+          
+          // Also load clinical notes from template if available
+          if (data.clinical_notes) {
+            document.getElementById('presentingComplaints').value = data.clinical_notes.presenting_complaints || '';
+            document.getElementById('development').value = data.clinical_notes.development || '';
+            document.getElementById('vaccination').value = data.clinical_notes.vaccination || '';
+            document.getElementById('medicalExamination').value = data.clinical_notes.medical_examination || '';
+            document.getElementById('investigationAdvised').value = data.clinical_notes.investigation_advised || '';
+            document.getElementById('provisionalDiagnosis').value = data.clinical_notes.provisional_diagnosis || '';
+          }
           
           // Show success message
           Modal.success(`Template loaded successfully!<br><strong>${data.medicines.length} medicine(s)</strong> added to prescription.`, 'Template Loaded', 3000);

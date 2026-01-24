@@ -31,19 +31,21 @@ class Patient(models.Model):
     temperature = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     age_years = models.PositiveIntegerField(blank=True, null=True, help_text="Age in years")
     age_months = models.PositiveIntegerField(blank=True, null=True, help_text="Age in months (0-11)")
+    age_days = models.PositiveIntegerField(blank=True, null=True, help_text="Age in days (0-30)")
     weight = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text="kg")
     height = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, help_text="cm")
     
     @property
     def age(self):
-        """Return formatted age string like '3 years 4 months' or '6 months'"""
-        if self.age_years and self.age_months:
-            return f"{self.age_years}y {self.age_months}m"
-        elif self.age_years:
-            return f"{self.age_years}y"
-        elif self.age_months:
-            return f"{self.age_months}m"
-        return None
+        """Return formatted age string like '3y 4m 15d' or '6m' or '20d'"""
+        parts = []
+        if self.age_years:
+            parts.append(f"{self.age_years}y")
+        if self.age_months:
+            parts.append(f"{self.age_months}m")
+        if self.age_days:
+            parts.append(f"{self.age_days}d")
+        return " ".join(parts) if parts else None
     
     # Doctor Queue system fields
     queue_status = models.CharField(max_length=20, choices=QUEUE_STATUS_CHOICES, default='none')

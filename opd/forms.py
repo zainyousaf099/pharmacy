@@ -5,7 +5,7 @@ from .models import Patient
 class PatientForm(forms.ModelForm):
     class Meta:
         model = Patient
-        fields = ['name', 'phone', 'temperature', 'age_years', 'age_months', 'weight', 'height']
+        fields = ['name', 'phone', 'temperature', 'age_years', 'age_months', 'age_days', 'weight', 'height']
         widgets = {
             'name': forms.TextInput(attrs={
                 'placeholder': 'patient name',
@@ -26,6 +26,12 @@ class PatientForm(forms.ModelForm):
                 'class': 'form-control',
                 'min': '0',
                 'max': '11',
+            }),
+            'age_days': forms.NumberInput(attrs={
+                'placeholder': 'days',
+                'class': 'form-control',
+                'min': '0',
+                'max': '30',
             }),
             'temperature': forms.NumberInput(attrs={
                 'placeholder': 'temperature',

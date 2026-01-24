@@ -19,6 +19,30 @@
     color: white;
   }
 
+  /* Direct Sale Mode - Hide prescription columns */
+  .direct-sale-mode .prescription-only-col {
+    display: none !important;
+  }
+  
+  .direct-sale-mode #medicineTable {
+    table-layout: fixed;
+  }
+  
+  .direct-sale-mode #medicineTable th:first-child,
+  .direct-sale-mode #medicineTable td:first-child {
+    width: 45% !important;
+  }
+  
+  .direct-sale-mode #medicineTable th:nth-child(2),
+  .direct-sale-mode #medicineTable td:nth-child(2) {
+    width: 20% !important;
+  }
+  
+  .direct-sale-mode #medicineTable th:nth-child(7),
+  .direct-sale-mode #medicineTable td:nth-child(7) {
+    width: 25% !important;
+  }
+
   /* Header */
   .header {
     display: flex;
@@ -734,8 +758,14 @@
     font-size: 0.9rem;
   }
 
-  .autocomplete-item:hover {
+  .autocomplete-item:hover,
+  .autocomplete-item.highlighted {
     background: rgba(40, 167, 69, 0.3);
+  }
+
+  .autocomplete-item.highlighted {
+    background: rgba(40, 167, 69, 0.5);
+    border-left: 3px solid #28a745;
   }
 
   .autocomplete-item:last-child {
@@ -1296,31 +1326,52 @@
   <!-- Left Card - Prescription Entry -->
   <div class="card">
     <div class="card-title">
-      <span><i class="fas fa-clipboard-list"></i></span>
-      PRESCRIPTION PROCESSING
+      <span><i class="fas fa-clipboard-list" id="titleIcon"></i></span>
+      <span id="mainTitle">PRESCRIPTION PROCESSING</span>
       <div style="margin-left: auto; display: flex; gap: 10px;">
         <button class="btn" onclick="openReturnModal()" id="returnBtn" style="padding: 8px 15px; font-size: 0.85rem; background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);">
           <i class="fas fa-undo-alt"></i> Return
         </button>
         <button class="btn" onclick="toggleDirectSale()" id="directSaleToggle" style="padding: 8px 15px; font-size: 0.85rem;">
-          <i class="fas fa-shopping-cart"></i> Direct Sale
+          <i class="fas fa-shopping-cart"></i> Prescription Mode
         </button>
       </div>
     </div>
 
     <!-- Mode Indicator -->
-    <div id="modeIndicator" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; background: rgba(76, 175, 80, 0.3); display: none;">
+    <div id="modeIndicator" style="margin-bottom: 15px; padding: 10px; border-radius: 8px; background: rgba(76, 175, 80, 0.3); display: block;">
       <strong><i class="fas fa-box"></i> Direct Sale Mode</strong> - Add medicines manually
     </div>
 
-    <!-- Search Prescription -->
-    <div class="search-section">
+    <!-- Customer Name Input (for Direct Sale) -->
+    <div id="customerNameSection" class="search-section" style="display: block;">
       <input 
         type="text" 
-        placeholder="Enter patient reference number or name..."
+        placeholder="Enter customer name (optional - leave empty for Walk-in Customer)"
+        id="customerNameInput"
+        style="flex: 1;"
+      >
+    </div>
+
+    <!-- Search Prescription (for Prescription Mode) -->
+    <div class="search-section" id="prescriptionSearchSection" style="display: none;">
+      <input 
+        type="text" 
+        placeholder="Enter PAT number, name or phone..."
         id="refNoInput"
       >
       <button class="btn" onclick="searchPrescription()"><i class="fas fa-search"></i> Search</button>
+    </div>
+
+    <!-- Multiple Patient Results Container -->
+    <div id="multiplePatientResults" style="display: none; margin-bottom: 15px;">
+      <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(129, 199, 132, 0.1)); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 12px; padding: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h4 style="margin: 0; color: #4CAF50;"><i class="fas fa-users"></i> Multiple Patients Found</h4>
+          <span id="patientResultCount" style="background: #4CAF50; color: white; padding: 3px 10px; border-radius: 15px; font-size: 0.8rem;"></span>
+        </div>
+        <div id="patientResultsList" style="max-height: 200px; overflow-y: auto;"></div>
+      </div>
     </div>
 
     <!-- Search Status Message -->
@@ -1333,16 +1384,16 @@
     </div>
 
     <div class="prescription-table-wrapper">
-    <table class="prescription-table" style="width: 100%; table-layout: fixed;">
+    <table class="prescription-table" id="medicineTable" style="width: 100%; table-layout: fixed;">
       <thead>
         <tr>
-          <th style="width: 25%;">Medicine</th>
-          <th style="width: 8%;">QTY</th>
-          <th style="width: 10%;">Form</th>
-          <th style="width: 8%;">Freq</th>
-          <th style="width: 19%;">اردو</th>
-          <th style="width: 8%;">Days</th>
-          <th style="width: 14%;">Price</th>
+          <th style="width: 35%;">Medicine</th>
+          <th style="width: 12%;">QTY</th>
+          <th style="width: 12%;" class="prescription-only-col">Form</th>
+          <th style="width: 10%;" class="prescription-only-col">Freq</th>
+          <th style="width: 20%;" class="prescription-only-col">اردو</th>
+          <th style="width: 10%;" class="prescription-only-col">Days</th>
+          <th style="width: 18%;">Price</th>
           <th style="width: 8%;">Del</th>
         </tr>
       </thead>
@@ -1398,6 +1449,62 @@
           <p>No items added yet</p>
           <small>Add medicines to see bill preview</small>
         </div>
+      </div>
+    </div>
+
+    <!-- Cash Calculator Box -->
+    <div class="info-box" style="margin-top: 15px;">
+      <div class="info-box-title" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
+        <i class="fas fa-calculator"></i>
+        CASH CALCULATOR
+      </div>
+      <div class="info-box-content" style="padding: 15px;">
+        <!-- Bill Amount -->
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">
+            <i class="fas fa-file-invoice-dollar"></i> Bill Amount (Rs.)
+          </label>
+          <input type="number" 
+                 id="calcBillAmount" 
+                 placeholder="0" 
+                 style="width: 100%; padding: 12px; border: 2px solid rgba(255, 152, 0, 0.4); border-radius: 8px; background: rgba(255, 152, 0, 0.1); color: #ff9800; font-size: 1.2rem; font-weight: bold; text-align: right;"
+                 oninput="calculateChange()">
+        </div>
+        
+        <!-- Customer Given Amount -->
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">
+            <i class="fas fa-hand-holding-usd"></i> Customer Gives (Rs.)
+          </label>
+          <input type="number" 
+                 id="calcCustomerGives" 
+                 placeholder="0" 
+                 style="width: 100%; padding: 12px; border: 2px solid rgba(40, 167, 69, 0.4); border-radius: 8px; background: rgba(40, 167, 69, 0.1); color: #28a745; font-size: 1.2rem; font-weight: bold; text-align: right;"
+                 oninput="calculateChange()">
+        </div>
+        
+        <!-- Return Change Amount -->
+        <div style="background: linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(21, 101, 192, 0.2) 100%); padding: 15px; border-radius: 10px; border: 2px solid rgba(33, 150, 243, 0.4);">
+          <label style="display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 5px;">
+            <i class="fas fa-coins"></i> Return Change
+          </label>
+          <div id="calcReturnAmount" style="font-size: 1.8rem; font-weight: bold; color: #2196F3; text-align: right;">
+            Rs. 0
+          </div>
+        </div>
+        
+        <!-- Quick Amount Buttons -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
+          <button onclick="setQuickAmount(100)" style="flex: 1; min-width: 60px; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; cursor: pointer; font-weight: bold;">100</button>
+          <button onclick="setQuickAmount(500)" style="flex: 1; min-width: 60px; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; cursor: pointer; font-weight: bold;">500</button>
+          <button onclick="setQuickAmount(1000)" style="flex: 1; min-width: 60px; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; cursor: pointer; font-weight: bold;">1000</button>
+          <button onclick="setQuickAmount(5000)" style="flex: 1; min-width: 60px; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; cursor: pointer; font-weight: bold;">5000</button>
+        </div>
+        
+        <!-- Clear Button -->
+        <button onclick="clearCalculator()" style="width: 100%; margin-top: 10px; padding: 10px; background: rgba(220, 53, 69, 0.2); border: 1px solid rgba(220, 53, 69, 0.4); border-radius: 8px; color: #dc3545; cursor: pointer; font-weight: bold;">
+          <i class="fas fa-eraser"></i> Clear
+        </button>
       </div>
     </div>
 
@@ -1641,10 +1748,12 @@
       
       <!-- Medicine Search -->
       <div class="return-search">
-        <input type="text" id="returnMedicineSearch" placeholder="Search medicine name..." oninput="searchMedicineForReturn()">
+        <input type="text" id="returnMedicineSearch" placeholder="Search medicine name..." 
+               oninput="searchMedicineForReturn()"
+               onkeydown="handleReturnMedicineKeydown(event)">
       </div>
       
-      <div id="medicineSearchResults" class="medicine-search-dropdown" style="display: none;">
+      <div id="medicineSearchResults" class="medicine-search-dropdown" style="display: none;" data-selected-index="-1">
         <!-- Search results will appear here -->
       </div>
       
@@ -1952,8 +2061,14 @@
   transition: background 0.2s;
 }
 
-.medicine-search-item:hover {
+.medicine-search-item:hover,
+.medicine-search-item.highlighted {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.medicine-search-item.highlighted {
+  background: rgba(40, 167, 69, 0.3);
+  border-left: 3px solid #28a745;
 }
 
 .medicine-search-item:last-child {
@@ -2236,10 +2351,10 @@
     <span id="receiptTime" style="color: #000 !important; font-weight: 900 !important;"></span>
   </div>
   <div class="info-line" style="color: #000 !important; font-weight: 900 !important;">
-    <span style="color: #000 !important; font-weight: 900 !important;">Patient:</span>
+    <span id="receiptNameLabel" style="color: #000 !important; font-weight: 900 !important;">Customer:</span>
     <span id="receiptPatient" style="color: #000 !important; font-weight: 900 !important;"></span>
   </div>
-  <div class="info-line" style="color: #000 !important; font-weight: 900 !important;">
+  <div class="info-line" id="receiptRefNoLine" style="color: #000 !important; font-weight: 900 !important; display: none;">
     <span style="color: #000 !important; font-weight: 900 !important;">Ref No:</span>
     <span id="receiptRefNo" style="color: #000 !important; font-weight: 900 !important;"></span>
   </div>
@@ -2279,25 +2394,68 @@
     let currentPrescriptions = [];
     let discountAmount = 0;
     let discountPercentage = 0;
-    let directSaleMode = false;
+    let directSaleMode = true;  // Start in direct sale mode by default
     let searchTimeout = null;
+
+    // Initialize direct sale mode on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set initial state to direct sale mode
+        initDirectSaleMode();
+    });
+    
+    function initDirectSaleMode() {
+        directSaleMode = true;
+        const container = document.querySelector('.container');
+        const modeIndicator = document.getElementById('modeIndicator');
+        const addMedicineSection = document.getElementById('addMedicineSection');
+        const toggleBtn = document.getElementById('directSaleToggle');
+        const mainTitle = document.getElementById('mainTitle');
+        const titleIcon = document.getElementById('titleIcon');
+        const customerNameSection = document.getElementById('customerNameSection');
+        const prescriptionSearchSection = document.getElementById('prescriptionSearchSection');
+        
+        container.classList.add('direct-sale-mode');
+        modeIndicator.style.display = 'block';
+        addMedicineSection.style.display = 'block';
+        customerNameSection.style.display = 'flex';
+        prescriptionSearchSection.style.display = 'none';
+        toggleBtn.innerHTML = '<i class="fas fa-clipboard-list"></i> Prescription Mode';
+        toggleBtn.style.background = 'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)';
+        mainTitle.textContent = 'DIRECT SALE';
+        titleIcon.className = 'fas fa-shopping-cart';
+        
+        // Clear and add first medicine row
+        document.getElementById('prescriptionRows').innerHTML = '';
+        addMedicineRow();
+    }
 
     // Toggle Direct Sale Mode
     function toggleDirectSale() {
         directSaleMode = !directSaleMode;
+        const container = document.querySelector('.container');
         const modeIndicator = document.getElementById('modeIndicator');
         const addMedicineSection = document.getElementById('addMedicineSection');
         const toggleBtn = document.getElementById('directSaleToggle');
+        const mainTitle = document.getElementById('mainTitle');
+        const titleIcon = document.getElementById('titleIcon');
+        const customerNameSection = document.getElementById('customerNameSection');
+        const prescriptionSearchSection = document.getElementById('prescriptionSearchSection');
         
         if (directSaleMode) {
+            container.classList.add('direct-sale-mode');
             modeIndicator.style.display = 'block';
             addMedicineSection.style.display = 'block';
+            customerNameSection.style.display = 'flex';
+            prescriptionSearchSection.style.display = 'none';
             toggleBtn.innerHTML = '<i class="fas fa-clipboard-list"></i> Prescription Mode';
             toggleBtn.style.background = 'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)';
+            mainTitle.textContent = 'DIRECT SALE';
+            titleIcon.className = 'fas fa-shopping-cart';
             
             // Clear current data and allow adding medicines
             document.getElementById('prescriptionRows').innerHTML = '';
             document.getElementById('searchStatus').style.display = 'none';
+            document.getElementById('customerNameInput').value = '';
             
             // Auto-add first medicine row and focus on it after a delay
             addMedicineRow();
@@ -2313,10 +2471,15 @@
             
             Modal.info('Direct Sale Mode - Add medicines manually.', 'Direct Sale', 1500);
         } else {
+            container.classList.remove('direct-sale-mode');
             modeIndicator.style.display = 'none';
             addMedicineSection.style.display = 'none';
+            customerNameSection.style.display = 'none';
+            prescriptionSearchSection.style.display = 'flex';
             toggleBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Direct Sale';
             toggleBtn.style.background = '';
+            mainTitle.textContent = 'PRESCRIPTION PROCESSING';
+            titleIcon.className = 'fas fa-clipboard-list';
             
             // Clear data
             resetForm();
@@ -2334,14 +2497,15 @@
                 <div class="medicine-search-wrapper">
                     <input type="text" 
                            class="medicine-input" 
-                           placeholder="Search..."
+                           placeholder="Search medicine..."
                            style="background: rgba(255, 255, 255, 0.15); cursor: text;"
                            data-medicine-id=""
                            data-medicine-form="tablet"
                            data-sale-price="0"
                            data-subitem-price="0"
                            autocomplete="off"
-                           onkeyup="searchMedicine(this)">
+                           oninput="searchMedicine(this)"
+                           onkeydown="handleMedicineKeydown(event, this)">
                     <div class="autocomplete-results"></div>
                 </div>
             </td>
@@ -2349,9 +2513,10 @@
                 <input type="number" 
                        value="1" 
                        class="qty-input small-input" 
-                       min="1">
+                       min="1"
+                       onchange="recalculateDirectSalePrice(this)">
             </td>
-            <td>
+            <td class="prescription-only-col">
                 <select class="dosage-form-select">
                     <option value="MG">MG</option>
                     <option value="CC">CC</option>
@@ -2366,7 +2531,7 @@
                     <option value="UNIT">Unit</option>
                 </select>
             </td>
-            <td>
+            <td class="prescription-only-col">
                 <select class="frequency-select" onchange="updateUrduInRow(this); recalculateRowPrice(this)">
                     <option value="OD">OD</option>
                     <option value="BD">BD</option>
@@ -2385,12 +2550,12 @@
                     <option value="PC">PC</option>
                 </select>
             </td>
-            <td>
+            <td class="prescription-only-col">
                 <span class="urdu-display" style="display: block; padding: 5px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; font-size: 0.85rem; text-align: right; direction: rtl; font-family: 'Jameel Noori Nastaleeq', Arial, sans-serif;">
                     روزانہ ایک بار
                 </span>
             </td>
-            <td>
+            <td class="prescription-only-col">
                 <input type="number" 
                        value="1" 
                        class="days-input small-input" 
@@ -2424,6 +2589,37 @@
                 medicineInput.focus();
             }
         }, 100);
+    }
+    
+    // Recalculate price for direct sale mode (qty * unit price)
+    function recalculateDirectSalePrice(element) {
+        const row = element.closest('tr');
+        const medicineInput = row.querySelector('.medicine-input');
+        const qtyInput = row.querySelector('.qty-input');
+        const priceInput = row.querySelector('.price-input');
+        
+        if (!medicineInput.dataset.medicineId) return;
+        
+        const qty = parseInt(qtyInput.value) || 1;
+        const subitemPrice = parseFloat(medicineInput.dataset.subitemPrice) || 0;
+        const salePrice = parseFloat(medicineInput.dataset.salePrice) || 0;
+        const medicineForm = medicineInput.dataset.medicineForm || 'tablet';
+        
+        // For direct sale mode, use simple qty * price calculation
+        if (directSaleMode) {
+            const LIQUID_FORMS = ['syrup', 'drops', 'injection', 'inhaler', 'ointment'];
+            if (LIQUID_FORMS.includes(medicineForm.toLowerCase())) {
+                // For liquids, qty = bottles, use sale price per bottle
+                priceInput.value = Math.round(qty * salePrice);
+            } else {
+                // For tablets/capsules, qty = tablets, use subitem price
+                priceInput.value = Math.round(qty * subitemPrice);
+            }
+            calculateBill();
+        } else {
+            // For prescription mode, use full calculation
+            recalculateRowPrice(element);
+        }
     }
     
     // Recalculate price when days or frequency changes
@@ -2471,6 +2667,7 @@
         const query = input.value.trim();
         const wrapper = input.closest('.medicine-search-wrapper');
         const resultsDiv = wrapper.querySelector('.autocomplete-results');
+        resultsDiv.dataset.selectedIndex = '-1'; // Reset selection on new search
         
         if (searchTimeout) {
             clearTimeout(searchTimeout);
@@ -2507,6 +2704,18 @@
                         });
                         resultsDiv.innerHTML = html;
                         resultsDiv.classList.add('show');
+                        
+                        // Auto-highlight first item
+                        resultsDiv.dataset.selectedIndex = '0';
+                        highlightAutocompleteItem(resultsDiv, 0);
+                        
+                        // Add hover handlers for mouse interaction
+                        resultsDiv.querySelectorAll('.autocomplete-item:not(.empty)').forEach((item, index) => {
+                            item.addEventListener('mouseenter', function() {
+                                resultsDiv.dataset.selectedIndex = index.toString();
+                                highlightAutocompleteItem(resultsDiv, index);
+                            });
+                        });
                     } else {
                         resultsDiv.innerHTML = '<div class="autocomplete-item empty">No medicines found</div>';
                         resultsDiv.classList.add('show');
@@ -2517,6 +2726,67 @@
                     resultsDiv.classList.remove('show');
                 });
         }, 300);
+    }
+    
+    // Highlight item at given index
+    function highlightAutocompleteItem(resultsDiv, index) {
+        const items = resultsDiv.querySelectorAll('.autocomplete-item:not(.empty)');
+        if (items.length === 0) return;
+        
+        // Remove highlight from all items
+        items.forEach(item => item.classList.remove('highlighted'));
+        
+        // Clamp index to valid range (no wrapping)
+        if (index < 0) index = 0;
+        if (index >= items.length) index = items.length - 1;
+        
+        resultsDiv.dataset.selectedIndex = index.toString();
+        
+        // Highlight selected item
+        items[index].classList.add('highlighted');
+        
+        // Scroll item into view
+        items[index].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    
+    // Handle keyboard navigation for medicine inputs
+    function handleMedicineKeydown(e, input) {
+        const wrapper = input.closest('.medicine-search-wrapper');
+        const resultsDiv = wrapper.querySelector('.autocomplete-results');
+        const items = resultsDiv.querySelectorAll('.autocomplete-item:not(.empty)');
+        const isDropdownVisible = resultsDiv.classList.contains('show') && items.length > 0;
+        const currentIndex = parseInt(resultsDiv.dataset.selectedIndex || '-1');
+        
+        if (e.key === 'ArrowDown') {
+            if (isDropdownVisible) {
+                e.preventDefault();
+                e.stopPropagation();
+                const newIndex = Math.min(currentIndex + 1, items.length - 1);
+                highlightAutocompleteItem(resultsDiv, newIndex);
+            }
+        } else if (e.key === 'ArrowUp') {
+            if (isDropdownVisible) {
+                e.preventDefault();
+                e.stopPropagation();
+                const newIndex = Math.max(currentIndex - 1, 0);
+                highlightAutocompleteItem(resultsDiv, newIndex);
+            }
+        } else if (e.key === 'Enter') {
+            if (isDropdownVisible && currentIndex >= 0 && items[currentIndex]) {
+                e.preventDefault();
+                e.stopPropagation();
+                selectMedicine(items[currentIndex]);
+            }
+        } else if (e.key === 'Escape') {
+            resultsDiv.classList.remove('show');
+            resultsDiv.dataset.selectedIndex = '-1';
+        } else if (e.key === 'Tab') {
+            // If dropdown is open and item is highlighted, select it
+            if (isDropdownVisible && currentIndex >= 0 && items[currentIndex]) {
+                e.preventDefault();
+                selectMedicine(items[currentIndex]);
+            }
+        }
     }
 
     // Select medicine from autocomplete
@@ -2533,6 +2803,7 @@
         input.dataset.subitemPrice = item.dataset.subitemPrice || '0';
         
         resultsDiv.classList.remove('show');
+        resultsDiv.dataset.selectedIndex = '-1';
         
         // Auto-fill QTY from medicine name or dosage field (e.g., "400" from "Brufen 400mg" or "400mg")
         const medicineName = item.dataset.name || '';
@@ -2540,7 +2811,9 @@
         const combinedText = medicineName + ' ' + dosage;
         const qtyMatch = combinedText.match(/(\d+)\s*(mg|ml|g|mcg)/i);
         const qtyInput = row.querySelector('.qty-input');
-        if (qtyMatch && qtyInput) {
+        
+        // In direct sale mode, don't auto-set qty from dosage - default to 1
+        if (!directSaleMode && qtyMatch && qtyInput) {
             qtyInput.value = qtyMatch[1];
         }
         
@@ -2561,8 +2834,19 @@
             dosageFormSelect.value = mappedForm;
         }
         
-        // Auto-fill price based on frequency and days
-        autoCalculatePrice(row, item.dataset.form, parseFloat(item.dataset.price) || 0, parseFloat(item.dataset.subitemPrice) || 0);
+        // Move focus to QTY field
+        if (qtyInput) {
+            setTimeout(() => qtyInput.focus(), 50);
+        }
+        
+        // Auto-fill price based on mode
+        if (directSaleMode) {
+            // Direct sale: simple qty * unit price
+            recalculateDirectSalePrice(qtyInput);
+        } else {
+            // Prescription mode: frequency and days based
+            autoCalculatePrice(row, item.dataset.form, parseFloat(item.dataset.price) || 0, parseFloat(item.dataset.subitemPrice) || 0);
+        }
     }
     
     // Auto calculate price based on frequency, days and medicine form
@@ -2574,20 +2858,26 @@
         const days = parseInt(daysInput?.value) || 1;
         const frequency = frequencySelect?.value || 'OD';
         
-        // Calculate doses per day based on frequency
-        const frequencyMap = { 'OD': 1, 'BD': 2, 'TDS': 3, 'QID': 4, 'HS': 1, 'SOS': 1 };
+        // Calculate doses per day based on frequency (matches backend exactly)
+        const frequencyMap = {
+            'OD': 1, 'BD': 2, 'TDS': 3, 'QID': 4,
+            'HS': 1, 'QAM': 1, 'QPM': 1, 'SOS': 1, 'STAT': 1,
+            'QOD': 0.5, 'QW': 0.14,
+            'Q6H': 4, 'Q8H': 3,
+            'AC': 3, 'PC': 3
+        };
         const dosesPerDay = frequencyMap[frequency] || 1;
         
         const LIQUID_FORMS = ['syrup', 'drops', 'injection', 'inhaler', 'ointment'];
         
         if (LIQUID_FORMS.includes((medicineForm || '').toLowerCase())) {
-            // Bottles calculation
+            // Bottles calculation: 1 bottle per 7 days (rounded up)
             const bottles = Math.max(1, Math.ceil(days / 7));
             const pricePerBottle = salePrice || 0;
             if (priceInput) priceInput.value = Math.round(bottles * pricePerBottle);
         } else {
-            // Tablets calculation
-            const totalTablets = dosesPerDay * days;
+            // Tablets calculation: doses per day * days
+            const totalTablets = Math.max(1, Math.round(dosesPerDay * days));
             const pricePerTablet = subitemPrice || 0;
             if (priceInput) priceInput.value = Math.round(totalTablets * pricePerTablet);
         }
@@ -2657,6 +2947,45 @@
         }
     });
 
+    // ========== AUTO-OPEN SELECT DROPDOWNS ON FOCUS ==========
+    function initSelectAutoOpen(selectElement) {
+        selectElement.addEventListener('focus', function() {
+            // Simulate click to open dropdown
+            this.click();
+            // For better cross-browser support, also try showPicker if available
+            if (typeof this.showPicker === 'function') {
+                try {
+                    this.showPicker();
+                } catch (e) {
+                    // showPicker may throw in some contexts, ignore
+                }
+            }
+        });
+    }
+    
+    // Initialize auto-open for all existing select dropdowns
+    document.querySelectorAll('.frequency-select, .dosage-form-select, .timing-select').forEach(select => {
+        initSelectAutoOpen(select);
+    });
+    
+    // Observe for new rows being added to apply auto-open to new selects
+    const prescriptionRowsObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) { // Element node
+                    node.querySelectorAll('.frequency-select, .dosage-form-select, .timing-select').forEach(select => {
+                        initSelectAutoOpen(select);
+                    });
+                }
+            });
+        });
+    });
+    
+    const prescriptionRowsContainer = document.getElementById('prescriptionRows');
+    if (prescriptionRowsContainer) {
+        prescriptionRowsObserver.observe(prescriptionRowsContainer, { childList: true, subtree: true });
+    }
+
     // ========== MENU PASSWORD LOCK FUNCTIONS ==========
     function showPasswordPrompt() {
       document.getElementById('menuPasswordOverlay').style.display = 'flex';
@@ -2718,25 +3047,86 @@
     });
 
     // Search patient and load prescriptions
-    function searchPrescription() {
+    function searchPrescription(patientId = null) {
+        // Handle case where patientId is actually an event object (from button click)
+        // Check for Event, PointerEvent, or any object that's not a string/number
+        if (patientId && (patientId instanceof Event || typeof patientId !== 'string')) {
+            patientId = null;
+        }
+        
         const refNo = document.getElementById('refNoInput').value.trim();
         const searchStatus = document.getElementById('searchStatus');
+        const multipleResultsContainer = document.getElementById('multiplePatientResults');
         
-        if (!refNo) {
-            Modal.warning('Please enter a patient reference number or name!', 'Search Required');
+        if (!refNo && !patientId) {
+            Modal.warning('Please enter PAT number, name or phone!', 'Search Required');
             return;
         }
         
         // Show loading
         Modal.loading('Searching patient and prescriptions...', 'Please Wait');
         searchStatus.style.display = 'none';
+        multipleResultsContainer.style.display = 'none';
         
-        fetch(`/pharmacy/api/search-patient/?q=${encodeURIComponent(refNo)}`)
+        // Build URL with optional patient ID for direct selection
+        let url = `/pharmacy/api/search-patient/?q=${encodeURIComponent(refNo)}`;
+        if (patientId) {
+            url += `&id=${encodeURIComponent(patientId)}`;
+        }
+        
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 Modal.close();
                 
                 if (data.success) {
+                    // Check if multiple results were returned
+                    if (data.multiple_results) {
+                        // Show patient selection list
+                        multipleResultsContainer.style.display = 'block';
+                        document.getElementById('patientResultCount').textContent = `${data.count} results`;
+                        
+                        let listHtml = '';
+                        data.patients.forEach(p => {
+                            const hasPrescBadge = p.has_prescriptions 
+                                ? '<span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 8px;">Rx</span>'
+                                : '<span style="background: #666; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.65rem; margin-left: 8px;">No Rx</span>';
+                            
+                            listHtml += `
+                                <div onclick="selectPatientFromResults('${p.id}')" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(76,175,80,0.2); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease;" 
+                                     onmouseover="this.style.background='rgba(76,175,80,0.2)'; this.style.borderColor='#4CAF50';" 
+                                     onmouseout="this.style.background='rgba(0,0,0,0.2)'; this.style.borderColor='rgba(76,175,80,0.2)';">
+                                  <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4CAF50, #388E3C); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">
+                                    ${p.initials}
+                                  </div>
+                                  <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: white;">${p.name} ${hasPrescBadge}</div>
+                                    <div style="font-size: 0.8rem; color: #aaa;">
+                                      <span style="margin-right: 12px;"><i class="fas fa-id-card"></i> ${p.ref_no}</span>
+                                      <span style="margin-right: 12px;"><i class="fas fa-phone"></i> ${p.phone}</span>
+                                      <span><i class="fas fa-birthday-cake"></i> ${p.age}</span>
+                                    </div>
+                                  </div>
+                                  <div style="color: #888; font-size: 0.75rem;">${p.registered}</div>
+                                </div>
+                            `;
+                        });
+                        document.getElementById('patientResultsList').innerHTML = listHtml;
+                        
+                        searchStatus.innerHTML = `<i class="fas fa-info-circle"></i> Found ${data.count} patients matching "${refNo}" - Click to select`;
+                        searchStatus.style.display = 'block';
+                        searchStatus.style.background = 'rgba(255, 152, 0, 0.3)';
+                        searchStatus.style.color = 'white';
+                        
+                        // Reset patient details
+                        resetPatientDetails();
+                        resetBillContent();
+                        return;
+                    }
+                    
+                    // Single patient found - hide multiple results
+                    multipleResultsContainer.style.display = 'none';
+                    
                     currentPatient = data.patient;
                     currentPrescriptions = data.prescriptions;
                     
@@ -2760,6 +3150,7 @@
                     
                     Modal.success(`Found ${data.total_medicines} prescribed medicine(s) for <strong>${data.patient.name}</strong>`, 'Prescriptions Loaded', 3000);
                 } else {
+                    multipleResultsContainer.style.display = 'none';
                     searchStatus.innerHTML = '<i class="fas fa-times-circle"></i> ' + data.error;
                     searchStatus.style.display = 'block';
                     searchStatus.style.background = 'rgba(244, 67, 54, 0.3)';
@@ -2797,11 +3188,18 @@
                 console.error('Search error:', error);
                 Modal.error('Failed to search patient. Please check your connection and try again.', 'Search Failed');
                 
+                multipleResultsContainer.style.display = 'none';
                 searchStatus.innerHTML = '<i class="fas fa-times-circle"></i> Connection error';
                 searchStatus.style.display = 'block';
                 searchStatus.style.background = 'rgba(244, 67, 54, 0.3)';
                 searchStatus.style.color = 'white';
             });
+    }
+    
+    // Function to select patient from multiple results
+    function selectPatientFromResults(patientId) {
+        document.getElementById('multiplePatientResults').style.display = 'none';
+        searchPrescription(patientId);
     }
 
     // Load prescriptions into the table
@@ -2822,10 +3220,11 @@
                                data-medicine-id="${rx.medicine_id}"
                                data-original-name="${rx.medicine_name}"
                                data-medicine-form="${rx.medicine_form || 'tablet'}"
-                               data-sale-price="0"
-                               data-subitem-price="0"
+                               data-sale-price="${rx.sale_price || 0}"
+                               data-subitem-price="${rx.subitem_price || 0}"
                                autocomplete="off"
-                               onkeyup="searchMedicine(this)">
+                               oninput="searchMedicine(this)"
+                               onkeydown="handleMedicineKeydown(event, this)">
                         <div class="autocomplete-results"></div>
                     </div>
                 </td>
@@ -2851,7 +3250,7 @@
                     </select>
                 </td>
                 <td>
-                    <select class="frequency-select" onchange="updateUrduInRow(this)">
+                    <select class="frequency-select" onchange="updateUrduInRow(this); recalculateRowPrice(this)">
                         <option value="OD" ${rx.frequency === 'OD' ? 'selected' : ''}>OD</option>
                         <option value="BD" ${rx.frequency === 'BD' ? 'selected' : ''}>BD</option>
                         <option value="TDS" ${rx.frequency === 'TDS' ? 'selected' : ''}>TDS</option>
@@ -2880,7 +3279,7 @@
                            class="days-input small-input" 
                            min="1"
                            max="365"
-                           onchange="calculateBill()">
+                           onchange="recalculateRowPrice(this)">
                 </td>
                 <td>
                     <input type="number" 
@@ -2990,6 +3389,11 @@
         }
         
         document.getElementById('billContent').innerHTML = billHtml;
+        
+        // Auto-update cash calculator with the total
+        if (itemsCount > 0) {
+            updateCalculatorBill(finalTotal);
+        }
     }
 
     // Update discount from amount
@@ -3056,8 +3460,20 @@
         document.getElementById('receiptDate').textContent = dateStr;
         document.getElementById('receiptTime').textContent = timeStr;
         
+        // Set label based on mode
+        const nameLabel = document.getElementById('receiptNameLabel');
+        const refNoLine = document.getElementById('receiptRefNoLine');
+        
+        if (directSaleMode) {
+            nameLabel.textContent = 'Customer:';
+            refNoLine.style.display = 'none';  // Hide ref no for direct sale
+        } else {
+            nameLabel.textContent = 'Patient:';
+            refNoLine.style.display = 'flex';  // Show ref no for prescription mode
+        }
+        
         // Truncate patient name if too long (max 20 chars)
-        const patientName = currentPatient ? currentPatient.name : 'N/A';
+        const patientName = currentPatient ? currentPatient.name : 'Walk-in Customer';
         document.getElementById('receiptPatient').textContent = patientName.length > 20 ? patientName.substring(0, 18) + '..' : patientName;
         document.getElementById('receiptRefNo').textContent = currentPatient ? currentPatient.ref_no : 'N/A';
         
@@ -3070,7 +3486,7 @@
                 medName = medName.substring(0, 20) + '..';
             }
             // Get quantity label from the table
-            const qtyLabel = item.qty_label || `${item.days} day(s)`;
+            const qtyLabel = item.qty_label || `${item.qty || item.days} unit(s)`;
             itemsHTML += `
                 <div class="item-row" style="color: #000 !important; font-weight: 900 !important;">
                     <div class="item-name" style="color: #000 !important; font-weight: 900 !important;">${index + 1}. ${medName}</div>
@@ -3106,12 +3522,13 @@
             return;
         }
         
-        // For direct sale without patient, create a walk-in patient reference
+        // For direct sale without patient, create a walk-in customer reference
         if (!currentPatient && directSaleMode) {
             const now = new Date();
+            const customerName = document.getElementById('customerNameInput')?.value.trim() || '';
             currentPatient = {
                 ref_no: 'WALK-IN-' + now.getTime(),
-                name: 'Walk-in Customer',
+                name: customerName || 'Walk-in Customer',
                 phone: 'N/A',
                 age: 'N/A'
             };
@@ -3122,22 +3539,30 @@
         
         rows.forEach(row => {
             const medicineInput = row.querySelector('.medicine-input');
+            const qtyInput = row.querySelector('.qty-input');
             const daysInput = row.querySelector('.days-input');
             const priceInput = row.querySelector('.price-input');
+            const frequencySelect = row.querySelector('.frequency-select');
             const qtyLabel = row.querySelector('.qty-label');
             
             if (medicineInput && priceInput) {
                 const medicineName = medicineInput.value.trim();
                 const medicineId = medicineInput.getAttribute('data-medicine-id');
-                const days = parseInt(daysInput.value) || 0;
+                const medicineForm = medicineInput.getAttribute('data-medicine-form') || 'tablet';
+                const qty = parseInt(qtyInput?.value) || 1;
+                const days = parseInt(daysInput?.value) || 0;
                 const price = parseFloat(priceInput.value) || 0;
-                const qtyText = qtyLabel ? qtyLabel.textContent.trim() : `${days} day(s)`;
+                const frequency = frequencySelect?.value || 'OD';
+                const qtyText = directSaleMode ? `${qty} unit(s)` : (qtyLabel ? qtyLabel.textContent.trim() : `${days} day(s)`);
                 
                 if (medicineName && price > 0) {
                     medicines.push({
                         medicine_id: medicineId,
                         medicine_name: medicineName,
-                        days: days,
+                        medicine_form: medicineForm,
+                        days: directSaleMode ? 0 : days,
+                        qty: qty,
+                        frequency: frequency,
                         price: price,
                         qty_label: qtyText
                     });
@@ -3484,6 +3909,54 @@
         document.getElementById('printReceiptBtn').style.display = 'none';
         currentPatient = null;
         currentPrescriptions = [];
+        
+        // Also reset customer name for direct sale mode
+        const customerNameInput = document.getElementById('customerNameInput');
+        if (customerNameInput) {
+            customerNameInput.value = '';
+        }
+        
+        // Clear cash calculator
+        clearCalculator();
+    }
+
+    // ============ CASH CALCULATOR FUNCTIONS ============
+    
+    // Calculate change to return
+    function calculateChange() {
+        const billAmount = parseFloat(document.getElementById('calcBillAmount').value) || 0;
+        const customerGives = parseFloat(document.getElementById('calcCustomerGives').value) || 0;
+        const returnAmount = customerGives - billAmount;
+        
+        const returnDisplay = document.getElementById('calcReturnAmount');
+        
+        if (returnAmount >= 0) {
+            returnDisplay.textContent = `Rs. ${returnAmount.toFixed(0)}`;
+            returnDisplay.style.color = '#2196F3';
+        } else {
+            returnDisplay.textContent = `Rs. ${Math.abs(returnAmount).toFixed(0)} (Short)`;
+            returnDisplay.style.color = '#dc3545';
+        }
+    }
+    
+    // Set quick amount for customer gives
+    function setQuickAmount(amount) {
+        document.getElementById('calcCustomerGives').value = amount;
+        calculateChange();
+    }
+    
+    // Clear calculator
+    function clearCalculator() {
+        document.getElementById('calcBillAmount').value = '';
+        document.getElementById('calcCustomerGives').value = '';
+        document.getElementById('calcReturnAmount').textContent = 'Rs. 0';
+        document.getElementById('calcReturnAmount').style.color = '#2196F3';
+    }
+    
+    // Auto-update calculator bill amount when total changes
+    function updateCalculatorBill(total) {
+        document.getElementById('calcBillAmount').value = Math.round(total);
+        calculateChange();
     }
 
     // Allow Enter key to search
@@ -4222,13 +4695,15 @@
     
     function searchMedicineForReturn() {
         const query = document.getElementById('returnMedicineSearch').value.trim();
+        const resultsDiv = document.getElementById('medicineSearchResults');
         
         if (returnSearchTimeout) {
             clearTimeout(returnSearchTimeout);
         }
         
         if (query.length < 2) {
-            document.getElementById('medicineSearchResults').style.display = 'none';
+            resultsDiv.style.display = 'none';
+            resultsDiv.dataset.selectedIndex = '-1';
             return;
         }
         
@@ -4238,9 +4713,16 @@
                 .then(data => {
                     if (data.success && data.medicines.length > 0) {
                         let html = '';
-                        data.medicines.forEach(med => {
+                        data.medicines.forEach((med, index) => {
                             html += `
-                                <div class="medicine-search-item" onclick="addReturnItem('${med.id}', '${med.name.replace(/'/g, "\\'")}', ${med.unit_price}, ${med.purchase_price}, '${med.medicine_form}', '${med.unit_label}')">
+                                <div class="medicine-search-item" 
+                                     data-id="${med.id}"
+                                     data-name="${med.name.replace(/'/g, "\\'")}"
+                                     data-unit-price="${med.unit_price}"
+                                     data-purchase-price="${med.purchase_price}"
+                                     data-form="${med.medicine_form}"
+                                     data-label="${med.unit_label}"
+                                     onclick="selectReturnMedicine(this)">
                                     <div><strong>${med.name}</strong></div>
                                     <div style="font-size: 0.85rem; color: #aaa;">
                                         ${med.medicine_form} | Rs. ${med.unit_price.toFixed(2)}/${med.unit_label} | Stock: ${med.stock}
@@ -4248,16 +4730,87 @@
                                 </div>
                             `;
                         });
-                        document.getElementById('medicineSearchResults').innerHTML = html;
-                        document.getElementById('medicineSearchResults').style.display = 'block';
+                        resultsDiv.innerHTML = html;
+                        resultsDiv.style.display = 'block';
+                        
+                        // Auto-highlight first item
+                        resultsDiv.dataset.selectedIndex = '0';
+                        highlightReturnItem(0);
+                        
+                        // Add hover handlers
+                        resultsDiv.querySelectorAll('.medicine-search-item').forEach((item, idx) => {
+                            item.addEventListener('mouseenter', function() {
+                                resultsDiv.dataset.selectedIndex = idx.toString();
+                                highlightReturnItem(idx);
+                            });
+                        });
                     } else {
-                        document.getElementById('medicineSearchResults').style.display = 'none';
+                        resultsDiv.style.display = 'none';
+                        resultsDiv.dataset.selectedIndex = '-1';
                     }
                 })
                 .catch(error => {
                     console.error('Error searching medicine:', error);
                 });
         }, 300);
+    }
+    
+    // Highlight return medicine item
+    function highlightReturnItem(index) {
+        const resultsDiv = document.getElementById('medicineSearchResults');
+        const items = resultsDiv.querySelectorAll('.medicine-search-item');
+        if (items.length === 0) return;
+        
+        // Remove highlight from all
+        items.forEach(item => item.classList.remove('highlighted'));
+        
+        // Clamp index (no wrapping)
+        if (index < 0) index = 0;
+        if (index >= items.length) index = items.length - 1;
+        
+        resultsDiv.dataset.selectedIndex = index.toString();
+        items[index].classList.add('highlighted');
+        items[index].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    
+    // Keyboard handler for return medicine search
+    function handleReturnMedicineKeydown(e) {
+        const resultsDiv = document.getElementById('medicineSearchResults');
+        const items = resultsDiv.querySelectorAll('.medicine-search-item');
+        const isVisible = resultsDiv.style.display === 'block' && items.length > 0;
+        const currentIndex = parseInt(resultsDiv.dataset.selectedIndex || '-1');
+        
+        if (e.key === 'ArrowDown') {
+            if (isVisible) {
+                e.preventDefault();
+                highlightReturnItem(Math.min(currentIndex + 1, items.length - 1));
+            }
+        } else if (e.key === 'ArrowUp') {
+            if (isVisible) {
+                e.preventDefault();
+                highlightReturnItem(Math.max(currentIndex - 1, 0));
+            }
+        } else if (e.key === 'Enter') {
+            if (isVisible && currentIndex >= 0 && items[currentIndex]) {
+                e.preventDefault();
+                selectReturnMedicine(items[currentIndex]);
+            }
+        } else if (e.key === 'Escape') {
+            resultsDiv.style.display = 'none';
+            resultsDiv.dataset.selectedIndex = '-1';
+        }
+    }
+    
+    // Select medicine from return search
+    function selectReturnMedicine(item) {
+        const id = item.dataset.id;
+        const name = item.dataset.name;
+        const unitPrice = parseFloat(item.dataset.unitPrice);
+        const purchasePrice = parseFloat(item.dataset.purchasePrice);
+        const form = item.dataset.form;
+        const label = item.dataset.label;
+        
+        addReturnItem(id, name, unitPrice, purchasePrice, form, label);
     }
     
     function addReturnItem(id, name, salePrice, purchasePrice, form, label) {
