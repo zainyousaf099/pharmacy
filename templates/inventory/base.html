@@ -332,89 +332,356 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary no-print">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'inventory:dashboard' %}">
-                <i class="fas fa-hospital me-2"></i>Pharmacy Inventory
+    <nav class="navbar navbar-expand-lg navbar-dark no-print inventory-navbar">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'inventory:dashboard' %}">
+                <div class="brand-icon me-2">
+                    <i class="fas fa-clinic-medical"></i>
+                </div>
+                <span class="brand-text">Pharmacy Inventory</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <!-- Search Bar -->
-                <div class="mx-auto" style="max-width: 400px; position: relative;">
-                    <input type="text" 
-                           class="form-control" 
-                           id="productSearch" 
-                           placeholder="Search medicines... (e.g., 'P' for Panadol)"
-                           autocomplete="off"
-                           style="border-radius: 20px; padding-left: 40px;">
-                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
-                    <div id="searchResults" class="list-group position-absolute w-100" style="z-index: 1050; display: none; max-height: 400px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                <div class="nav-search-container mx-lg-4">
+                    <div class="nav-search-box">
+                        <i class="fas fa-search nav-search-icon"></i>
+                        <input type="text" 
+                               class="nav-search-input" 
+                               id="productSearch" 
+                               placeholder="Search medicines..."
+                               autocomplete="off">
+                    </div>
+                    <div id="searchResults" class="list-group position-absolute w-100" style="z-index: 1050; display: none; max-height: 400px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); top: 100%; border-radius: 12px;"></div>
                 </div>
                 
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item d-flex align-items-center">
-                        <button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <!-- Theme Toggle -->
+                    <li class="nav-item">
+                        <button class="theme-toggle-btn" id="themeToggle" onclick="toggleDarkMode()">
                             <i class="fas fa-moon" id="themeIcon"></i>
-                            <span id="themeText">Dark</span>
                         </button>
                     </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inventory:dashboard' %}">
-                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        <a class="nav-link nav-link-custom" href="{% url 'inventory:dashboard' %}">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
                         </a>
                     </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inventory:product_list' %}">
-                            <i class="fas fa-pills me-1"></i>Medicines
+                        <a class="nav-link nav-link-custom" href="{% url 'inventory:product_list' %}">
+                            <i class="fas fa-capsules"></i>
+                            <span>Medicines</span>
                         </a>
                     </li>
+                    
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-chart-bar me-1"></i>Reports
+                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Reports</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'inventory:all_reports' %}"><i class="fas fa-file-alt me-2"></i>All Reports</a></li>
+                        <ul class="dropdown-menu dropdown-menu-modern">
+                            <li><a class="dropdown-item" href="{% url 'inventory:all_reports' %}"><i class="fas fa-file-alt me-2 text-primary"></i>All Reports</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'inventory:stock_report' %}"><i class="fas fa-boxes me-2"></i>Stock Report</a></li>
-                            <li><a class="dropdown-item" href="{% url 'inventory:low_stock_report' %}"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock</a></li>
-                            <li><a class="dropdown-item" href="{% url 'inventory:expiry_report' %}"><i class="fas fa-calendar-times me-2"></i>Expiry Report</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:stock_report' %}"><i class="fas fa-boxes me-2 text-info"></i>Stock Report</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:low_stock_report' %}"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Low Stock</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:expiry_report' %}"><i class="fas fa-calendar-times me-2 text-danger"></i>Expiry Report</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'inventory:sales_analysis_report' %}"><i class="fas fa-chart-line me-2"></i>Sales Analysis</a></li>
-                            <li><a class="dropdown-item" href="{% url 'inventory:profit_loss_report' %}"><i class="fas fa-balance-scale me-2"></i>Profit & Loss</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:sales_analysis_report' %}"><i class="fas fa-chart-line me-2 text-success"></i>Sales Analysis</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:profit_loss_report' %}"><i class="fas fa-balance-scale me-2 text-purple"></i>Profit & Loss</a></li>
                         </ul>
                     </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inventory:expense_list' %}">
-                            <i class="fas fa-money-bill-wave me-1"></i>Expenses
+                        <a class="nav-link nav-link-custom" href="{% url 'inventory:expense_list' %}">
+                            <i class="fas fa-receipt"></i>
+                            <span>Expenses</span>
                         </a>
                     </li>
+                    
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="distributorDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-truck me-1"></i>Distributors
+                        <a class="nav-link nav-link-custom dropdown-toggle" href="#" id="distributorDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-truck-loading"></i>
+                            <span>Distributors</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_list' %}"><i class="fas fa-list me-2"></i>All Distributors</a></li>
-                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_create' %}"><i class="fas fa-plus me-2"></i>Add Distributor</a></li>
+                        <ul class="dropdown-menu dropdown-menu-modern">
+                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_list' %}"><i class="fas fa-list me-2 text-info"></i>All Distributors</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_create' %}"><i class="fas fa-user-plus me-2 text-success"></i>Add Distributor</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_dues_report' %}"><i class="fas fa-file-invoice-dollar me-2"></i>Dues Report</a></li>
+                            <li><a class="dropdown-item" href="{% url 'inventory:distributor_dues_report' %}"><i class="fas fa-file-invoice-dollar me-2 text-warning"></i>Dues Report</a></li>
                         </ul>
                     </li>
+                    
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inventory:product_create' %}">
-                            <i class="fas fa-plus me-1"></i>Add Medicine
+                        <a class="nav-link nav-add-btn" href="{% url 'inventory:product_create' %}">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Medicine</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'pharmacypanel' %}" style="background: rgba(255, 255, 255, 0.2); border-radius: 8px; margin-left: 10px; padding: 8px 16px; border: 1px solid rgba(255, 255, 255, 0.4);" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">
-                            <i class="fas fa-arrow-left me-1"></i>Back to Pharmacy
+                    
+                    <li class="nav-item ms-2">
+                        <a class="nav-link nav-back-btn" href="{% url 'pharmacypanel' %}">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Pharmacy</span>
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+
+    <style>
+        /* Modern Navbar Styles */
+        .inventory-navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
+            padding: 0.5rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        [data-theme="dark"] .inventory-navbar {
+            background: linear-gradient(135deg, #0d1f12 0%, #1a3a2a 100%) !important;
+            border-bottom: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .brand-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Search Box */
+        .nav-search-container {
+            position: relative;
+            flex: 1;
+            max-width: 350px;
+        }
+        
+        .nav-search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-search-icon {
+            position: absolute;
+            left: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            z-index: 1;
+        }
+        
+        .nav-search-input {
+            width: 100%;
+            padding: 10px 16px 10px 42px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .nav-search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(20deg);
+        }
+        
+        /* Nav Links */
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px !important;
+            margin: 0 2px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link-custom:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white !important;
+        }
+        
+        .nav-link-custom i {
+            font-size: 1rem;
+        }
+        
+        /* Add Button */
+        .nav-add-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px !important;
+            margin: 0 4px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+            color: white !important;
+        }
+        
+        /* Back Button */
+        .nav-back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px !important;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white !important;
+        }
+        
+        /* Dropdown Menu Modern */
+        .dropdown-menu-modern {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            margin-top: 10px;
+        }
+        
+        .dropdown-menu-modern .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-menu-modern .dropdown-item:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .dropdown-menu-modern .dropdown-divider {
+            margin: 6px 0;
+        }
+        
+        [data-theme="dark"] .dropdown-menu-modern {
+            background: #1a3a2a;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        [data-theme="dark"] .dropdown-menu-modern .dropdown-item {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        [data-theme="dark"] .dropdown-menu-modern .dropdown-item:hover {
+            background: rgba(40, 167, 69, 0.2);
+        }
+        
+        .text-purple { color: #6f42c1; }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .nav-search-container {
+                max-width: 100%;
+                margin: 15px 0;
+            }
+            
+            .nav-link-custom span,
+            .nav-add-btn span,
+            .nav-back-btn span {
+                display: inline;
+            }
+            
+            .navbar-nav {
+                padding-top: 15px;
+            }
+            
+            .nav-item {
+                margin: 4px 0;
+            }
+            
+            .nav-add-btn, .nav-back-btn {
+                justify-content: center;
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .nav-link-custom span {
+                display: none;
+            }
+            
+            .nav-link-custom i {
+                font-size: 1.1rem;
+            }
+            
+            .nav-link-custom {
+                padding: 10px 12px !important;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .nav-link-custom span {
+                display: inline;
+            }
+            
+            .nav-link-custom i {
+                font-size: 1rem;
+            }
+        }
+    </style>
 
     <!-- Messages -->
     {% if messages %}

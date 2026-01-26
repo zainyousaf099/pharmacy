@@ -5,93 +5,697 @@
 
 {% block content %}
 <div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h1 class="display-5 mb-0">
-                <i class="fas fa-pills me-2"></i>Medicines Inventory
-            </h1>
-            <p class="text-muted">Manage all medicines and products</p>
+    <!-- Header Section -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-lg-5">
+            <div class="d-flex align-items-center">
+                <div class="icon-box bg-gradient-primary rounded-3 p-3 me-3 shadow">
+                    <i class="fas fa-capsules fa-2x text-white"></i>
+                </div>
+                <div>
+                    <h2 class="mb-0 fw-bold">Medicine Inventory</h2>
+                    <p class="text-muted mb-0 small">Manage your complete medicine database</p>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 text-end">
-            <a class="btn btn-outline-secondary me-2" href="{% url 'inventory:all_reports' %}">
-                <i class="fas fa-chart-bar me-2"></i>All Reports
-            </a>
-            <a class="btn btn-primary btn-lg" href="{% url 'inventory:product_create' %}">
-                <i class="fas fa-plus me-2"></i>Add New Medicine
-            </a>
+        <div class="col-lg-7">
+            <div class="d-flex justify-content-lg-end gap-2 mt-3 mt-lg-0 flex-wrap">
+                <a class="btn btn-outline-primary" href="{% url 'inventory:all_reports' %}">
+                    <i class="fas fa-chart-line me-2"></i>Reports
+                </a>
+                <a class="btn btn-success btn-lg shadow-sm" href="{% url 'inventory:product_create' %}">
+                    <i class="fas fa-plus-circle me-2"></i>Add New Medicine
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="card border-0 bg-gradient-info text-white shadow-sm h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1 small text-uppercase">Total Medicines</h6>
+                            <h3 class="mb-0 fw-bold" id="statTotal">0</h3>
+                        </div>
+                        <i class="fas fa-pills fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 bg-gradient-success text-white shadow-sm h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1 small text-uppercase">In Stock</h6>
+                            <h3 class="mb-0 fw-bold" id="statInStock">0</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 bg-gradient-danger text-white shadow-sm h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 mb-1 small text-uppercase">Out of Stock</h6>
+                            <h3 class="mb-0 fw-bold" id="statOutStock">0</h3>
+                        </div>
+                        <i class="fas fa-exclamation-triangle fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 bg-gradient-warning text-dark shadow-sm h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-dark-50 mb-1 small text-uppercase">Low Stock</h6>
+                            <h3 class="mb-0 fw-bold" id="statLowStock">0</h3>
+                        </div>
+                        <i class="fas fa-battery-quarter fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card border-0 shadow">
+        <!-- Search Bar Header -->
+        <div class="card-header bg-white border-bottom py-3">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-5">
+                    <div class="search-box position-relative">
+                        <i class="fas fa-search position-absolute search-icon text-muted"></i>
+                        <input type="text" id="searchInput" class="form-control form-control-lg ps-5 search-input" 
+                               placeholder="Search medicines by name, dosage..." autocomplete="off">
+                        <button class="btn btn-link position-absolute clear-btn text-muted" type="button" id="clearSearch">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                        <kbd class="search-shortcut">Ctrl+F</kbd>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="showing-info">
+                        <span class="text-muted">Showing</span>
+                        <span class="badge bg-primary mx-1 px-3 py-2" id="showingCount">0</span>
+                        <span class="text-muted">of</span>
+                        <span class="badge bg-dark mx-1 px-3 py-2" id="totalCount">0</span>
+                        <span class="text-muted">medicines</span>
+                    </div>
+                </div>
+                <div class="col-lg-3 text-lg-end">
+                    <div class="d-flex align-items-center justify-content-lg-end gap-2">
+                        <label class="text-muted small mb-0">Show:</label>
+                        <select id="perPage" class="form-select form-select-sm per-page-select">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <!-- Loading indicator -->
+            <div id="loadingIndicator" class="text-center py-5">
+                <div class="loading-spinner">
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-primary" role="status" style="animation-delay: 0.1s;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-primary" role="status" style="animation-delay: 0.2s;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <p class="mt-3 text-muted mb-0">Loading medicines...</p>
+            </div>
+
+            <div class="table-responsive" id="tableContainer" style="display: none;">
+                <table class="table table-hover align-middle mb-0 medicine-table">
+                    <thead>
                         <tr>
-                            <th>Medicine Name</th>
-                            <th>Category</th>
-                            <th>Dosage</th>
-                            <th>Packs in Stock</th>
-                            <th>Strips in Stock</th>
-                            <th>Tablets in Stock</th>
-                            <th>Purchase Price (Pack)</th>
-                            <th>Sale Price (Pack)</th>
-                            <th>Actions</th>
+                            <th class="ps-4" style="min-width: 280px;">
+                                <i class="fas fa-prescription-bottle-alt me-2 text-primary"></i>Medicine Name
+                            </th>
+                            <th><i class="fas fa-tags me-2 text-secondary"></i>Category</th>
+                            <th><i class="fas fa-weight me-2 text-info"></i>Dosage</th>
+                            <th class="text-center"><i class="fas fa-boxes me-2 text-success"></i>Packs</th>
+                            <th class="text-center"><i class="fas fa-grip-lines me-2 text-warning"></i>Strips</th>
+                            <th class="text-center"><i class="fas fa-tablets me-2 text-danger"></i>Tablets</th>
+                            <th class="text-end"><i class="fas fa-shopping-cart me-2 text-primary"></i>Buy Price</th>
+                            <th class="text-end"><i class="fas fa-tag me-2 text-success"></i>Sale Price</th>
+                            <th class="text-center pe-4">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for p in products %}
-                        <tr>
-                            <td>
-                                <div class="fw-bold">{{ p.name }}</div>
-                                {% if p.batch_no %}
-                                    <small class="text-muted">Batch: {{ p.batch_no }}</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if p.category %}
-                                    <span class="badge bg-secondary">{{ p.category }}</span>
-                                {% else %}
-                                    <span class="text-muted">—</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ p.weight_or_quantity|default:"—" }}</td>
-                            <td>
-                                <span class="badge {% if p.total_boxes < 5 %}bg-danger{% else %}bg-success{% endif %}">
-                                    {{ p.total_boxes|floatformat:0 }}
-                                </span>
-                            </td>
-                            <td>{{ p.total_items|floatformat:0 }}</td>
-                            <td>{{ p.total_subitems|floatformat:0 }}</td>
-                            <td>Rs. {{ p.purchase_price|floatformat:2 }}</td>
-                            <td class="text-success fw-bold">Rs. {{ p.sale_price|floatformat:2 }}</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'inventory:product_detail' p.pk %}" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a class="btn btn-sm btn-success" href="{% url 'inventory:product_purchase' p.pk %}" title="Add Stock">
-                                        <i class="fas fa-plus"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="9" class="text-center py-5">
-                                <i class="fas fa-inbox fa-4x text-muted mb-3 d-block"></i>
-                                <h5 class="text-muted">No medicines found</h5>
-                                <p class="text-muted">Start by adding your first medicine to the inventory</p>
-                                <a href="{% url 'inventory:product_create' %}" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>Add Medicine
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                    <tbody id="productsTableBody">
+                        <!-- Products loaded via AJAX -->
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Empty state -->
+            <div id="emptyState" class="text-center py-5" style="display: none;">
+                <div class="empty-icon mb-4">
+                    <i class="fas fa-search fa-4x text-muted"></i>
+                </div>
+                <h4 class="text-muted">No medicines found</h4>
+                <p class="text-muted mb-4" id="emptyMessage">Start by adding your first medicine to the inventory</p>
+                <a href="{% url 'inventory:product_create' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Add Medicine
+                </a>
+            </div>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div class="card-footer bg-light border-top py-3" id="paginationContainer">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <div class="page-info">
+                        <i class="fas fa-file-alt me-2 text-muted"></i>
+                        <span class="text-muted">Page</span>
+                        <span class="badge bg-primary mx-1" id="currentPage">1</span>
+                        <span class="text-muted">of</span>
+                        <span class="badge bg-secondary mx-1" id="totalPages">1</span>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <nav aria-label="Products pagination">
+                        <ul class="pagination mb-0 justify-content-end pagination-modern" id="pagination">
+                            <!-- Pagination buttons loaded via JS -->
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Gradient backgrounds */
+    .bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .bg-gradient-info { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); }
+    .bg-gradient-danger { background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); }
+    
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Search box styling */
+    .search-box {
+        position: relative;
+    }
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+    .search-input {
+        border-radius: 50px;
+        border: 2px solid #e9ecef;
+        padding-right: 100px;
+        transition: all 0.3s ease;
+    }
+    .search-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+    }
+    .clear-btn {
+        right: 70px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+    }
+    .search-shortcut {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #e9ecef;
+        border: none;
+        border-radius: 4px;
+        font-size: 11px;
+        padding: 2px 8px;
+    }
+    .search-input:focus + .clear-btn + .search-shortcut {
+        display: none;
+    }
+    
+    .per-page-select {
+        width: 80px;
+        border-radius: 20px;
+    }
+    
+    /* Table styling */
+    .medicine-table {
+        font-size: 0.9rem;
+    }
+    .medicine-table thead {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    .medicine-table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #495057;
+        padding: 1rem 0.75rem;
+        border-bottom: 2px solid #dee2e6;
+        white-space: nowrap;
+    }
+    .medicine-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    .medicine-table tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+        transform: scale(1.001);
+    }
+    .medicine-table tbody td {
+        padding: 0.875rem 0.75rem;
+        vertical-align: middle;
+    }
+    
+    .table-responsive {
+        max-height: calc(100vh - 480px);
+        overflow-y: auto;
+    }
+    
+    /* Stock badges */
+    .stock-badge {
+        min-width: 55px;
+        padding: 0.4em 0.8em;
+        font-weight: 600;
+        border-radius: 20px;
+    }
+    .stock-in { background: linear-gradient(135deg, #28a745, #1e7e34); }
+    .stock-out { background: linear-gradient(135deg, #dc3545, #bd2130); }
+    .stock-low { background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529; }
+    
+    /* Medicine name styling */
+    .medicine-name {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 2px;
+    }
+    .medicine-batch {
+        font-size: 0.75rem;
+        color: #718096;
+    }
+    
+    /* Price styling */
+    .price-buy { color: #e53e3e; }
+    .price-sale { color: #38a169; font-weight: 700; }
+    
+    /* Action buttons */
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    /* Pagination styling */
+    .pagination-modern .page-item .page-link {
+        border: none;
+        margin: 0 2px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: #495057;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    .pagination-modern .page-item .page-link:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-1px);
+    }
+    .pagination-modern .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .pagination-modern .page-item.disabled .page-link {
+        background: #e9ecef;
+        color: #adb5bd;
+    }
+    
+    /* Loading animation */
+    .loading-spinner .spinner-grow {
+        width: 1rem;
+        height: 1rem;
+        margin: 0 3px;
+    }
+    
+    /* Empty state */
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .table-responsive {
+            max-height: calc(100vh - 400px);
+        }
+        .search-shortcut {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentPage = 1;
+    let perPage = 50;
+    let searchQuery = '';
+    let searchTimeout = null;
+    let isLoading = false;
+    let totalPages = 1;
+    
+    const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+    const perPageSelect = document.getElementById('perPage');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const tableContainer = document.getElementById('tableContainer');
+    const emptyState = document.getElementById('emptyState');
+    const emptyMessage = document.getElementById('emptyMessage');
+    const tableBody = document.getElementById('productsTableBody');
+    const pagination = document.getElementById('pagination');
+    const showingCount = document.getElementById('showingCount');
+    const totalCount = document.getElementById('totalCount');
+    const currentPageEl = document.getElementById('currentPage');
+    const totalPagesEl = document.getElementById('totalPages');
+    
+    // Stats elements
+    const statTotal = document.getElementById('statTotal');
+    const statInStock = document.getElementById('statInStock');
+    const statOutStock = document.getElementById('statOutStock');
+    const statLowStock = document.getElementById('statLowStock');
+    
+    // URL templates for product links
+    const detailUrlTemplate = "{% url 'inventory:product_detail' '00000000-0000-0000-0000-000000000000' %}";
+    const purchaseUrlTemplate = "{% url 'inventory:product_purchase' '00000000-0000-0000-0000-000000000000' %}";
+    
+    // Update stats cards with animation
+    function updateStats(stats) {
+        animateNumber(statTotal, stats.total);
+        animateNumber(statInStock, stats.in_stock);
+        animateNumber(statOutStock, stats.out_of_stock);
+        animateNumber(statLowStock, stats.low_stock);
+    }
+    
+    function animateNumber(element, target) {
+        const current = parseInt(element.textContent.replace(/,/g, '')) || 0;
+        const increment = Math.ceil((target - current) / 20);
+        let value = current;
+        
+        const timer = setInterval(() => {
+            value += increment;
+            if ((increment > 0 && value >= target) || (increment < 0 && value <= target) || increment === 0) {
+                value = target;
+                clearInterval(timer);
+            }
+            element.textContent = value.toLocaleString();
+        }, 30);
+    }
+    
+    // Load products
+    function loadProducts(page = 1) {
+        if (isLoading) return;
+        isLoading = true;
+        
+        loadingIndicator.style.display = 'block';
+        tableContainer.style.display = 'none';
+        emptyState.style.display = 'none';
+        
+        const params = new URLSearchParams({
+            page: page,
+            per_page: perPage,
+            search: searchQuery
+        });
+        
+        fetch(`{% url 'inventory:product_list' %}?${params}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            isLoading = false;
+            loadingIndicator.style.display = 'none';
+            
+            // Update stats cards
+            if (data.stats) {
+                updateStats(data.stats);
+            }
+            
+            if (data.products.length === 0) {
+                emptyState.style.display = 'block';
+                tableContainer.style.display = 'none';
+                emptyMessage.textContent = searchQuery 
+                    ? `No medicines found matching "${searchQuery}"` 
+                    : 'Start by adding your first medicine to the inventory';
+                showingCount.textContent = '0';
+                totalCount.textContent = data.total_count;
+                return;
+            }
+            
+            tableContainer.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            // Update counts
+            const startIdx = (data.page - 1) * data.per_page + 1;
+            const endIdx = Math.min(data.page * data.per_page, data.total_count);
+            showingCount.textContent = `${startIdx}-${endIdx}`;
+            totalCount.textContent = data.total_count.toLocaleString();
+            currentPageEl.textContent = data.page;
+            totalPagesEl.textContent = data.total_pages;
+            currentPage = data.page;
+            totalPages = data.total_pages;
+            
+            // Render products
+            renderProducts(data.products);
+            
+            // Render pagination
+            renderPagination(data);
+        })
+        .catch(error => {
+            isLoading = false;
+            loadingIndicator.style.display = 'none';
+            console.error('Error loading products:', error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center text-danger py-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>Error loading products. Please refresh the page.
+                    </td>
+                </tr>
+            `;
+            tableContainer.style.display = 'block';
+        });
+    }
+    
+    function renderProducts(products) {
+        let html = '';
+        products.forEach(p => {
+            let stockClass = 'stock-in';
+            if (p.total_boxes <= 0) {
+                stockClass = 'stock-out';
+            } else if (p.total_boxes < 5) {
+                stockClass = 'stock-low';
+            }
+            
+            const detailUrl = detailUrlTemplate.replace('00000000-0000-0000-0000-000000000000', p.id);
+            const purchaseUrl = purchaseUrlTemplate.replace('00000000-0000-0000-0000-000000000000', p.id);
+            
+            html += `
+                <tr>
+                    <td class="ps-4">
+                        <div class="medicine-name">${escapeHtml(p.name)}</div>
+                        ${p.batch_no ? `<span class="medicine-batch"><i class="fas fa-barcode me-1"></i>${escapeHtml(p.batch_no)}</span>` : ''}
+                    </td>
+                    <td>
+                        ${p.category ? `<span class="badge bg-light text-dark border">${escapeHtml(p.category)}</span>` : '<span class="text-muted">—</span>'}
+                    </td>
+                    <td><span class="text-primary fw-medium">${p.dosage ? escapeHtml(p.dosage) : '—'}</span></td>
+                    <td class="text-center">
+                        <span class="badge ${stockClass} stock-badge">${p.total_boxes}</span>
+                    </td>
+                    <td class="text-center fw-medium">${p.total_items}</td>
+                    <td class="text-center fw-medium">${p.total_subitems}</td>
+                    <td class="text-end price-buy">Rs. ${p.purchase_price.toFixed(2)}</td>
+                    <td class="text-end price-sale">Rs. ${p.sale_price.toFixed(2)}</td>
+                    <td class="text-center pe-4">
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-outline-primary action-btn" href="${detailUrl}" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a class="btn btn-success action-btn ms-1" href="${purchaseUrl}" title="Add Stock">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        tableBody.innerHTML = html;
+    }
+    
+    function renderPagination(data) {
+        let html = '';
+        
+        // Previous button
+        html += `
+            <li class="page-item ${!data.has_previous ? 'disabled' : ''}">
+                <span class="page-link" data-page="${data.page - 1}" ${!data.has_previous ? 'tabindex="-1"' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </span>
+            </li>
+        `;
+        
+        // Page numbers (show max 7 pages)
+        const maxPages = 7;
+        let startPage = Math.max(1, data.page - 3);
+        let endPage = Math.min(data.total_pages, startPage + maxPages - 1);
+        
+        if (endPage - startPage < maxPages - 1) {
+            startPage = Math.max(1, endPage - maxPages + 1);
+        }
+        
+        if (startPage > 1) {
+            html += `<li class="page-item"><span class="page-link" data-page="1">1</span></li>`;
+            if (startPage > 2) {
+                html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+            }
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            html += `
+                <li class="page-item ${i === data.page ? 'active' : ''}">
+                    <span class="page-link" data-page="${i}">${i}</span>
+                </li>
+            `;
+        }
+        
+        if (endPage < data.total_pages) {
+            if (endPage < data.total_pages - 1) {
+                html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+            }
+            html += `<li class="page-item"><span class="page-link" data-page="${data.total_pages}">${data.total_pages}</span></li>`;
+        }
+        
+        // Next button
+        html += `
+            <li class="page-item ${!data.has_next ? 'disabled' : ''}">
+                <span class="page-link" data-page="${data.page + 1}" ${!data.has_next ? 'tabindex="-1"' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+            </li>
+        `;
+        
+        pagination.innerHTML = html;
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Pagination click handler (event delegation)
+    pagination.addEventListener('click', function(e) {
+        const pageLink = e.target.closest('.page-link');
+        if (pageLink && !pageLink.parentElement.classList.contains('disabled') && !pageLink.parentElement.classList.contains('active')) {
+            const page = parseInt(pageLink.dataset.page);
+            if (page >= 1 && page <= totalPages) {
+                loadProducts(page);
+            }
+        }
+    });
+    
+    // Search input handler with debounce
+    searchInput.addEventListener('input', function() {
+        clearSearch.style.display = this.value ? 'block' : 'none';
+        
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchQuery = this.value.trim();
+            currentPage = 1;
+            loadProducts(1);
+        }, 300); // 300ms debounce
+    });
+    
+    // Clear search
+    clearSearch.addEventListener('click', function() {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearch.style.display = 'none';
+        currentPage = 1;
+        loadProducts(1);
+        searchInput.focus();
+    });
+    
+    // Per page change
+    perPageSelect.addEventListener('change', function() {
+        perPage = parseInt(this.value);
+        currentPage = 1;
+        loadProducts(1);
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Focus search on Ctrl+F or /
+        if ((e.ctrlKey && e.key === 'f') || (e.key === '/' && document.activeElement !== searchInput)) {
+            e.preventDefault();
+            searchInput.focus();
+        }
+        // Arrow keys for pagination when not in input
+        if (document.activeElement !== searchInput) {
+            if (e.key === 'ArrowLeft' && currentPage > 1) {
+                loadProducts(currentPage - 1);
+            } else if (e.key === 'ArrowRight' && currentPage < totalPages) {
+                loadProducts(currentPage + 1);
+            }
+        }
+    });
+    
+    // Initial load
+    loadProducts(1);
+});
+</script>
 {% endblock %}

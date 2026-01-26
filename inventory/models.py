@@ -132,6 +132,13 @@ class Product(models.Model):
 
     class Meta:
         ordering = ('name',)
+        indexes = [
+            models.Index(fields=['name']),
+            models.Index(fields=['weight_or_quantity']),
+            models.Index(fields=['batch_no']),
+            models.Index(fields=['total_boxes']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return f"{self.name} ({self.id})"

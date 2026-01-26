@@ -61,8 +61,84 @@ def dashboard(request):
     return render(request, "inventory/dashboard.html", context)
 
 def product_list(request):
-    products = Product.objects.all().order_by('name')
-    return render(request, "inventory/product_list.html", {"products": products})
+    """Paginated product list with AJAX support for fast loading"""
+    # Check if this is an AJAX request for data
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return product_list_ajax(request)
+    
+    # For initial page load, just render the template (data loaded via AJAX)
+    return render(request, "inventory/product_list.html", {})
+
+
+def product_list_ajax(request):
+    """AJAX endpoint for paginated product data with search"""
+    from django.core.paginator import Paginator
+    import json
+    
+    # Get parameters
+    page = int(request.GET.get('page', 1))
+    per_page = int(request.GET.get('per_page', 50))
+    search = request.GET.get('search', '').strip()
+    
+    # Base queryset with only needed fields for performance
+    products = Product.objects.only(
+        'id', 'name', 'category', 'weight_or_quantity', 
+        'total_boxes', 'total_items', 'total_subitems',
+        'purchase_price', 'sale_price', 'batch_no'
+    ).select_related('category')
+    
+    # Get stock statistics (before applying search filter)
+    total_all = Product.objects.count()
+    in_stock = Product.objects.filter(total_boxes__gt=0).count()
+    out_of_stock = Product.objects.filter(total_boxes__lte=0).count()
+    low_stock = Product.objects.filter(total_boxes__gt=0, total_boxes__lt=5).count()
+    
+    # Apply search filter
+    if search:
+        products = products.filter(
+            Q(name__icontains=search) | 
+            Q(weight_or_quantity__icontains=search) |
+            Q(batch_no__icontains=search)
+        )
+    
+    # Order by name
+    products = products.order_by('name')
+    
+    # Paginate
+    paginator = Paginator(products, per_page)
+    page_obj = paginator.get_page(page)
+    
+    # Build response data
+    products_data = []
+    for p in page_obj:
+        products_data.append({
+            'id': str(p.pk),
+            'name': p.name,
+            'batch_no': p.batch_no or '',
+            'category': p.category.name if p.category else '',
+            'dosage': p.weight_or_quantity or '',
+            'total_boxes': int(p.total_boxes or 0),
+            'total_items': int(p.total_items or 0),
+            'total_subitems': int(p.total_subitems or 0),
+            'purchase_price': float(p.purchase_price or 0),
+            'sale_price': float(p.sale_price or 0),
+        })
+    
+    return JsonResponse({
+        'products': products_data,
+        'page': page,
+        'per_page': per_page,
+        'total_pages': paginator.num_pages,
+        'total_count': paginator.count,
+        'has_next': page_obj.has_next(),
+        'has_previous': page_obj.has_previous(),
+        'stats': {
+            'total': total_all,
+            'in_stock': in_stock,
+            'out_of_stock': out_of_stock,
+            'low_stock': low_stock,
+        }
+    })
 
 def product_create(request):
     new_distributor_name = ''
