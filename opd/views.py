@@ -47,7 +47,7 @@ def opdpanel(request):
                 patient.created_by = staff
                 
                 # Add patient to queue
-                today = timezone.now().date()
+                today = timezone.localtime(timezone.now()).date()
                 # Get next queue number for today
                 last_queue = Patient.objects.filter(
                     queued_at__date=today

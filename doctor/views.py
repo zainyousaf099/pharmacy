@@ -75,7 +75,7 @@ def doctor_panel(request):
             
             # Add patient to pharmacy queue
             from django.utils import timezone
-            today = timezone.now().date()
+            today = timezone.localtime(timezone.now()).date()
             
             # Only add to pharmacy queue if not already waiting
             if patient.pharmacy_queue_status != 'waiting':
@@ -636,7 +636,7 @@ def patient_statistics(request):
     from django.db.models import Count
     
     # Get today's data by default
-    today = timezone.now().date()
+    today = timezone.localtime(timezone.now()).date()
     start_date = today
     end_date = today
     
@@ -679,7 +679,7 @@ def patient_statistics_api(request):
     
     try:
         filter_type = request.GET.get('filter', 'today')
-        today = timezone.now().date()
+        today = timezone.localtime(timezone.now()).date()
         
         # Determine date range based on filter
         if filter_type == 'today':
@@ -808,7 +808,8 @@ def get_patient_queue(request):
     """Get all patients waiting in queue"""
     try:
         # Get patients with waiting or with_doctor status from today
-        today = timezone.now().date()
+        # Use localtime() to convert to configured TIME_ZONE before getting date
+        today = timezone.localtime(timezone.now()).date()
         waiting_patients = Patient.objects.filter(
             queue_status__in=['waiting', 'with_doctor'],
             queued_at__date=today
