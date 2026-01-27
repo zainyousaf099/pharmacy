@@ -980,7 +980,7 @@ def check_daily_backup(request):
 
 def pharmacy_queue_api(request):
     """Get pharmacy queue - patients waiting for medicine after doctor visit"""
-    today = timezone.now().date()
+    today = timezone.localtime(timezone.now()).date()
     
     # Get patients in pharmacy queue for today
     waiting_patients = Patient.objects.filter(
@@ -1396,7 +1396,7 @@ def get_return_history(request):
             from datetime import datetime
             query_date = datetime.strptime(date_str, '%Y-%m-%d').date()
         else:
-            query_date = timezone.now().date()
+            query_date = timezone.localtime(timezone.now()).date()
         
         returns = MedicineReturn.objects.filter(
             return_date__date=query_date
